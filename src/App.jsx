@@ -13,6 +13,7 @@ import ParticlesBackground from './components/react-bits/ParticlesBackground';
 import ClickSpark from './components/react-bits/ClickSpark';
 import RetroArcadeSprites from './components/ambient/RetroArcadeSprites';
 import TokyoDriftMatrixBackground from './components/ambient/TokyoDriftMatrixBackground';
+import StarfieldBackground from './components/ambient/StarfieldBackground';
 import { Storage, uid } from './utils/storage';
 import { themedAudio } from './utils/retroAudio';
 import confetti from 'canvas-confetti';
@@ -376,30 +377,30 @@ export default function App() {
       {/* CRT Scanline Shader Overlay for 8-Bit mode */}
       {theme === 'retro-pixel' && scanlinesEnabled && <div className="crt-scanlines-overlay" />}
 
-      {/* Background Ambient Particles */}
-      <ParticlesBackground
-        particleCount={theme === 'retro-pixel' ? 20 : 35}
-        particleColor={
-          theme === 'haunted'
-            ? 'rgba(239, 68, 68, 0.25)'
-            : theme === 'cyberpunk'
-            ? 'rgba(0, 240, 255, 0.25)'
-            : theme === 'scifi-hud'
-            ? 'rgba(34, 197, 94, 0.25)'
-            : theme === 'dark'
-            ? 'rgba(255, 255, 255, 0.12)'
-            : 'rgba(0, 0, 0, 0.08)'
-        }
-        lineColor={
-          theme === 'haunted'
-            ? 'rgba(239, 68, 68, 0.05)'
-            : theme === 'cyberpunk'
-            ? 'rgba(255, 0, 127, 0.08)'
-            : theme === 'scifi-hud'
-            ? 'rgba(34, 197, 94, 0.05)'
-            : 'rgba(255, 255, 255, 0.03)'
-        }
-      />
+      {/* Background Ambient Particles (for standard themes) */}
+      {theme !== 'dark' && theme !== 'tokyo-drift' && (
+        <ParticlesBackground
+          particleCount={theme === 'retro-pixel' ? 20 : 35}
+          particleColor={
+            theme === 'haunted'
+              ? 'rgba(239, 68, 68, 0.25)'
+              : theme === 'cyberpunk'
+              ? 'rgba(0, 240, 255, 0.25)'
+              : theme === 'scifi-hud'
+              ? 'rgba(34, 197, 94, 0.25)'
+              : 'rgba(0, 0, 0, 0.08)'
+          }
+          lineColor={
+            theme === 'haunted'
+              ? 'rgba(239, 68, 68, 0.05)'
+              : theme === 'cyberpunk'
+              ? 'rgba(255, 0, 127, 0.08)'
+              : theme === 'scifi-hud'
+              ? 'rgba(34, 197, 94, 0.05)'
+              : 'rgba(255, 255, 255, 0.03)'
+          }
+        />
+      )}
 
       {/* Tactile Click Sparks */}
       <ClickSpark
@@ -419,6 +420,9 @@ export default function App() {
         sparkCount={6}
         sparkSize={7}
       />
+
+      {/* 🌌 Obsidian Zen 3D Deep Space Starfield Background */}
+      {theme === 'dark' && !isFullscreen && <StarfieldBackground />}
 
       {/* 👾 8-Bit Retro Arcade Ambient Pixel Sprites (Only on Home Screen, Not Fullscreen) */}
       {theme === 'retro-pixel' && !isFullscreen && <RetroArcadeSprites />}
