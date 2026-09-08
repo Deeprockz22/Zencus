@@ -2168,6 +2168,185 @@ body {
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
 }
 
+/* ─────────────────────────────────────────────────────────────
+   🎌 UIVERSE MODE SELECTOR 6: Tokyo Drift Neon Speed Bar
+   ───────────────────────────────────────────────────────────── */
+[data-theme='tokyo-drift'] .mode-selector {
+  border-radius: 9999px;
+  background: rgba(14, 3, 28, 0.9);
+  border: 1px solid rgba(255, 0, 127, 0.4);
+  box-shadow: 0 0 20px rgba(255, 0, 127, 0.25);
+}
+
+[data-theme='tokyo-drift'] .mode-btn {
+  border-radius: 9999px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+}
+
+[data-theme='tokyo-drift'] .mode-btn.active {
+  background: linear-gradient(135deg, #ff007f 0%, #7928ca 100%);
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+}
+
+[data-theme='tokyo-drift'] .preset-pill {
+  border-radius: 9999px;
+  background: rgba(22, 5, 45, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  color: #00f0ff;
+}
+
+[data-theme='tokyo-drift'] .preset-pill.active {
+  background: #00f0ff;
+  color: #0d011c;
+  border-color: #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   💻 UIVERSE MODE SELECTOR 7: Matrix Terminal Prompt Block
+   ───────────────────────────────────────────────────────────── */
+[data-theme='matrix-code'] .mode-selector {
+  border-radius: 2px;
+  background: rgba(2, 9, 4, 0.95);
+  border: 1px solid rgba(0, 255, 102, 0.4);
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
+}
+
+[data-theme='matrix-code'] .mode-btn {
+  border-radius: 2px;
+  font-family: 'VT323', monospace;
+  font-size: 1.15rem;
+  color: #00ff66;
+}
+
+[data-theme='matrix-code'] .mode-btn.active {
+  background: #00ff66;
+  color: #020904;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
+}
+
+[data-theme='matrix-code'] .preset-pill {
+  border-radius: 2px;
+  background: rgba(4, 20, 8, 0.9);
+  border: 1px solid rgba(0, 255, 102, 0.3);
+  color: #86efac;
+  font-family: 'VT323', monospace;
+  font-size: 1.05rem;
+}
+
+[data-theme='matrix-code'] .preset-pill.active {
+  background: #00ff66;
+  color: #020904;
+  border-color: #00ff66;
+  box-shadow: 0 0 12px rgba(0, 255, 102, 0.5);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ⚡ UIVERSE MODE SELECTOR 8: Solar Saiyan Aura Strip
+   ───────────────────────────────────────────────────────────── */
+[data-theme='solar-saiyan'] .mode-selector {
+  border-radius: 14px;
+  background: rgba(24, 12, 0, 0.9);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.25);
+}
+
+[data-theme='solar-saiyan'] .mode-btn {
+  border-radius: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+[data-theme='solar-saiyan'] .mode-btn.active {
+  background: linear-gradient(135deg, #ffd700 0%, #f59e0b 100%);
+  color: #1a0800;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.6);
+}
+
+[data-theme='solar-saiyan'] .preset-pill {
+  border-radius: 10px;
+  background: rgba(36, 16, 0, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #fde047;
+}
+
+[data-theme='solar-saiyan'] .preset-pill.active {
+  background: #ffd700;
+  color: #1a0800;
+  border-color: #ffd700;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🌊 UIVERSE MODE SELECTOR 9: Ocean Bioluminescence Lagoon
+   ───────────────────────────────────────────────────────────── */
+[data-theme='ocean-biolum'] .mode-selector {
+  border-radius: 9999px;
+  background: rgba(3, 16, 30, 0.85);
+  border: 1px solid rgba(0, 245, 212, 0.35);
+  box-shadow: 0 0 20px rgba(0, 245, 212, 0.2);
+}
+
+[data-theme='ocean-biolum'] .mode-btn {
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+[data-theme='ocean-biolum'] .mode-btn.active {
+  background: linear-gradient(135deg, #00f5d4 0%, #0ea5e9 100%);
+  color: #020b14;
+  box-shadow: 0 0 18px rgba(0, 245, 212, 0.6);
+}
+
+[data-theme='ocean-biolum'] .preset-pill {
+  border-radius: 9999px;
+  background: rgba(4, 22, 42, 0.8);
+  border: 1px solid rgba(0, 245, 212, 0.25);
+  color: #00f5d4;
+}
+
+[data-theme='ocean-biolum'] .preset-pill.active {
+  background: #00f5d4;
+  color: #020b14;
+  border-color: #00f5d4;
+  box-shadow: 0 0 12px rgba(0, 245, 212, 0.5);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ☕ UIVERSE MODE SELECTOR 10: Cozy Lo-Fi Coffee Ceramic Strip
+   ───────────────────────────────────────────────────────────── */
+[data-theme='coffee-lofi'] .mode-selector {
+  border-radius: 18px;
+  background: rgba(28, 16, 11, 0.9);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+[data-theme='coffee-lofi'] .mode-btn {
+  border-radius: 14px;
+  font-weight: 600;
+}
+
+[data-theme='coffee-lofi'] .mode-btn.active {
+  background: #d97706;
+  color: #fef3c7;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+}
+
+[data-theme='coffee-lofi'] .preset-pill {
+  border-radius: 14px;
+  background: rgba(36, 20, 14, 0.85);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+  color: #fde68a;
+}
+
+[data-theme='coffee-lofi'] .preset-pill.active {
+  background: #f59e0b;
+  color: #170e0a;
+  border-color: #f59e0b;
+}
+
 .timer-visualizer-container {
   position: relative;
   width: 270px;
@@ -2421,6 +2600,128 @@ body {
   text-shadow: 0 0 18px rgba(239, 68, 68, 0.9), 0 0 30px rgba(255, 0, 0, 0.6) !important;
   font-size: 3.5rem !important;
   letter-spacing: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🎌 UIVERSE TIMER DIAL 6: Tokyo Drift Neon Tachometer
+   ───────────────────────────────────────────────────────────── */
+[data-theme='tokyo-drift'] .timer-dial-wrapper {
+  border: 2px solid #ff007f !important;
+  background: radial-gradient(circle, rgba(255, 0, 127, 0.15) 0%, rgba(10, 2, 20, 0.98) 100%) !important;
+  box-shadow: 0 0 35px rgba(255, 0, 127, 0.5), inset 0 0 25px rgba(0, 240, 255, 0.3) !important;
+}
+
+[data-theme='tokyo-drift'] .timer-dial-wrapper.running {
+  box-shadow: 0 0 50px rgba(255, 0, 127, 0.8), inset 0 0 35px rgba(0, 240, 255, 0.5) !important;
+}
+
+[data-theme='tokyo-drift'] .ring-progress {
+  stroke: #ff007f !important;
+  filter: drop-shadow(0 0 10px #ff007f) drop-shadow(0 0 20px #00f0ff);
+}
+
+[data-theme='tokyo-drift'] .timer-digits {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-weight: 800;
+  color: #ffffff !important;
+  text-shadow: 0 0 15px #ff007f, 0 0 30px #00f0ff !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   💻 UIVERSE TIMER DIAL 7: Matrix Terminal CRT Oscilloscope
+   ───────────────────────────────────────────────────────────── */
+[data-theme='matrix-code'] .timer-dial-wrapper {
+  border-radius: 4px !important;
+  border: 2px solid #00ff66 !important;
+  background: radial-gradient(circle, rgba(0, 255, 102, 0.15) 0%, rgba(2, 9, 4, 0.98) 100%) !important;
+  box-shadow: 0 0 30px rgba(0, 255, 102, 0.4), inset 0 0 20px rgba(0, 255, 102, 0.2) !important;
+}
+
+[data-theme='matrix-code'] .timer-dial-wrapper.running {
+  box-shadow: 0 0 45px rgba(0, 255, 102, 0.7), inset 0 0 30px rgba(0, 255, 102, 0.4) !important;
+}
+
+[data-theme='matrix-code'] .ring-progress {
+  stroke: #00ff66 !important;
+  filter: drop-shadow(0 0 10px #00ff66) drop-shadow(0 0 20px rgba(0, 255, 102, 0.8));
+}
+
+[data-theme='matrix-code'] .timer-digits {
+  font-family: 'VT323', monospace !important;
+  font-size: 3.8rem !important;
+  color: #00ff66 !important;
+  text-shadow: 0 0 15px rgba(0, 255, 102, 0.9) !important;
+  letter-spacing: 3px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ⚡ UIVERSE TIMER DIAL 8: Solar Saiyan Ki Sphere
+   ───────────────────────────────────────────────────────────── */
+[data-theme='solar-saiyan'] .timer-dial-wrapper {
+  border: 2px solid #ffd700 !important;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(20, 10, 0, 0.98) 100%) !important;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.6), inset 0 0 30px rgba(245, 158, 11, 0.4) !important;
+}
+
+[data-theme='solar-saiyan'] .timer-dial-wrapper.running {
+  box-shadow: 0 0 60px rgba(255, 215, 0, 0.9), inset 0 0 40px rgba(245, 158, 11, 0.7) !important;
+}
+
+[data-theme='solar-saiyan'] .ring-progress {
+  stroke: #ffd700 !important;
+  filter: drop-shadow(0 0 12px #ffd700) drop-shadow(0 0 25px #f59e0b);
+}
+
+[data-theme='solar-saiyan'] .timer-digits {
+  font-weight: 900;
+  color: #ffffff !important;
+  text-shadow: 0 0 18px #ffd700, 0 0 35px #f59e0b !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🌊 UIVERSE TIMER DIAL 9: Ocean Bioluminescent Abyss Ring
+   ───────────────────────────────────────────────────────────── */
+[data-theme='ocean-biolum'] .timer-dial-wrapper {
+  border: 2px solid #00f5d4 !important;
+  background: radial-gradient(circle, rgba(0, 245, 212, 0.18) 0%, rgba(2, 11, 20, 0.98) 100%) !important;
+  box-shadow: 0 0 35px rgba(0, 245, 212, 0.45), inset 0 0 25px rgba(14, 165, 233, 0.3) !important;
+}
+
+[data-theme='ocean-biolum'] .timer-dial-wrapper.running {
+  box-shadow: 0 0 50px rgba(0, 245, 212, 0.75), inset 0 0 35px rgba(14, 165, 233, 0.5) !important;
+}
+
+[data-theme='ocean-biolum'] .ring-progress {
+  stroke: #00f5d4 !important;
+  filter: drop-shadow(0 0 10px #00f5d4) drop-shadow(0 0 20px #0ea5e9);
+}
+
+[data-theme='ocean-biolum'] .timer-digits {
+  color: #f0fdfa !important;
+  text-shadow: 0 0 16px rgba(0, 245, 212, 0.8) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ☕ UIVERSE TIMER DIAL 10: Cozy Lo-Fi Vinyl Record
+   ───────────────────────────────────────────────────────────── */
+[data-theme='coffee-lofi'] .timer-dial-wrapper {
+  border: 2px solid rgba(217, 119, 6, 0.4) !important;
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.15) 0%, rgba(20, 12, 8, 0.98) 100%) !important;
+  box-shadow: 0 15px 35px rgba(23, 14, 10, 0.6), inset 0 2px 6px rgba(254, 243, 199, 0.2) !important;
+}
+
+[data-theme='coffee-lofi'] .timer-dial-wrapper.running {
+  box-shadow: 0 20px 45px rgba(23, 14, 10, 0.8), 0 0 30px rgba(217, 119, 6, 0.4) !important;
+}
+
+[data-theme='coffee-lofi'] .ring-progress {
+  stroke: #d97706 !important;
+  filter: drop-shadow(0 0 10px rgba(217, 119, 6, 0.6));
+}
+
+[data-theme='coffee-lofi'] .timer-digits {
+  color: #fef3c7 !important;
+  text-shadow: 0 0 15px rgba(217, 119, 6, 0.4) !important;
 }
 
 .timer-edit-form {
@@ -2734,6 +3035,188 @@ body {
   background: rgba(74, 222, 128, 0.2);
   border-color: #4ade80;
   color: #ffffff;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🎌 UIVERSE BUTTONS 6: Tokyo Drift Neon Tube Buttons
+   ───────────────────────────────────────────────────────────── */
+[data-theme='tokyo-drift'] .btn-action {
+  border-radius: 9999px;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+[data-theme='tokyo-drift'] .btn-action.primary {
+  background: linear-gradient(135deg, #ff007f 0%, #7928ca 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 0, 127, 0.6);
+  box-shadow: 0 0 20px rgba(255, 0, 127, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+[data-theme='tokyo-drift'] .btn-action.primary:hover {
+  box-shadow: 0 0 30px rgba(255, 0, 127, 0.8), 0 0 15px #00f0ff;
+  transform: translateY(-2px);
+}
+
+[data-theme='tokyo-drift'] .btn-action.secondary {
+  background: rgba(18, 5, 36, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: #00f0ff;
+}
+
+[data-theme='tokyo-drift'] .btn-action.secondary:hover {
+  background: rgba(0, 240, 255, 0.2);
+  border-color: #00f0ff;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   💻 UIVERSE BUTTONS 7: Matrix Terminal VT220 Monospace
+   ───────────────────────────────────────────────────────────── */
+[data-theme='matrix-code'] .btn-action {
+  border-radius: 2px;
+  font-family: 'VT323', monospace;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+}
+
+[data-theme='matrix-code'] .btn-action.primary {
+  background: #00ff66;
+  color: #020904;
+  border: 1px solid #00ff66;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+}
+
+[data-theme='matrix-code'] .btn-action.primary:hover {
+  background: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 0 25px rgba(0, 255, 102, 0.8);
+  transform: translateY(-1px);
+}
+
+[data-theme='matrix-code'] .btn-action.secondary {
+  background: #041408;
+  border: 1px solid rgba(0, 255, 102, 0.4);
+  color: #00ff66;
+}
+
+[data-theme='matrix-code'] .btn-action.secondary:hover {
+  background: rgba(0, 255, 102, 0.15);
+  border-color: #00ff66;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ⚡ UIVERSE BUTTONS 8: Solar Saiyan Energy Blast
+   ───────────────────────────────────────────────────────────── */
+[data-theme='solar-saiyan'] .btn-action {
+  border-radius: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+[data-theme='solar-saiyan'] .btn-action.primary {
+  background: linear-gradient(135deg, #ffd700 0%, #f59e0b 100%);
+  color: #1a0800;
+  border: 1px solid #ffe600;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 1px 3px rgba(255, 255, 255, 0.7);
+}
+
+[data-theme='solar-saiyan'] .btn-action.primary:hover {
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 20px #f59e0b;
+  transform: translateY(-2px) scale(1.02);
+}
+
+[data-theme='solar-saiyan'] .btn-action.secondary {
+  background: rgba(30, 15, 0, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  color: #ffd700;
+}
+
+[data-theme='solar-saiyan'] .btn-action.secondary:hover {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: #ffd700;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🌊 UIVERSE BUTTONS 9: Deep Ocean Bioluminescence
+   ───────────────────────────────────────────────────────────── */
+[data-theme='ocean-biolum'] .btn-action {
+  border-radius: 9999px;
+  backdrop-filter: blur(16px);
+}
+
+[data-theme='ocean-biolum'] .btn-action.primary {
+  background: linear-gradient(135deg, #00f5d4 0%, #0ea5e9 100%);
+  color: #020b14;
+  border: 1px solid rgba(0, 245, 212, 0.6);
+  box-shadow: 0 0 25px rgba(0, 245, 212, 0.45);
+}
+
+[data-theme='ocean-biolum'] .btn-action.primary:hover {
+  box-shadow: 0 0 35px rgba(0, 245, 212, 0.75), 0 0 20px rgba(14, 165, 233, 0.5);
+  transform: translateY(-2px);
+}
+
+[data-theme='ocean-biolum'] .btn-action.secondary {
+  background: rgba(4, 20, 38, 0.8);
+  border: 1px solid rgba(0, 245, 212, 0.3);
+  color: #00f5d4;
+}
+
+[data-theme='ocean-biolum'] .btn-action.secondary:hover {
+  background: rgba(0, 245, 212, 0.18);
+  border-color: #00f5d4;
+  box-shadow: 0 0 15px rgba(0, 245, 212, 0.4);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ☕ UIVERSE BUTTONS 10: Cozy Lo-Fi Coffee Ceramic & Leather
+   ───────────────────────────────────────────────────────────── */
+[data-theme='coffee-lofi'] .btn-action {
+  border-radius: 16px;
+  font-weight: 600;
+}
+
+[data-theme='coffee-lofi'] .btn-action.primary {
+  background: linear-gradient(135deg, #d97706 0%, #92400e 100%);
+  color: #fef3c7;
+  border: 1px solid #f59e0b;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.35);
+}
+
+[data-theme='coffee-lofi'] .btn-action.primary:hover {
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.55);
+  transform: translateY(-2px);
+}
+
+[data-theme='coffee-lofi'] .btn-action.secondary {
+  background: rgba(36, 20, 14, 0.85);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  color: #fef3c7;
+}
+
+[data-theme='coffee-lofi'] .btn-action.secondary:hover {
+  background: rgba(217, 119, 6, 0.2);
+  border-color: #d97706;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🎨 UIVERSE BUTTONS 11: Solid Dual Color Aesthetic Sets
+   ───────────────────────────────────────────────────────────── */
+[data-theme='cobalt-cream'] .btn-action.primary,
+[data-theme='brutalist-tangerine'] .btn-action.primary,
+[data-theme='sage-linen'] .btn-action.primary,
+[data-theme='swiss-scarlet'] .btn-action.primary,
+[data-theme='velvet-plum'] .btn-action.primary,
+[data-theme='klein-chalk'] .btn-action.primary {
+  background: var(--accent-primary) !important;
+  color: var(--accent-text) !important;
+  border: 1px solid var(--border-active) !important;
+  box-shadow: 0 4px 14px var(--shadow-sm), 0 0 15px var(--accent-glow) !important;
+  font-weight: 700;
 }
 
 .stats-row {
@@ -3210,6 +3693,125 @@ body {
   border-color: #ef4444 !important;
   box-shadow: 0 0 25px rgba(239, 68, 68, 0.35), inset 0 0 20px rgba(255, 0, 0, 0.1) !important;
   transform: translateY(-2px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🎌 UIVERSE CARDS 6: Tokyo Drift Neon Horizon Glass
+   ───────────────────────────────────────────────────────────── */
+[data-theme='tokyo-drift'] .spotlight-card,
+[data-theme='tokyo-drift'] .note-card,
+[data-theme='tokyo-drift'] .task-item-card,
+[data-theme='tokyo-drift'] .stat-card {
+  border-radius: 20px;
+  background: rgba(14, 3, 28, 0.85) !important;
+  border: 1px solid rgba(255, 0, 127, 0.35) !important;
+  box-shadow: 0 8px 32px rgba(9, 2, 18, 0.6), 0 0 15px rgba(255, 0, 127, 0.15) !important;
+}
+
+[data-theme='tokyo-drift'] .spotlight-card:hover,
+[data-theme='tokyo-drift'] .note-card:hover,
+[data-theme='tokyo-drift'] .task-item-card:hover {
+  border-color: #ff007f !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 0, 127, 0.4), 0 0 15px rgba(0, 240, 255, 0.3) !important;
+  transform: translateY(-2px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   💻 UIVERSE CARDS 7: Matrix Terminal Phosphor CRT Frame
+   ───────────────────────────────────────────────────────────── */
+[data-theme='matrix-code'] .spotlight-card,
+[data-theme='matrix-code'] .note-card,
+[data-theme='matrix-code'] .task-item-card,
+[data-theme='matrix-code'] .stat-card {
+  border-radius: 2px !important;
+  background: rgba(2, 9, 4, 0.95) !important;
+  border: 1px solid rgba(0, 255, 102, 0.35) !important;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.15), inset 0 0 12px rgba(0, 255, 102, 0.05) !important;
+}
+
+[data-theme='matrix-code'] .spotlight-card:hover,
+[data-theme='matrix-code'] .note-card:hover,
+[data-theme='matrix-code'] .task-item-card:hover {
+  border-color: #00ff66 !important;
+  box-shadow: 0 0 25px rgba(0, 255, 102, 0.4), inset 0 0 18px rgba(0, 255, 102, 0.12) !important;
+  transform: translateY(-1px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ⚡ UIVERSE CARDS 8: Solar Saiyan Ki Barrier Plate
+   ───────────────────────────────────────────────────────────── */
+[data-theme='solar-saiyan'] .spotlight-card,
+[data-theme='solar-saiyan'] .note-card,
+[data-theme='solar-saiyan'] .task-item-card,
+[data-theme='solar-saiyan'] .stat-card {
+  border-radius: 16px;
+  background: rgba(24, 12, 0, 0.9) !important;
+  border: 1px solid rgba(255, 215, 0, 0.35) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.18) !important;
+}
+
+[data-theme='solar-saiyan'] .spotlight-card:hover,
+[data-theme='solar-saiyan'] .note-card:hover,
+[data-theme='solar-saiyan'] .task-item-card:hover {
+  border-color: #ffd700 !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.45) !important;
+  transform: translateY(-2px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🌊 UIVERSE CARDS 9: Deep Ocean Trench Glass
+   ───────────────────────────────────────────────────────────── */
+[data-theme='ocean-biolum'] .spotlight-card,
+[data-theme='ocean-biolum'] .note-card,
+[data-theme='ocean-biolum'] .task-item-card,
+[data-theme='ocean-biolum'] .stat-card {
+  border-radius: 20px;
+  background: rgba(3, 16, 30, 0.85) !important;
+  border: 1px solid rgba(0, 245, 212, 0.3) !important;
+  box-shadow: 0 8px 32px rgba(2, 8, 16, 0.7), 0 0 20px rgba(0, 245, 212, 0.15) !important;
+}
+
+[data-theme='ocean-biolum'] .spotlight-card:hover,
+[data-theme='ocean-biolum'] .note-card:hover,
+[data-theme='ocean-biolum'] .task-item-card:hover {
+  border-color: #00f5d4 !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 245, 212, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ☕ UIVERSE CARDS 10: Cozy Lo-Fi Coffee Amber Glass
+   ───────────────────────────────────────────────────────────── */
+[data-theme='coffee-lofi'] .spotlight-card,
+[data-theme='coffee-lofi'] .note-card,
+[data-theme='coffee-lofi'] .task-item-card,
+[data-theme='coffee-lofi'] .stat-card {
+  border-radius: 18px;
+  background: rgba(28, 16, 11, 0.9) !important;
+  border: 1px solid rgba(217, 119, 6, 0.25) !important;
+  box-shadow: 0 8px 24px rgba(18, 10, 6, 0.5) !important;
+}
+
+[data-theme='coffee-lofi'] .spotlight-card:hover,
+[data-theme='coffee-lofi'] .note-card:hover,
+[data-theme='coffee-lofi'] .task-item-card:hover {
+  border-color: #d97706 !important;
+  box-shadow: 0 12px 30px rgba(18, 10, 6, 0.7), 0 0 20px rgba(217, 119, 6, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🎨 UIVERSE CARDS 11: Solid Dual Color Aesthetic Cards
+   ───────────────────────────────────────────────────────────── */
+[data-theme='cobalt-cream'] .spotlight-card,
+[data-theme='brutalist-tangerine'] .spotlight-card,
+[data-theme='sage-linen'] .spotlight-card,
+[data-theme='swiss-scarlet'] .spotlight-card,
+[data-theme='velvet-plum'] .spotlight-card,
+[data-theme='klein-chalk'] .spotlight-card {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 .note-card-inner {
