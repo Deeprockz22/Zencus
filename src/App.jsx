@@ -15,8 +15,8 @@ import { themedAudio } from './utils/retroAudio';
 import confetti from 'canvas-confetti';
 
 export default function App() {
-  // Theme state: Crisp Light Mode only
-  const [theme, setTheme] = useState('light');
+  // Theme state: Crisp Light & Dark Modes
+  const [theme, setTheme] = useState(() => Storage.get('theme', 'light'));
   const [soundEnabled, setSoundEnabled] = useState(() => Storage.get('soundEnabled', true));
 
   // Companion Pet state
@@ -367,16 +367,16 @@ export default function App() {
 
   return (
     <div className={`app-layout theme-${theme} mode-${mode}`} data-timer-mode={mode}>
-      {/* Crisp Light Background Ambient Particles */}
+      {/* Background Ambient Particles */}
       <ParticlesBackground
         particleCount={20}
-        particleColor="rgba(0, 0, 0, 0.08)"
-        lineColor="rgba(0, 0, 0, 0.03)"
+        particleColor={theme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}
+        lineColor={theme === 'dark' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)'}
       />
 
       {/* Tactile Click Sparks */}
       <ClickSpark
-        sparkColor="#0f172a"
+        sparkColor={theme === 'dark' ? '#ffffff' : '#0f172a'}
         sparkCount={6}
         sparkSize={7}
       />

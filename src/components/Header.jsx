@@ -3,14 +3,16 @@ import {
   Volume2,
   VolumeX,
   Maximize2,
-  Settings
+  Settings,
+  Sun,
+  Moon
 } from 'lucide-react';
 import MagnetButton from './react-bits/MagnetButton';
 import FocusLogo from './brand/FocusLogo';
 import { COMPANIONS } from '../utils/companionPresets';
 
 export default function Header({
-  theme,
+  theme = 'light',
   setTheme,
   soundEnabled,
   toggleSound,
@@ -19,6 +21,12 @@ export default function Header({
   companionType = 'dino',
   openCompanionPicker
 }) {
+  const toggleTheme = () => {
+    if (setTheme) {
+      setTheme(theme === 'dark' ? 'light' : 'dark');
+    }
+  };
+
   return (
     <header className="app-header">
       <div className="header-left">
@@ -33,6 +41,16 @@ export default function Header({
           </span>
           <span className="theme-mode-name">Pets</span>
         </button>
+
+        {/* Crisp Light / Dark Toggle Button */}
+        <MagnetButton
+          className="icon-btn theme-toggle-btn"
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'Switch to Crisp Light Mode' : 'Switch to Crisp Dark Mode'}
+          aria-label="Toggle Theme"
+        >
+          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </MagnetButton>
 
         {/* Sound toggle */}
         <MagnetButton
