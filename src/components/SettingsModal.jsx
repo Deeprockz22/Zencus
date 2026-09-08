@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Clock, Database, Info, Download, Upload, Trash2 } from 'lucide-react';
 import MagnetButton from './react-bits/MagnetButton';
+import AsciiImage from './ui/AsciiImage';
 
 export default function SettingsModal({
   isOpen,
@@ -159,16 +160,35 @@ export default function SettingsModal({
             </div>
           </div>
 
-          {/* About */}
-          <div className="settings-section">
+          {/* About & Creator ASCII Profile Card */}
+          <div className="settings-section about-card-section">
             <div className="settings-section-title">
               <Info size={16} />
-              <span>About Focus</span>
+              <span>About Zencus</span>
             </div>
-            <p className="about-text">
-              Focus is an ultra-minimalist, animated productivity suite built with React, Vite, and React Bits components.
-            </p>
-            <span className="about-version">Version 2.1.0 • PWA Ready</span>
+
+            <div className="about-ascii-profile-card">
+              <AsciiImage
+                src="./user-avatar.png"
+                width={130}
+                height={130}
+                charSize={4.5}
+                mask="linear-gradient(to bottom, black 40%, transparent 100%)"
+                baseMask="linear-gradient(to bottom, transparent 35%, black 100%)"
+                className="about-ascii-avatar"
+              />
+              <div className="about-ascii-details">
+                <div className="about-badge-role">CREATOR & DESIGN ENGINEER</div>
+                <h4 className="about-creator-name">Jakka Sai Srinivasa Manideep</h4>
+                <p className="about-text">
+                  Crafting hyper-minimalist ambient productivity suites with real-time WebGL shaders, chiptune audio, and fluid micro-interactions.
+                </p>
+                <div className="about-meta-row">
+                  <span className="about-version">Zencus v2.1.0 • PWA</span>
+                  <span className="about-status-pill">STATUS: ONLINE</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="settings-footer">
