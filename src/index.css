@@ -4907,6 +4907,17 @@ body {
   color: #facc15;
 }
 
+.zen-advice-quote {
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 460px;
+  line-height: 1.45;
+  margin: 8px auto;
+  opacity: 0.85;
+}
+
 /* Animal Fact Cluster Styling */
 .ambient-tiny-bubble.fact-bubble {
   border-color: rgba(56, 189, 248, 0.4);

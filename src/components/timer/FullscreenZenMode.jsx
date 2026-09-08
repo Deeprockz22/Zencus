@@ -1,44 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Minimize2, Play, Pause, RotateCcw, Sparkles } from 'lucide-react';
+import { Minimize2, Play, Pause, RotateCcw } from 'lucide-react';
 import MagnetButton from '../react-bits/MagnetButton';
 import ShinyText from '../react-bits/ShinyText';
-import FogSphere from '../react-bits/FogSphere';
-import AmbientCompanionUniverse from './AmbientCompanionUniverse';
 import FocusLogo from '../brand/FocusLogo';
-import WittyFlySwitch from '../ui/WittyFlySwitch';
 import {
   fetchDailyZenAdvice,
-  fetchNasaCosmicBackdrop,
   fetchLocalWeather
 } from '../../utils/publicApisService';
-
-const ZEN_BG_PRESETS = [
-  { id: 'auto', label: 'Auto', icon: '✨' },
-  { id: 'fog', label: 'Fog Sphere', icon: '🔮' },
-  { id: 'forest', label: 'Forest', icon: '🌲' },
-  { id: 'sunset', label: 'Sunset', icon: '🌅' },
-  { id: 'cafe', label: 'Cafe', icon: '☕' }
-];
-
-function getFogColors(mode, zenBg) {
-  if (zenBg === 'forest') return { core: '#16a34a', glow: '#34d399' };
-  if (zenBg === 'sunset') return { core: '#f97316', glow: '#ec4899' };
-  if (zenBg === 'cafe') return { core: '#d97706', glow: '#fbbf24' };
-  if (zenBg === 'space') return { core: '#9333ea', glow: '#3b82f6' };
-
-  // Mode-adaptive colors
-  switch (mode) {
-    case 'work':
-      return { core: '#0284c7', glow: '#38bdf8' }; // Cyan & Electric Blue
-    case 'shortBreak':
-      return { core: '#059669', glow: '#34d399' }; // Mint & Emerald Dawn
-    case 'longBreak':
-      return { core: '#d97706', glow: '#f43f5e' }; // Sunset Amber & Rose
-    case 'chill':
-    default:
-      return { core: '#9333ea', glow: '#6366f1' }; // Astral Violet & Indigo
-  }
-}
 
 export default function FullscreenZenMode({
   isOpen,
@@ -50,29 +18,14 @@ export default function FullscreenZenMode({
   pauseTimer,
   resetTimer,
   mode = 'work',
-  theme,
-  companionType = 'dino',
-  setCompanionType
+  theme = 'light'
 }) {
-  // Automatically enable Ambient Living Universe for chill mode, or allow toggle
-  const [showUniverse, setShowUniverse] = useState(mode === 'chill');
-
-  // Mouse activity tracking for auto-hiding all UI elements except time, bar, and soft logo
+  // Mouse activity tracking for auto-hiding controls during idle focus
   const [isMouseActive, setIsMouseActive] = useState(true);
   const mouseTimerRef = useRef(null);
 
-  // Background Scene Preset State (persisted)
-  const [zenBg, setZenBg] = useState(() => {
-    try {
-      return localStorage.getItem('phocus_zen_bg') || 'auto';
-    } catch {
-      return 'auto';
-    }
-  });
-
-  // 🌐 Public APIs Data State
+  // Weather & Zen advice
   const [weather, setWeather] = useState(null);
-  const [nasaBackdrop, setNasaBackdrop] = useState(null);
   const [zenAdvice, setZenAdvice] = useState(null);
 
   useEffect(() => {
@@ -81,10 +34,6 @@ export default function FullscreenZenMode({
 
     fetchLocalWeather().then((w) => {
       if (isMounted && w) setWeather(w);
-    }).catch(console.warn);
-
-    fetchNasaCosmicBackdrop().then((nb) => {
-      if (isMounted && nb) setNasaBackdrop(nb);
     }).catch(console.warn);
 
     fetchDailyZenAdvice().then((adv) => {
@@ -96,26 +45,7 @@ export default function FullscreenZenMode({
     };
   }, [isOpen]);
 
-  const cycleBackground = () => {
-    setZenBg((current) => {
-      const idx = ZEN_BG_PRESETS.findIndex((p) => p.id === current);
-      const nextPreset = ZEN_BG_PRESETS[(idx + 1) % ZEN_BG_PRESETS.length];
-      try {
-        localStorage.setItem('phocus_zen_bg', nextPreset.id);
-      } catch (e) {
-        // ignore
-      }
-      return nextPreset.id;
-    });
-  };
-
-  useEffect(() => {
-    if (mode === 'chill') {
-      setShowUniverse(true);
-    }
-  }, [mode]);
-
-  // Auto-hide UI elements after 2.5 seconds of mouse inactivity
+  // Idle mouse tracking
   useEffect(() => {
     if (!isOpen) return;
 
@@ -126,10 +56,9 @@ export default function FullscreenZenMode({
       }
       mouseTimerRef.current = setTimeout(() => {
         setIsMouseActive(false);
-      }, 2500); // 2.5s idle threshold
+      }, 3000); // 3s idle threshold
     };
 
-    // Initial wake & schedule hide
     wakeUI();
 
     window.addEventListener('mousemove', wakeUI, { passive: true });
@@ -146,12 +75,12 @@ export default function FullscreenZenMode({
     };
   }, [isOpen]);
 
+  // Keyboard shortcut listener (Esc to close, Space to toggle)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen) {
         onClose();
       }
-      // Space bar to toggle play/pause
       if (e.key === ' ' && isOpen && e.target === document.body) {
         e.preventDefault();
         if (isRunning) pauseTimer();
@@ -169,54 +98,25 @@ export default function FullscreenZenMode({
   const formattedTime = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   const progress = totalDuration > 0 ? ((totalDuration - timeLeft) / totalDuration) * 100 : 0;
 
-  const activeBgObj = ZEN_BG_PRESETS.find((p) => p.id === zenBg) || ZEN_BG_PRESETS[0];
-  const fogColors = getFogColors(mode, zenBg);
-  const showFogSphere = zenBg !== 'oled';
-
   return (
     <div
-      className={`fullscreen-zen-overlay zen-bg-${zenBg} mode-${mode} ${
-        showUniverse ? 'ambient-universe-active' : ''
-      } ${!isMouseActive ? 'zen-idle' : 'zen-active'}`}
+      className={`fullscreen-zen-overlay plain-mode mode-${mode} ${!isMouseActive ? 'zen-idle' : 'zen-active'}`}
       data-mode={mode}
     >
-      {/* 🔮 Volumetric Ray-Marched Fog Sphere (React Bits Component) */}
-      {showFogSphere && (
-        <FogSphere
-          coreColor={fogColors.core}
-          glowColor={fogColors.glow}
-          sphereRadius={1.75}
-          rotationSpeed={0.5}
-          opacity={zenBg === 'fog' ? 0.95 : 0.4}
-          brightness={zenBg === 'fog' ? 1.25 : 1.05}
-          rayMarchSteps={20}
-          turbulenceIters={4}
-        />
-      )}
-
-      {/* 🌌 Mode-Adaptive Atmospheric Aurora Glow Effects */}
-      <div className="zen-mode-aurora-layer" />
-
-      {/* 🌌 Ambient Living Companion Universe (20 Staggered Chit-Chat Clusters) */}
-      {showUniverse && (
-        <AmbientCompanionUniverse isRunning={isRunning} progress={progress} />
-      )}
-
       {/* Top Bar */}
       <div className="fullscreen-top-bar">
-        {/* Brand: Persistent Symbol + Auto-hiding Shimmer Typography */}
+        {/* Brand: Persistent Symbol + Mode Typography */}
         <div className="zen-brand">
           <div className="zen-symbol-wrapper">
             <FocusLogo size={32} className="brand-logo-icon zen-persistent-symbol" />
           </div>
           <div className="zen-brand-text auto-hide-element">
-            <ShinyText text={mode === 'chill' ? 'CHILL LOUNGE' : 'ZENCUS ZEN'} speed={3} />
+            <ShinyText text={mode === 'chill' ? 'CHILL LOUNGE' : 'ZEN FOCUS'} speed={3} />
           </div>
         </div>
 
-        {/* Actions & Live Weather Capsule (Auto-hides on idle) */}
+        {/* Actions & Weather Capsule */}
         <div className="zen-top-actions auto-hide-element">
-          {/* 🌧️ Real-Time Weather Capsule (Open-Meteo + ipwho.is) */}
           {weather && (
             <div
               className="zen-weather-pill"
@@ -227,39 +127,6 @@ export default function FullscreenZenMode({
               <span className="zen-weather-city">{weather.city}</span>
             </div>
           )}
-
-          {/* Unified Glass Capsule Pill: Auto Background & Universe */}
-          <div className="zen-control-pill-group">
-            {/* Auto / Scene Switcher Button */}
-            <button
-              className={`zen-top-pill-btn zen-bg-picker-btn ${zenBg !== 'auto' ? 'custom-active' : ''}`}
-              onClick={cycleBackground}
-              title={`Background Scene: ${activeBgObj.label} (Click to switch)`}
-            >
-              <span className="zen-btn-icon">{activeBgObj.icon}</span>
-              <span className="zen-btn-label">{activeBgObj.label}</span>
-            </button>
-
-            <div className="zen-pill-divider" />
-
-            {/* Uiverse Neumorphic Switch (witty-fly-56): Companion Universe Toggle */}
-            <div
-              className="zen-switch-pill-item"
-              title={showUniverse ? 'Companion Universe: ACTIVE (Toggle off)' : 'Companion Universe: IDLE (Toggle on)'}
-            >
-              <span className="zen-switch-mini-label">
-                <Sparkles size={13} className="zen-sparkle-icon" />
-                <span>Universe</span>
-              </span>
-              <WittyFlySwitch
-                checked={showUniverse}
-                onChange={(val) => setShowUniverse(val)}
-                width="3.5rem"
-                accentHue="142deg"
-                baseHue="220deg"
-              />
-            </div>
-          </div>
 
           {/* Close / Minimize Button */}
           <button
@@ -293,7 +160,7 @@ export default function FullscreenZenMode({
           {formattedTime}
         </div>
 
-        {/* ══ Clean Minimalist Linear Progress Bar (No Companions) ══ */}
+        {/* Clean Minimalist Linear Progress Bar */}
         <div className="zen-minimal-bar-container" aria-label="Timer progress">
           <div className="zen-minimal-bar-track">
             <div
@@ -306,14 +173,20 @@ export default function FullscreenZenMode({
           </div>
         </div>
 
+        {/* Zen Advice / Quote */}
+        {zenAdvice && (
+          <p className="zen-advice-quote auto-hide-element">
+            "{zenAdvice.advice}"
+          </p>
+        )}
 
-        {/* Controls: Pause & Reset (Auto-hides on idle, reveals on mouse move) */}
+        {/* Controls: Pause & Reset */}
         <div className="zen-controls auto-hide-element">
           <MagnetButton
             className="btn-action primary zen-main-btn"
             onClick={isRunning ? pauseTimer : startTimer}
           >
-            {isRunning ? <Pause size={22} /> : <Play size={22} fill="currentColor" />}
+            {isRunning ? <Pause size={20} /> : <Play size={20} fill="currentColor" />}
             <span>{isRunning ? 'Pause' : 'Resume'}</span>
           </MagnetButton>
 
