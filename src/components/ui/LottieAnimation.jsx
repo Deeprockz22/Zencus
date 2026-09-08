@@ -225,6 +225,57 @@ export default function LottieAnimation({
           </svg>
         );
 
+      case 'empty-tasks':
+        return (
+          <svg
+            width={size}
+            height={size}
+            viewBox="0 0 160 160"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="lottie-svg-animated"
+          >
+            <style>
+              {`
+                @keyframes floatClipboard {
+                  0%, 100% { transform: translateY(0px) rotate(0deg); }
+                  50% { transform: translateY(-5px) rotate(1deg); }
+                }
+                @keyframes checkPulse {
+                  0%, 100% { transform: scale(1); opacity: 0.9; }
+                  50% { transform: scale(1.15); opacity: 1; }
+                }
+                @keyframes sparklePop {
+                  0%, 100% { transform: scale(0.8) rotate(0deg); opacity: 0.4; }
+                  50% { transform: scale(1.2) rotate(45deg); opacity: 1; }
+                }
+                .lottie-board { animation: floatClipboard 4s ease-in-out infinite; transform-origin: center; }
+                .lottie-check-glow { animation: checkPulse 2.8s ease-in-out infinite; transform-origin: 58px 65px; }
+                .lottie-sparkle { animation: sparklePop 2.2s ease-in-out infinite; transform-origin: center; }
+              `}
+            </style>
+            <g className="lottie-board">
+              <rect x="42" y="36" width="76" height="92" rx="12" fill="var(--bg-card, #121216)" stroke="var(--border-subtle, rgba(255,255,255,0.12))" strokeWidth="1.5" />
+              {/* Header Clip */}
+              <rect x="62" y="28" width="36" height="14" rx="5" fill="var(--accent-primary, #ffffff)" fillOpacity="0.85" />
+              <circle cx="80" cy="34" r="2.5" fill="var(--bg-primary, #09090b)" />
+              {/* Row 1 - Completed */}
+              <circle cx="58" cy="62" r="6" fill="#22c55e" fillOpacity="0.2" className="lottie-check-glow" />
+              <path d="M55 62L57.5 64.5L61.5 59.5" stroke="#22c55e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="68" y1="62" x2="104" y2="62" stroke="var(--text-secondary, #94a3b8)" strokeWidth="2" strokeLinecap="round" strokeDasharray="36" strokeOpacity="0.5" />
+              {/* Row 2 - In progress */}
+              <circle cx="58" cy="80" r="6" stroke="var(--border-active, rgba(255,255,255,0.3))" strokeWidth="1.5" fill="none" />
+              <line x1="68" y1="80" x2="108" y2="80" stroke="var(--text-primary, #f4f4f5)" strokeWidth="2.5" strokeLinecap="round" strokeOpacity="0.8" />
+              {/* Row 3 - Pending */}
+              <circle cx="58" cy="98" r="6" stroke="var(--border-subtle, rgba(255,255,255,0.2))" strokeWidth="1.5" fill="none" />
+              <line x1="68" y1="98" x2="96" y2="98" stroke="var(--text-secondary, #94a3b8)" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.4" />
+            </g>
+            {/* Sparkles */}
+            <path d="M126 44L128 50L134 52L128 54L126 60L124 54L118 52L124 50Z" fill="#eab308" className="lottie-sparkle" />
+            <circle cx="32" cy="90" r="2" fill="#38bdf8" className="lottie-sparkle" />
+          </svg>
+        );
+
       default:
         return null;
     }
