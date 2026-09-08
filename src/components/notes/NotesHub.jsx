@@ -11,6 +11,9 @@ import {
   Lock,
   Layers,
   RotateCcw,
+  LayoutGrid,
+  List as ListIcon,
+  ArrowUpDown,
   X
 } from 'lucide-react';
 import NoteCard from './NoteCard';
@@ -20,6 +23,7 @@ import NoteLockModal from '../security/NoteLockModal';
 import FocusCompanion from '../companion/FocusCompanion';
 import MagnetButton from '../react-bits/MagnetButton';
 import DecryptedText from '../react-bits/DecryptedText';
+import LottieAnimation from '../ui/LottieAnimation';
 
 export default function NotesHub({
   notes = [],
@@ -29,6 +33,7 @@ export default function NotesHub({
   togglePin,
   customFolders = [],
   addCustomFolder,
+  deleteCustomFolder,
   theme = 'dark',
   companionType = 'dino',
   onOpenPicker
@@ -36,6 +41,8 @@ export default function NotesHub({
   const [currentFolder, setCurrentFolder] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState(null);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' (Bento) | 'list'
+  const [sortBy, setSortBy] = useState('updated'); // 'updated' | 'title' | 'words'
 
   // Active note in editor
   const [activeNote, setActiveNote] = useState(null);
@@ -106,6 +113,7 @@ export default function NotesHub({
       ? note.content
           .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n')
           .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n')
+          .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n')
           .replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**')
           .replace(/<b[^>]*>(.*?)<\/b>/gi, '**$1**')
           .replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*')
@@ -127,38 +135,48 @@ export default function NotesHub({
   };
 
   // Filter notes based on folder, search query, and hashtag
-  const filteredNotes = notes.filter((n) => {
-    const isTrash = Boolean(n.trash);
+  const filteredNotes = useMemo(() => {
+    let list = notes.filter((n) => {
+      const isTrash = Boolean(n.trash);
 
-    if (currentFolder === 'trash') {
-      if (!isTrash) return false;
-    } else {
-      if (isTrash) return false;
-      if (currentFolder !== 'all' && (n.folder || 'quick') !== currentFolder) return false;
-    }
+      if (currentFolder === 'trash') {
+        if (!isTrash) return false;
+      } else {
+        if (isTrash) return false;
+        if (currentFolder !== 'all' && (n.folder || 'quick') !== currentFolder) return false;
+      }
 
-    if (selectedTag) {
-      const combined = `${n.title || ''} ${n.content || ''}`;
-      if (!combined.includes(selectedTag)) return false;
-    }
+      if (selectedTag) {
+        const combined = `${n.title || ''} ${n.content || ''}`;
+        if (!combined.includes(selectedTag)) return false;
+      }
 
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
-      const matchTitle = (n.title || '').toLowerCase().includes(q);
-      const textContent = (n.content || '').replace(/<[^>]+>/g, ' ').toLowerCase();
-      const matchContent = textContent.includes(q);
-      return matchTitle || matchContent;
-    }
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const matchTitle = (n.title || '').toLowerCase().includes(q);
+        const textContent = (n.content || '').replace(/<[^>]+>/g, ' ').toLowerCase();
+        const matchContent = textContent.includes(q);
+        return matchTitle || matchContent;
+      }
 
-    return true;
-  });
+      return true;
+    });
 
-  const pinnedNotes = filteredNotes.filter((n) => n.pinned && !n.trash);
-  const otherNotes = filteredNotes.filter((n) => !n.pinned || n.trash);
+    // Sorting
+    return list.sort((a, b) => {
+      if (sortBy === 'title') {
+        return (a.title || '').localeCompare(b.title || '');
+      }
+      return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+    });
+  }, [notes, currentFolder, selectedTag, searchQuery, sortBy]);
+
+  const pinnedNotes = useMemo(() => filteredNotes.filter((n) => n.pinned && !n.trash), [filteredNotes]);
+  const otherNotes = useMemo(() => filteredNotes.filter((n) => !n.pinned || n.trash), [filteredNotes]);
 
   return (
     <div className="notes-hub-layout">
-      {/* Apple Notes Folder Navigation Sidebar */}
+      {/* Folder Navigation Sidebar */}
       <FolderSidebar
         currentFolder={currentFolder}
         setCurrentFolder={(folder) => {
@@ -167,6 +185,7 @@ export default function NotesHub({
         }}
         customFolders={customFolders}
         onAddFolder={addCustomFolder}
+        onDeleteFolder={deleteCustomFolder}
         notesCountByFolder={notesCountByFolder}
       />
 
@@ -188,7 +207,7 @@ export default function NotesHub({
           <div>
             <h2 className="view-title">
               <DecryptedText
-                text={currentFolder === 'trash' ? 'Recently Deleted' : 'Brain Dump Section'}
+                text={currentFolder === 'trash' ? 'Recently Deleted' : 'Brain Dump Vault'}
                 speed={30}
                 maxIterations={8}
               />
@@ -196,16 +215,51 @@ export default function NotesHub({
             <p className="view-subtitle">
               {currentFolder === 'trash'
                 ? 'Items in trash can be restored or permanently removed'
-                : 'Your mind is for creating ideas, not holding them. Offload your thoughts!'}
+                : 'Offload your ideas, sketches, and notes into your private vault.'}
             </p>
           </div>
 
-          {currentFolder !== 'trash' && (
-            <MagnetButton className="btn-action primary new-note-btn" onClick={handleCreateNew}>
-              <Plus size={18} />
-              <span>New Note</span>
-            </MagnetButton>
-          )}
+          <div className="view-header-right-actions">
+            {/* View Mode Switcher */}
+            <div className="view-mode-toggle-group">
+              <button
+                type="button"
+                className={`view-mode-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                onClick={() => setViewMode('grid')}
+                title="Bento Grid View"
+              >
+                <LayoutGrid size={15} />
+              </button>
+              <button
+                type="button"
+                className={`view-mode-btn ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+                title="Compact List View"
+              >
+                <ListIcon size={15} />
+              </button>
+            </div>
+
+            {/* Sort Selector */}
+            <div className="sort-select-wrapper">
+              <ArrowUpDown size={13} className="sort-icon" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="notes-sort-select"
+              >
+                <option value="updated">Recent</option>
+                <option value="title">Title (A-Z)</option>
+              </select>
+            </div>
+
+            {currentFolder !== 'trash' && (
+              <MagnetButton className="btn-action primary new-note-btn" onClick={handleCreateNew}>
+                <Plus size={16} />
+                <span>New Note</span>
+              </MagnetButton>
+            )}
+          </div>
         </div>
 
         {/* Search & Smart Tags Bar */}
@@ -248,7 +302,7 @@ export default function NotesHub({
           )}
         </div>
 
-        {/* Active Search Filter Feedback Bar */}
+        {/* Active Search Filter Indicator */}
         {searchQuery.trim() && (
           <div className="active-search-indicator">
             <span>
@@ -267,10 +321,10 @@ export default function NotesHub({
         {pinnedNotes.length > 0 && (
           <div className="notes-group-section">
             <div className="group-label">
-              <Pin size={14} className="fill-current text-white" />
-              <span>PINNED</span>
+              <Pin size={13} className="fill-current text-amber-400" />
+              <span>PINNED VAULT ITEMS</span>
             </div>
-            <div className="notes-grid">
+            <div className={`notes-grid ${viewMode === 'list' ? 'list-view' : 'bento-grid'}`}>
               {pinnedNotes.map((note) => (
                 <NoteCard
                   key={note.id}
@@ -280,7 +334,9 @@ export default function NotesHub({
                   onDelete={deleteNote}
                   onRestore={restoreNote}
                   onExport={handleExportNote}
+                  onTagClick={(t) => setSelectedTag(t)}
                   isTrashView={false}
+                  viewMode={viewMode}
                 />
               ))}
             </div>
@@ -295,7 +351,7 @@ export default function NotesHub({
                 <span>NOTES</span>
               </div>
             )}
-            <div className="notes-grid">
+            <div className={`notes-grid ${viewMode === 'list' ? 'list-view' : 'bento-grid'}`}>
               {otherNotes.map((note) => (
                 <NoteCard
                   key={note.id}
@@ -305,25 +361,40 @@ export default function NotesHub({
                   onDelete={deleteNote}
                   onRestore={restoreNote}
                   onExport={handleExportNote}
+                  onTagClick={(t) => setSelectedTag(t)}
                   isTrashView={currentFolder === 'trash'}
+                  viewMode={viewMode}
                 />
               ))}
             </div>
           </div>
         )}
 
-        {/* Empty State */}
+        {/* Dynamic Lottie Animated Empty States */}
         {filteredNotes.length === 0 && (
-          <div className="empty-state-card">
-            <FileText size={36} className="empty-icon" />
-            <h3 className="empty-title">
-              {currentFolder === 'trash' ? 'Trash is Empty' : 'No notes in this folder'}
-            </h3>
-            <p className="empty-desc">
-              {currentFolder === 'trash'
-                ? 'Deleted notes will appear here.'
-                : 'Click "+ New Note" above or sketch an idea to start writing.'}
-            </p>
+          <div className="empty-state-card revamped-empty-card">
+            {searchQuery.trim() ? (
+              <LottieAnimation
+                type="empty-search"
+                size={140}
+                text="No Matching Notes"
+                subtext={`No results found for "${searchQuery}". Try searching with another keyword or hashtag.`}
+              />
+            ) : currentFolder === 'trash' ? (
+              <LottieAnimation
+                type="trash-empty"
+                size={140}
+                text="Trash is Empty"
+                subtext="Your recycle bin is clean. Deleted notes will stay here until emptied."
+              />
+            ) : (
+              <LottieAnimation
+                type="empty-notes"
+                size={150}
+                text="Your Vault is Clear"
+                subtext="Offload your thoughts! Create your first note with rich markdown, tags, and sketches."
+              />
+            )}
           </div>
         )}
       </div>

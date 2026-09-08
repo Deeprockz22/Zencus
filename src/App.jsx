@@ -310,6 +310,12 @@ export default function App() {
     Storage.set('custom_folders', updated);
   };
 
+  const deleteCustomFolder = (folderId) => {
+    const updated = customFolders.filter((f) => f.id !== folderId);
+    setCustomFolders(updated);
+    Storage.set('custom_folders', updated);
+  };
+
   // Settings & Data Backup Operations
   const saveTimerSettings = (newSettings) => {
     setTimerSettings(newSettings);
@@ -486,6 +492,7 @@ export default function App() {
             togglePin={togglePin}
             customFolders={customFolders}
             addCustomFolder={addCustomFolder}
+            deleteCustomFolder={deleteCustomFolder}
             theme={theme}
             companionType={companionType}
             onOpenPicker={() => setIsCompanionPickerOpen(true)}

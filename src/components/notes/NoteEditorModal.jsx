@@ -5,6 +5,9 @@ import {
   Italic,
   Underline,
   Strikethrough,
+  Heading1,
+  Heading2,
+  Heading3,
   List,
   ListOrdered,
   CheckSquare,
@@ -19,12 +22,26 @@ import {
   Unlock,
   Image as ImageIcon,
   Folder,
-  BarChart2
+  BarChart2,
+  Palette,
+  Eye,
+  Edit3,
+  Sparkles,
+  Check
 } from 'lucide-react';
 import MagnetButton from '../react-bits/MagnetButton';
 import SketchCanvasModal from '../canvas/SketchCanvasModal';
 import NoteLockModal from '../security/NoteLockModal';
 import { Sanitizer } from '../../utils/sanitize';
+
+const COLOR_OPTIONS = [
+  { id: 'default', label: 'Obsidian', color: 'rgba(255,255,255,0.1)' },
+  { id: 'amber', label: 'Amber Gold', color: '#f59e0b' },
+  { id: 'emerald', label: 'Emerald Forest', color: '#10b981' },
+  { id: 'cyan', label: 'Cyber Cyan', color: '#06b6d4' },
+  { id: 'violet', label: 'Midnight Violet', color: '#8b5cf6' },
+  { id: 'rose', label: 'Sunset Rose', color: '#f43f5e' }
+];
 
 export default function NoteEditorModal({
   note,
@@ -37,8 +54,11 @@ export default function NoteEditorModal({
 }) {
   const [title, setTitle] = useState('');
   const [folder, setFolder] = useState('quick');
+  const [noteColor, setNoteColor] = useState('default');
   const [isPinned, setIsPinned] = useState(false);
   const [pin, setPin] = useState(null);
+  const [previewMode, setPreviewMode] = useState(false); // Split/Live preview
+  const [autoSaveStatus, setAutoSaveStatus] = useState('Saved to Local Vault');
 
   // Modals for Sketch and Lock
   const [isSketchOpen, setIsSketchOpen] = useState(false);
@@ -55,6 +75,7 @@ export default function NoteEditorModal({
     if (note) {
       setTitle(note.title || '');
       setFolder(note.folder || 'quick');
+      setNoteColor(note.color || 'default');
       setIsPinned(note.pinned || false);
       setPin(note.pin || null);
       if (editorRef.current) {
@@ -63,12 +84,15 @@ export default function NoteEditorModal({
     } else {
       setTitle('');
       setFolder('quick');
+      setNoteColor('default');
       setIsPinned(false);
       setPin(null);
       if (editorRef.current) {
         editorRef.current.innerHTML = '';
       }
     }
+    setPreviewMode(false);
+    setAutoSaveStatus('Saved to Local Vault');
     updateStats();
   }, [note, isOpen]);
 
@@ -77,8 +101,9 @@ export default function NoteEditorModal({
     const text = editorRef.current.innerText || '';
     const words = text.trim() ? text.trim().split(/\s+/).length : 0;
     const chars = text.length;
-    const readingTime = Math.max(1, Math.ceil(words / 200));
+    const readingTime = Math.max(1, Math.ceil(words / 180));
     setStats({ words, chars, readingTime });
+    setAutoSaveStatus('Editing...');
   };
 
   const executeCommand = (command, value = null) => {
@@ -107,21 +132,21 @@ export default function NoteEditorModal({
       <table class="note-table">
         <thead>
           <tr>
-            <th>Header 1</th>
-            <th>Header 2</th>
-            <th>Header 3</th>
+            <th>Feature</th>
+            <th>Status</th>
+            <th>Priority</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Item 1</td>
-            <td>Data 2</td>
-            <td>Data 3</td>
+            <td>Ambient Mode</td>
+            <td>Completed</td>
+            <td>High</td>
           </tr>
           <tr>
-            <td>Item 2</td>
-            <td>Data 4</td>
-            <td>Data 5</td>
+            <td>Notes Hub</td>
+            <td>Revamped</td>
+            <td>Essential</td>
           </tr>
         </tbody>
       </table>
@@ -131,7 +156,7 @@ export default function NoteEditorModal({
   };
 
   const handleEmbedDrawing = (dataUrl) => {
-    const imgHtml = `<p><img src="${dataUrl}" class="embedded-drawing" alt="Drawing" /><br/></p>`;
+    const imgHtml = `<p><img src="${dataUrl}" class="embedded-drawing" alt="Sketch Drawing" /><br/></p>`;
     executeCommand('insertHTML', imgHtml);
   };
 
@@ -155,6 +180,7 @@ export default function NoteEditorModal({
         title: title.trim() || 'Untitled Note',
         content: currentHtml,
         folder,
+        color: noteColor,
         pinned: isPinned,
         pin,
         updatedAt: new Date().toISOString()
@@ -168,24 +194,34 @@ export default function NoteEditorModal({
   return (
     <>
       <div className="modal-backdrop" onClick={handleClose}>
-        <div className="modal-card note-modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className={`modal-card note-modal-card note-color-${noteColor}`} onClick={(e) => e.stopPropagation()}>
           {/* Header */}
           <div className="modal-header">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Note Title..."
-              className="note-title-modal-input"
-              autoFocus
-            />
+            <div className="note-title-container">
+              <span className={`note-color-badge ${noteColor}`} />
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  setAutoSaveStatus('Editing...');
+                }}
+                placeholder="Note Title (e.g. #Project Planning)..."
+                className="note-title-modal-input"
+                autoFocus
+              />
+            </div>
 
             <div className="modal-header-actions">
+              {/* Folder Selector */}
               <div className="folder-select-wrapper">
                 <Folder size={14} className="folder-icon-select" />
                 <select
                   value={folder}
-                  onChange={(e) => setFolder(e.target.value)}
+                  onChange={(e) => {
+                    setFolder(e.target.value);
+                    setAutoSaveStatus('Editing...');
+                  }}
                   className="note-folder-select"
                 >
                   <option value="quick">Quick Notes</option>
@@ -196,6 +232,33 @@ export default function NoteEditorModal({
                 </select>
               </div>
 
+              {/* Color Theme Selector */}
+              <div className="note-color-picker-dropdown">
+                {COLOR_OPTIONS.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className={`color-dot-btn ${noteColor === c.id ? 'active' : ''}`}
+                    style={{ backgroundColor: c.color }}
+                    title={c.label}
+                    onClick={() => setNoteColor(c.id)}
+                  >
+                    {noteColor === c.id && <Check size={10} color="#000" />}
+                  </button>
+                ))}
+              </div>
+
+              {/* Preview Toggle */}
+              <button
+                type="button"
+                className={`icon-btn ${previewMode ? 'active' : ''}`}
+                onClick={() => setPreviewMode(!previewMode)}
+                title={previewMode ? 'Switch to Edit Mode' : 'Switch to Reader Preview'}
+              >
+                {previewMode ? <Edit3 size={15} /> : <Eye size={15} />}
+              </button>
+
+              {/* Lock Button */}
               <button
                 type="button"
                 className={`icon-btn ${pin ? 'locked-active' : ''}`}
@@ -205,7 +268,7 @@ export default function NoteEditorModal({
                 }}
                 title={pin ? 'Protected with PIN (Click to remove)' : 'Lock note with 4-digit PIN'}
               >
-                {pin ? <Lock size={16} color="#eab308" /> : <Unlock size={16} />}
+                {pin ? <Lock size={15} color="#eab308" /> : <Unlock size={15} />}
               </button>
 
               <button
@@ -214,153 +277,189 @@ export default function NoteEditorModal({
                 title="Save & Close (Esc)"
                 aria-label="Close"
               >
-                <X size={18} />
+                <X size={17} />
               </button>
             </div>
           </div>
 
           {/* Formatting & Media Toolbar */}
-          <div className="editor-toolbar">
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={() => executeCommand('bold')}
-              title="Bold (Ctrl+B)"
-            >
-              <Bold size={15} />
-            </button>
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={() => executeCommand('italic')}
-              title="Italic (Ctrl+I)"
-            >
-              <Italic size={15} />
-            </button>
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={() => executeCommand('underline')}
-              title="Underline (Ctrl+U)"
-            >
-              <Underline size={15} />
-            </button>
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={() => executeCommand('strikeThrough')}
-              title="Strikethrough"
-            >
-              <Strikethrough size={15} />
-            </button>
+          {!previewMode && (
+            <div className="editor-toolbar">
+              {/* Heading formats */}
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('formatBlock', '<h1>')}
+                title="Heading 1"
+              >
+                <Heading1 size={15} />
+              </button>
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('formatBlock', '<h2>')}
+                title="Heading 2"
+              >
+                <Heading2 size={15} />
+              </button>
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('formatBlock', '<h3>')}
+                title="Heading 3"
+              >
+                <Heading3 size={15} />
+              </button>
 
-            <span className="toolbar-separator" />
+              <span className="toolbar-separator" />
 
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={() => executeCommand('insertUnorderedList')}
-              title="Bullet List"
-            >
-              <List size={15} />
-            </button>
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={() => executeCommand('insertOrderedList')}
-              title="Numbered List"
-            >
-              <ListOrdered size={15} />
-            </button>
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={insertChecklist}
-              title="Checklist Item"
-            >
-              <CheckSquare size={15} />
-            </button>
+              {/* Inline styles */}
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('bold')}
+                title="Bold (Ctrl+B)"
+              >
+                <Bold size={15} />
+              </button>
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('italic')}
+                title="Italic (Ctrl+I)"
+              >
+                <Italic size={15} />
+              </button>
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('underline')}
+                title="Underline (Ctrl+U)"
+              >
+                <Underline size={15} />
+              </button>
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('strikeThrough')}
+                title="Strikethrough"
+              >
+                <Strikethrough size={15} />
+              </button>
 
-            <span className="toolbar-separator" />
+              <span className="toolbar-separator" />
 
-            {/* Whiteboard Drawing Canvas Button */}
-            <button
-              type="button"
-              className="toolbar-btn media-tool-btn"
-              onClick={() => setIsSketchOpen(true)}
-              title="Draw / Sketch on Canvas"
-            >
-              <PenTool size={15} />
-              <span className="tool-label">Sketch</span>
-            </button>
+              {/* Lists & Checklists */}
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('insertUnorderedList')}
+                title="Bullet List"
+              >
+                <List size={15} />
+              </button>
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('insertOrderedList')}
+                title="Numbered List"
+              >
+                <ListOrdered size={15} />
+              </button>
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={insertChecklist}
+                title="Checklist Item"
+              >
+                <CheckSquare size={15} />
+              </button>
 
-            {/* Table Button */}
-            <button
-              type="button"
-              className="toolbar-btn media-tool-btn"
-              onClick={insertTable}
-              title="Insert Table"
-            >
-              <Table size={15} />
-              <span className="tool-label">Table</span>
-            </button>
+              <span className="toolbar-separator" />
 
-            {/* Image Attachment Button */}
-            <button
-              type="button"
-              className="toolbar-btn media-tool-btn"
-              onClick={() => fileInputRef.current?.click()}
-              title="Attach Image"
-            >
-              <ImageIcon size={15} />
-              <span className="tool-label">Image</span>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                style={{ display: 'none' }}
-              />
-            </button>
+              {/* Sketch Drawing Canvas */}
+              <button
+                type="button"
+                className="toolbar-btn media-tool-btn"
+                onClick={() => setIsSketchOpen(true)}
+                title="Draw / Sketch on Canvas"
+              >
+                <PenTool size={14} />
+                <span className="tool-label">Sketch</span>
+              </button>
 
-            <span className="toolbar-separator" />
+              {/* Table */}
+              <button
+                type="button"
+                className="toolbar-btn media-tool-btn"
+                onClick={insertTable}
+                title="Insert Table"
+              >
+                <Table size={14} />
+                <span className="tool-label">Table</span>
+              </button>
 
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={() => executeCommand('formatBlock', '<blockquote>')}
-              title="Quote"
-            >
-              <Quote size={15} />
-            </button>
-            <button
-              type="button"
-              className="toolbar-btn"
-              onClick={() => executeCommand('formatBlock', '<pre>')}
-              title="Code Block"
-            >
-              <Code size={15} />
-            </button>
-          </div>
+              {/* Image */}
+              <button
+                type="button"
+                className="toolbar-btn media-tool-btn"
+                onClick={() => fileInputRef.current?.click()}
+                title="Attach Image"
+              >
+                <ImageIcon size={14} />
+                <span className="tool-label">Image</span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                />
+              </button>
 
-          {/* Cognitive Science Offload Reminder */}
-          <div className="editor-cognitive-bar">
-            <span className="cognitive-badge">🧠 Brain Fact:</span>
-            <span className="cognitive-text">Your mind is for <strong>creating</strong> ideas, not holding them. Dump everything out!</span>
-          </div>
+              <span className="toolbar-separator" />
 
-          {/* Rich Content Area */}
-          <div
-            ref={editorRef}
-            className="rich-note-editor"
-            contentEditable="true"
-            data-placeholder="Start typing your thoughts, sketch ideas, or organize your notes..."
-            onInput={updateStats}
-            onKeyUp={updateStats}
-            suppressContentEditableWarning
-          />
+              {/* Quotes & Code */}
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('formatBlock', '<blockquote>')}
+                title="Quote"
+              >
+                <Quote size={15} />
+              </button>
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={() => executeCommand('formatBlock', '<pre>')}
+                title="Code Block"
+              >
+                <Code size={15} />
+              </button>
+            </div>
+          )}
 
-          {/* Modal Footer with Live Intelligence Stats */}
+          {/* Rich Content Area or Preview */}
+          {previewMode ? (
+            <div
+              className="rich-note-editor reader-preview"
+              dangerouslySetInnerHTML={{
+                __html: editorRef.current ? editorRef.current.innerHTML : ''
+              }}
+            />
+          ) : (
+            <div
+              ref={editorRef}
+              className="rich-note-editor"
+              contentEditable="true"
+              data-placeholder="Start typing your thoughts, markdown notes (#tags), sketch ideas, or organize tasks..."
+              onInput={updateStats}
+              onKeyUp={updateStats}
+              suppressContentEditableWarning
+            />
+          )}
+
+          {/* Modal Footer with Live Metrics */}
           <div className="modal-footer">
             <div className="footer-left">
               <div className="note-live-stats">
@@ -370,6 +469,8 @@ export default function NoteEditorModal({
                 <span>{stats.chars} chars</span>
                 <span className="stat-dot">•</span>
                 <span>{stats.readingTime} min read</span>
+                <span className="stat-dot">•</span>
+                <span className="autosave-pill">{autoSaveStatus}</span>
               </div>
             </div>
 
@@ -392,7 +493,7 @@ export default function NoteEditorModal({
                 className="btn-action primary modal-save-btn"
                 onClick={handleClose}
               >
-                <Save size={16} />
+                <Save size={15} />
                 <span>Done</span>
               </MagnetButton>
             </div>

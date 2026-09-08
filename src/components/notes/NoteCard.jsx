@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Pin,
   Trash2,
@@ -7,7 +7,9 @@ import {
   Lock,
   RotateCcw,
   Folder,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Clock,
+  FileText
 } from 'lucide-react';
 import SpotlightCard from '../react-bits/SpotlightCard';
 
@@ -18,16 +20,34 @@ export default function NoteCard({
   onDelete,
   onRestore,
   onExport,
-  isTrashView = false
+  onTagClick,
+  isTrashView = false,
+  viewMode = 'grid'
 }) {
   const isLocked = Boolean(note.pin);
 
   // Extract drawing / image thumbnail if present
   const hasImage = note.content && note.content.includes('<img');
 
-  const plainSnippet = note.content
-    ? note.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-    : 'No additional content...';
+  const plainSnippet = useMemo(() => {
+    if (!note.content) return 'No additional content...';
+    return note.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  }, [note.content]);
+
+  // Extract hashtags from content
+  const tags = useMemo(() => {
+    if (isLocked || !note.content) return [];
+    const combined = `${note.title || ''} ${note.content || ''}`;
+    const matches = combined.match(/#[a-zA-Z0-9_\-]+/g);
+    return matches ? Array.from(new Set(matches)).slice(0, 3) : [];
+  }, [note.title, note.content, isLocked]);
+
+  // Compute word count & reading time
+  const readingStats = useMemo(() => {
+    const words = plainSnippet.split(/\s+/).filter(Boolean).length;
+    const mins = Math.max(1, Math.ceil(words / 180));
+    return { words, readingTime: `${mins}m read` };
+  }, [plainSnippet]);
 
   const formattedDate = note.updatedAt
     ? new Date(note.updatedAt).toLocaleDateString(undefined, {
@@ -38,17 +58,23 @@ export default function NoteCard({
       })
     : '';
 
+  const noteColorClass = note.color ? `note-color-${note.color}` : 'note-color-default';
+
   return (
     <SpotlightCard
-      className={`note-card ${note.pinned ? 'pinned' : ''} ${isLocked ? 'locked' : ''}`}
+      className={`note-card ${note.pinned ? 'pinned' : ''} ${isLocked ? 'locked' : ''} ${noteColorClass} view-${viewMode}`}
       onClick={() => onOpen(note)}
-      spotlightColor="rgba(255, 255, 255, 0.09)"
+      spotlightColor="rgba(255, 255, 255, 0.12)"
     >
       <div className="note-card-inner">
         {/* Header */}
         <div className="note-card-header">
           <div className="note-title-wrapper">
-            {isLocked && <Lock size={14} className="note-lock-badge" />}
+            {isLocked ? (
+              <Lock size={14} className="note-lock-badge" />
+            ) : (
+              <span className={`note-color-indicator ${note.color || 'default'}`} />
+            )}
             <h3 className="note-card-title">{note.title || 'Untitled Note'}</h3>
           </div>
 
@@ -62,7 +88,7 @@ export default function NoteCard({
               title={note.pinned ? 'Unpin Note' : 'Pin Note'}
               aria-label={note.pinned ? 'Unpin Note' : 'Pin Note'}
             >
-              <Pin size={15} className={note.pinned ? 'fill-current' : ''} />
+              <Pin size={14} className={note.pinned ? 'fill-current' : ''} />
             </button>
           )}
         </div>
@@ -70,11 +96,29 @@ export default function NoteCard({
         {/* Content Snippet or Lock Blur */}
         {isLocked ? (
           <div className="locked-note-placeholder">
-            <Lock size={22} className="lock-blur-icon" />
-            <span>Password Protected</span>
+            <Lock size={20} className="lock-blur-icon" />
+            <span>Encrypted Vault Note</span>
           </div>
         ) : (
           <p className="note-card-snippet">{plainSnippet}</p>
+        )}
+
+        {/* Tag Pills */}
+        {!isLocked && tags.length > 0 && (
+          <div className="note-card-tags">
+            {tags.map((t) => (
+              <span
+                key={t}
+                className="note-tag-chip"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onTagClick) onTagClick(t);
+                }}
+              >
+                {t}
+              </span>
+            ))}
+          </div>
         )}
 
         {/* Footer */}
@@ -89,6 +133,12 @@ export default function NoteCard({
             {hasImage && !isLocked && (
               <span className="note-has-image-indicator" title="Contains Drawing / Image">
                 <ImageIcon size={11} />
+              </span>
+            )}
+            {!isLocked && plainSnippet !== 'No additional content...' && (
+              <span className="note-stats-pill" title={`${readingStats.words} words`}>
+                <Clock size={10} />
+                <span>{readingStats.readingTime}</span>
               </span>
             )}
             <span className="note-date">{formattedDate}</span>

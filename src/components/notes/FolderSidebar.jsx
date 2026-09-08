@@ -9,17 +9,18 @@ import {
   User,
   Lightbulb,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  X
 } from 'lucide-react';
 
 const DEFAULT_FOLDERS = [
-  { id: 'all', name: 'All Notes', icon: FileText },
-  { id: 'quick', name: 'Quick Notes', icon: Sparkles },
-  { id: 'work', name: 'Work', icon: Briefcase },
-  { id: 'personal', name: 'Personal', icon: User },
-  { id: 'ideas', name: 'Ideas & Drafts', icon: Lightbulb },
-  { id: 'archive', name: 'Archive', icon: Archive },
-  { id: 'trash', name: 'Recently Deleted', icon: Trash2, isTrash: true }
+  { id: 'all', name: 'All Notes', icon: FileText, color: '#94a3b8' },
+  { id: 'quick', name: 'Quick Notes', icon: Sparkles, color: '#f59e0b' },
+  { id: 'work', name: 'Work', icon: Briefcase, color: '#3b82f6' },
+  { id: 'personal', name: 'Personal', icon: User, color: '#10b981' },
+  { id: 'ideas', name: 'Ideas & Drafts', icon: Lightbulb, color: '#8b5cf6' },
+  { id: 'archive', name: 'Archive', icon: Archive, color: '#64748b' },
+  { id: 'trash', name: 'Recently Deleted', icon: Trash2, color: '#ef4444', isTrash: true }
 ];
 
 export default function FolderSidebar({
@@ -27,6 +28,7 @@ export default function FolderSidebar({
   setCurrentFolder,
   customFolders = [],
   onAddFolder,
+  onDeleteFolder,
   notesCountByFolder = {}
 }) {
   const [newFolderName, setNewFolderName] = useState('');
@@ -42,15 +44,18 @@ export default function FolderSidebar({
   };
 
   return (
-    <aside className="folder-sidebar" aria-label="Brain Dump Folders">
+    <aside className="folder-sidebar" aria-label="Notes Vault Folders">
       <div className="folder-sidebar-header">
-        <span className="sidebar-title">Folders</span>
+        <div className="sidebar-title-row">
+          <span className="sidebar-title">Vault Folders</span>
+          <span className="sidebar-badge">{Object.values(notesCountByFolder).reduce((a, b) => a + b, 0)}</span>
+        </div>
         <button
-          className="folder-add-btn"
+          className={`folder-add-btn ${isCreating ? 'active' : ''}`}
           onClick={() => setIsCreating(!isCreating)}
-          title="New Folder"
+          title={isCreating ? 'Cancel' : 'Create Custom Folder'}
         >
-          <FolderPlus size={16} />
+          {isCreating ? <X size={15} /> : <FolderPlus size={15} />}
         </button>
       </div>
 
@@ -83,13 +88,20 @@ export default function FolderSidebar({
               onClick={() => setCurrentFolder(folder.id)}
             >
               <div className="folder-item-left">
-                <Icon size={16} className="folder-icon" />
+                <span className="folder-dot" style={{ backgroundColor: folder.color }} />
+                <Icon size={15} className="folder-icon" />
                 <span className="folder-name">{folder.name}</span>
               </div>
               <span className="folder-count">{count}</span>
             </button>
           );
         })}
+
+        {customFolders.length > 0 && (
+          <div className="folder-divider">
+            <span>Custom</span>
+          </div>
+        )}
 
         {customFolders.map((custom) => {
           const count = notesCountByFolder[custom.id] || 0;
@@ -98,14 +110,31 @@ export default function FolderSidebar({
           return (
             <button
               key={custom.id}
-              className={`folder-item ${isActive ? 'active' : ''}`}
+              className={`folder-item custom-folder-item ${isActive ? 'active' : ''}`}
               onClick={() => setCurrentFolder(custom.id)}
             >
               <div className="folder-item-left">
-                <Folder size={16} className="folder-icon" />
+                <span className="folder-dot custom" />
+                <Folder size={15} className="folder-icon" />
                 <span className="folder-name">{custom.name}</span>
               </div>
-              <span className="folder-count">{count}</span>
+              <div className="folder-item-right">
+                <span className="folder-count">{count}</span>
+                {onDeleteFolder && (
+                  <span
+                    className="folder-delete-icon"
+                    title="Delete Folder"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm(`Delete folder "${custom.name}"? Notes inside will stay in Quick Notes.`)) {
+                        onDeleteFolder(custom.id);
+                      }
+                    }}
+                  >
+                    <X size={12} />
+                  </span>
+                )}
+              </div>
             </button>
           );
         })}
