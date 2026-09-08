@@ -6,8 +6,6 @@ import FogSphere from '../react-bits/FogSphere';
 import AmbientCompanionUniverse from './AmbientCompanionUniverse';
 import FocusLogo from '../brand/FocusLogo';
 import WittyFlySwitch from '../ui/WittyFlySwitch';
-import StarfieldBackground from '../ambient/StarfieldBackground';
-import TokyoDriftMatrixBackground from '../ambient/TokyoDriftMatrixBackground';
 import {
   fetchDailyZenAdvice,
   fetchNasaCosmicBackdrop,
@@ -16,13 +14,10 @@ import {
 
 const ZEN_BG_PRESETS = [
   { id: 'auto', label: 'Auto', icon: '✨' },
-  { id: 'space', label: 'Starfield', icon: '🌌' },
-  { id: 'matrix', label: 'Matrix', icon: '🎌' },
   { id: 'fog', label: 'Fog Sphere', icon: '🔮' },
   { id: 'forest', label: 'Forest', icon: '🌲' },
   { id: 'sunset', label: 'Sunset', icon: '🌅' },
-  { id: 'cafe', label: 'Cafe', icon: '☕' },
-  { id: 'oled', label: 'OLED', icon: '🖤' }
+  { id: 'cafe', label: 'Cafe', icon: '☕' }
 ];
 
 function getFogColors(mode, zenBg) {
@@ -185,25 +180,8 @@ export default function FullscreenZenMode({
       } ${!isMouseActive ? 'zen-idle' : 'zen-active'}`}
       data-mode={mode}
     >
-      {/* 🌌 3D Deep Space Starfield Simulation */}
-      {(zenBg === 'space' || (zenBg === 'auto' && (mode === 'work' || mode === 'chill'))) && (
-        <StarfieldBackground starCount={360} speed={0.4} />
-      )}
-
-      {/* 🎌 Tokyo Drift Katakana Matrix Neon Ambient */}
-      {zenBg === 'matrix' && <TokyoDriftMatrixBackground />}
-
-      {/* 🌌 NASA Cosmic Deep-Space Backdrop (Only in Cosmic Scene when available) */}
-      {zenBg === 'space' && nasaBackdrop?.url && (
-        <div
-          className="zen-nasa-backdrop"
-          style={{ backgroundImage: `url(${nasaBackdrop.url})` }}
-          title={`NASA Deep Space: ${nasaBackdrop.title}`}
-        />
-      )}
-
       {/* 🔮 Volumetric Ray-Marched Fog Sphere (React Bits Component) */}
-      {showFogSphere && zenBg !== 'matrix' && zenBg !== 'space' && (
+      {showFogSphere && (
         <FogSphere
           coreColor={fogColors.core}
           glowColor={fogColors.glow}

@@ -8,21 +8,16 @@ import TaskManager from './components/tasks/TaskManager';
 import NotesHub from './components/notes/NotesHub';
 import SettingsModal from './components/SettingsModal';
 import CompanionPickerModal from './components/companion/CompanionPickerModal';
-import DynamicIslandModesDock from './components/modes/DynamicIslandModesDock';
 import ParticlesBackground from './components/react-bits/ParticlesBackground';
 import ClickSpark from './components/react-bits/ClickSpark';
-import RetroArcadeSprites from './components/ambient/RetroArcadeSprites';
-import TokyoDriftMatrixBackground from './components/ambient/TokyoDriftMatrixBackground';
-import StarfieldBackground from './components/ambient/StarfieldBackground';
 import { Storage, uid } from './utils/storage';
 import { themedAudio } from './utils/retroAudio';
 import confetti from 'canvas-confetti';
 
 export default function App() {
-  // Theme state
-  const [theme, setTheme] = useState(() => Storage.get('theme', 'dark'));
+  // Theme state: Crisp Light Mode only
+  const [theme, setTheme] = useState('light');
   const [soundEnabled, setSoundEnabled] = useState(() => Storage.get('soundEnabled', true));
-  const [scanlinesEnabled, setScanlinesEnabled] = useState(() => Storage.get('scanlines', true));
 
   // Companion Pet state
   const [companionType, setCompanionType] = useState(() =>
@@ -82,14 +77,6 @@ export default function App() {
     setSoundEnabled((prev) => {
       const next = !prev;
       Storage.set('soundEnabled', next);
-      return next;
-    });
-  };
-
-  const toggleScanlines = () => {
-    setScanlinesEnabled((prev) => {
-      const next = !prev;
-      Storage.set('scanlines', next);
       return next;
     });
   };
@@ -380,61 +367,19 @@ export default function App() {
 
   return (
     <div className={`app-layout theme-${theme} mode-${mode}`} data-timer-mode={mode}>
-      {/* CRT Scanline Shader Overlay for 8-Bit mode */}
-      {theme === 'retro-pixel' && scanlinesEnabled && <div className="crt-scanlines-overlay" />}
-
-      {/* Background Ambient Particles (for standard themes) */}
-      {theme !== 'dark' && theme !== 'tokyo-drift' && (
-        <ParticlesBackground
-          particleCount={theme === 'retro-pixel' ? 20 : 35}
-          particleColor={
-            theme === 'haunted'
-              ? 'rgba(239, 68, 68, 0.25)'
-              : theme === 'cyberpunk'
-              ? 'rgba(0, 240, 255, 0.25)'
-              : theme === 'scifi-hud'
-              ? 'rgba(34, 197, 94, 0.25)'
-              : 'rgba(0, 0, 0, 0.08)'
-          }
-          lineColor={
-            theme === 'haunted'
-              ? 'rgba(239, 68, 68, 0.05)'
-              : theme === 'cyberpunk'
-              ? 'rgba(255, 0, 127, 0.08)'
-              : theme === 'scifi-hud'
-              ? 'rgba(34, 197, 94, 0.05)'
-              : 'rgba(255, 255, 255, 0.03)'
-          }
-        />
-      )}
+      {/* Crisp Light Background Ambient Particles */}
+      <ParticlesBackground
+        particleCount={20}
+        particleColor="rgba(0, 0, 0, 0.08)"
+        lineColor="rgba(0, 0, 0, 0.03)"
+      />
 
       {/* Tactile Click Sparks */}
       <ClickSpark
-        sparkColor={
-          theme === 'haunted'
-            ? '#ef4444'
-            : theme === 'cyberpunk'
-            ? '#00f0ff'
-            : theme === 'retro-pixel'
-            ? '#eab308'
-            : theme === 'scifi-hud'
-            ? '#22c55e'
-            : theme === 'dark'
-            ? '#ffffff'
-            : '#0f172a'
-        }
+        sparkColor="#0f172a"
         sparkCount={6}
         sparkSize={7}
       />
-
-      {/* 🌌 Obsidian Zen 3D Deep Space Starfield Background */}
-      {theme === 'dark' && !isFullscreen && <StarfieldBackground />}
-
-      {/* 👾 8-Bit Retro Arcade Ambient Pixel Sprites (Only on Home Screen, Not Fullscreen) */}
-      {theme === 'retro-pixel' && !isFullscreen && <RetroArcadeSprites />}
-
-      {/* 🎌 Tokyo Drift Katakana Matrix Neon Background (Only on Home Screen, Not Fullscreen) */}
-      {theme === 'tokyo-drift' && !isFullscreen && <TokyoDriftMatrixBackground />}
 
       {/* Persistent App Header */}
       <Header
@@ -444,8 +389,6 @@ export default function App() {
         toggleSound={toggleSound}
         openSettings={() => setIsSettingsOpen(true)}
         openFullscreen={() => setIsFullscreen(true)}
-        scanlinesEnabled={scanlinesEnabled}
-        toggleScanlines={toggleScanlines}
         companionType={companionType}
         openCompanionPicker={() => setIsCompanionPickerOpen(true)}
       />
@@ -506,12 +449,6 @@ export default function App() {
         setActiveTab={setActiveTab}
         taskCount={tasks.filter((t) => !t.completed).length}
         noteCount={notes.filter((n) => !n.trash).length}
-      />
-
-      {/* Right Side Dynamic Island Theme Modes Dock (Pure Typography, No Emojis) */}
-      <DynamicIslandModesDock
-        currentTheme={theme}
-        setTheme={setTheme}
       />
 
       {/* Floating Mini Timer Indicator when outside timer tab */}

@@ -1,16 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  Palette,
   Volume2,
   VolumeX,
   Maximize2,
-  Settings,
-  Tv,
-  Check
+  Settings
 } from 'lucide-react';
 import MagnetButton from './react-bits/MagnetButton';
 import FocusLogo from './brand/FocusLogo';
-import { THEME_MODES } from '../utils/themePresets';
 import { COMPANIONS } from '../utils/companionPresets';
 
 export default function Header({
@@ -20,8 +16,6 @@ export default function Header({
   toggleSound,
   openSettings,
   openFullscreen,
-  scanlinesEnabled,
-  toggleScanlines,
   companionType = 'dino',
   openCompanionPicker
 }) {
@@ -39,17 +33,6 @@ export default function Header({
           </span>
           <span className="theme-mode-name">Pets</span>
         </button>
-
-        {/* CRT Scanline Toggle for Retro Arcade mode */}
-        {theme === 'retro-pixel' && (
-          <button
-            className={`icon-btn crt-toggle-btn ${scanlinesEnabled ? 'active-crt' : ''}`}
-            onClick={toggleScanlines}
-            title={scanlinesEnabled ? 'Disable CRT Scanlines' : 'Enable CRT Scanlines'}
-          >
-            <Tv size={16} />
-          </button>
-        )}
 
         {/* Sound toggle */}
         <MagnetButton
