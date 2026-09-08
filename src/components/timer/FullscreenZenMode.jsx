@@ -6,6 +6,8 @@ import FogSphere from '../react-bits/FogSphere';
 import AmbientCompanionUniverse from './AmbientCompanionUniverse';
 import FocusLogo from '../brand/FocusLogo';
 import WittyFlySwitch from '../ui/WittyFlySwitch';
+import StarfieldBackground from '../ambient/StarfieldBackground';
+import TokyoDriftMatrixBackground from '../ambient/TokyoDriftMatrixBackground';
 import {
   fetchDailyZenAdvice,
   fetchNasaCosmicBackdrop,
@@ -14,8 +16,9 @@ import {
 
 const ZEN_BG_PRESETS = [
   { id: 'auto', label: 'Auto', icon: '✨' },
+  { id: 'space', label: 'Starfield', icon: '🌌' },
+  { id: 'matrix', label: 'Matrix', icon: '🎌' },
   { id: 'fog', label: 'Fog Sphere', icon: '🔮' },
-  { id: 'space', label: 'Cosmic', icon: '🌌' },
   { id: 'forest', label: 'Forest', icon: '🌲' },
   { id: 'sunset', label: 'Sunset', icon: '🌅' },
   { id: 'cafe', label: 'Cafe', icon: '☕' },
@@ -182,7 +185,15 @@ export default function FullscreenZenMode({
       } ${!isMouseActive ? 'zen-idle' : 'zen-active'}`}
       data-mode={mode}
     >
-      {/* 🌌 NASA Cosmic Deep-Space Backdrop (Only in Cosmic Scene) */}
+      {/* 🌌 3D Deep Space Starfield Simulation */}
+      {(zenBg === 'space' || (zenBg === 'auto' && (mode === 'work' || mode === 'chill'))) && (
+        <StarfieldBackground starCount={360} speed={0.4} />
+      )}
+
+      {/* 🎌 Tokyo Drift Katakana Matrix Neon Ambient */}
+      {zenBg === 'matrix' && <TokyoDriftMatrixBackground />}
+
+      {/* 🌌 NASA Cosmic Deep-Space Backdrop (Only in Cosmic Scene when available) */}
       {zenBg === 'space' && nasaBackdrop?.url && (
         <div
           className="zen-nasa-backdrop"
@@ -192,7 +203,7 @@ export default function FullscreenZenMode({
       )}
 
       {/* 🔮 Volumetric Ray-Marched Fog Sphere (React Bits Component) */}
-      {showFogSphere && (
+      {showFogSphere && zenBg !== 'matrix' && zenBg !== 'space' && (
         <FogSphere
           coreColor={fogColors.core}
           glowColor={fogColors.glow}
