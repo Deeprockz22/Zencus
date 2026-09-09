@@ -11,6 +11,7 @@ import SettingsModal from './components/SettingsModal';
 import CompanionPickerModal from './components/companion/CompanionPickerModal';
 import ParticlesBackground from './components/react-bits/ParticlesBackground';
 import ClickSpark from './components/react-bits/ClickSpark';
+import useWakeLock from './hooks/useWakeLock';
 import { Storage, uid } from './utils/storage';
 import { themedAudio } from './utils/retroAudio';
 import confetti from 'canvas-confetti';
@@ -105,6 +106,9 @@ export default function App() {
   const [totalDuration, setTotalDuration] = useState(25 * 60);
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
+
+  // Keep the display awake for the length of a running session
+  useWakeLock(isRunning);
 
   // Tasks State
   const [tasks, setTasks] = useState(() => Storage.getArray('tasks'));
