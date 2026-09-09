@@ -92,13 +92,31 @@ export default function Globe({
 
   useEffect(() => {
     let phi = 0;
-    let theta = 0.22;
-    let widthPx = 0;
+    let theta = 0.2;
+    let widthPx = containerRef.current?.offsetWidth || 420;
     let globeInstance = null;
+    let rafId = null;
+    let isDestroyed = false;
+
+    // Drag physics state
+    let isDragging = false;
+    let lastPointerX = 0;
+    let lastPointerY = 0;
+    let velocityX = 0;
+    let velocityY = 0;
 
     const onResize = () => {
       if (canvasRef.current && containerRef.current) {
-        widthPx = containerRef.current.offsetWidth || 500;
+        const measured = containerRef.current.offsetWidth || 420;
+        if (measured > 0 && Math.abs(measured - widthPx) > 4) {
+          widthPx = measured;
+          if (globeInstance) {
+            globeInstance.update({
+              width: widthPx * 2,
+              height: widthPx * 2
+            });
+          }
+        }
       }
     };
     window.addEventListener('resize', onResize);
@@ -108,17 +126,18 @@ export default function Globe({
     if (!canvas) return;
 
     try {
+      // Initialize Cobe v2 3D Globe
       globeInstance = createGlobe(canvas, {
         devicePixelRatio: Math.min(window.devicePixelRatio || 2, 2),
         width: widthPx * 2,
         height: widthPx * 2,
         phi: 0,
-        theta: 0.22,
+        theta: 0.2,
         dark: isDarkMode ? 1 : 0,
-        diffuse: 1.3,
+        diffuse: 1.25,
         mapSamples: 16000,
-        mapBrightness: isDarkMode ? 4.5 : 2.8,
-        baseColor: isDarkMode ? [0.12, 0.12, 0.15] : [0.94, 0.93, 0.9],
+        mapBrightness: isDarkMode ? 6.2 : 3.8,
+        baseColor: isDarkMode ? [0.55, 0.62, 0.75] : [0.28, 0.3, 0.35],
         markerColor: primaryRGB,
         glowColor: showAtmosphere ? glowRGB : [0, 0, 0],
         markers: markers.map((m) => ({
@@ -131,32 +150,121 @@ export default function Globe({
           to: a.to,
           color: a.color ? parseColorToRGB(a.color) : primaryRGB
         })),
-        arcWidth: 1.4,
-        arcHeight: 0.35,
-        opacity: 0.94,
-        onRender: (state) => {
-          if (!pointerInteracting.current) {
-            phi += 0.003 * autoRotateSpeed;
-          }
-          state.phi = phi + pointerInteractionMovement.current;
-          state.theta = theta;
-          state.width = widthPx * 2;
-          state.height = widthPx * 2;
-        }
+        arcColor: primaryRGB,
+        arcWidth: 1.3,
+        arcHeight: 0.32,
+        opacity: 0.95
       });
+
+      // ══════════ CONTINUOUS 60FPS ANIMATION LOOP ══════════
+      // Cobe v2 requires manual requestAnimationFrame calling globeInstance.update()
+      const animate = (timestamp) => {
+        if (isDestroyed) return;
+
+        const time = timestamp * 0.001;
+
+        if (!isDragging) {
+          // Apply inertia momentum decay
+          if (Math.abs(velocityX) > 0.0001) {
+            phi += velocityX;
+            velocityX *= 0.94; // Smooth damping
+          } else {
+            // Silky continuous auto-rotation
+            phi += 0.004 * autoRotateSpeed;
+          }
+
+          // Gentle spring return for tilt theta
+          theta += (0.2 - theta) * 0.03;
+        }
+
+        if (globeInstance) {
+          globeInstance.update({
+            phi: phi,
+            theta: theta,
+            arcHeight: 0.32 + 0.025 * Math.sin(time * 2.5) // Dynamic pulsating arcs
+          });
+        }
+
+        rafId = requestAnimationFrame(animate);
+      };
+
+      rafId = requestAnimationFrame(animate);
 
       if (onReady) onReady();
     } catch (err) {
       console.warn('Error initializing 3D Globe:', err);
     }
 
-    // Fade-in canvas
+    // Pointer & Touch Interaction Handlers
+    const handleDown = (clientX, clientY) => {
+      if (!interactive) return;
+      isDragging = true;
+      lastPointerX = clientX;
+      lastPointerY = clientY;
+      velocityX = 0;
+      velocityY = 0;
+      if (canvasRef.current) canvasRef.current.style.cursor = 'grabbing';
+    };
+
+    const handleMove = (clientX, clientY) => {
+      if (!isDragging) return;
+      const deltaX = clientX - lastPointerX;
+      const deltaY = clientY - lastPointerY;
+      lastPointerX = clientX;
+      lastPointerY = clientY;
+
+      velocityX = deltaX * 0.006;
+      velocityY = deltaY * 0.004;
+
+      phi += velocityX;
+      theta = Math.max(-0.6, Math.min(0.6, theta - velocityY));
+    };
+
+    const handleUp = () => {
+      isDragging = false;
+      if (canvasRef.current) canvasRef.current.style.cursor = 'grab';
+    };
+
+    const onMouseDown = (e) => handleDown(e.clientX, e.clientY);
+    const onMouseMove = (e) => handleMove(e.clientX, e.clientY);
+    const onMouseUp = () => handleUp();
+
+    const onTouchStart = (e) => {
+      if (e.touches[0]) handleDown(e.touches[0].clientX, e.touches[0].clientY);
+    };
+    const onTouchMove = (e) => {
+      if (e.touches[0]) handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    };
+    const onTouchEnd = () => handleUp();
+
+    const currentCanvas = canvasRef.current;
+    if (currentCanvas && interactive) {
+      currentCanvas.addEventListener('mousedown', onMouseDown);
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+
+      currentCanvas.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchmove', onTouchMove, { passive: true });
+      window.addEventListener('touchend', onTouchEnd);
+    }
+
+    // Fade-in canvas once ready
     setTimeout(() => {
       if (canvas) canvas.style.opacity = '1';
     }, 100);
 
     return () => {
+      isDestroyed = true;
       window.removeEventListener('resize', onResize);
+      if (rafId) cancelAnimationFrame(rafId);
+      if (currentCanvas && interactive) {
+        currentCanvas.removeEventListener('mousedown', onMouseDown);
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+        currentCanvas.removeEventListener('touchstart', onTouchStart);
+        window.removeEventListener('touchmove', onTouchMove);
+        window.removeEventListener('touchend', onTouchEnd);
+      }
       if (globeInstance) {
         try {
           globeInstance.destroy();
@@ -164,39 +272,6 @@ export default function Globe({
       }
     };
   }, [isDarkMode, autoRotateSpeed, showAtmosphere, JSON.stringify(primaryRGB), JSON.stringify(markers), JSON.stringify(arcs)]);
-
-  // Pointer Drag Handlers
-  const handlePointerDown = (e) => {
-    if (!interactive) return;
-    pointerInteracting.current = e.clientX - pointerInteractionMovement.current;
-    if (canvasRef.current) canvasRef.current.style.cursor = 'grabbing';
-  };
-
-  const handlePointerUp = () => {
-    if (!interactive) return;
-    pointerInteracting.current = null;
-    if (canvasRef.current) canvasRef.current.style.cursor = 'grab';
-  };
-
-  const handlePointerOut = () => {
-    if (!interactive) return;
-    pointerInteracting.current = null;
-    if (canvasRef.current) canvasRef.current.style.cursor = 'grab';
-  };
-
-  const handleMouseMove = (e) => {
-    if (pointerInteracting.current !== null) {
-      const delta = e.clientX - pointerInteracting.current;
-      pointerInteractionMovement.current = delta * 0.005;
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (pointerInteracting.current !== null && e.touches[0]) {
-      const delta = e.touches[0].clientX - pointerInteracting.current;
-      pointerInteractionMovement.current = delta * 0.005;
-    }
-  };
 
   return (
     <div
@@ -213,11 +288,6 @@ export default function Globe({
         userSelect: 'none',
         ...style
       }}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerOut={handlePointerOut}
-      onMouseMove={handleMouseMove}
-      onTouchMove={handleTouchMove}
     >
       <canvas
         ref={canvasRef}
