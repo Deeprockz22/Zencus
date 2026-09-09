@@ -129,6 +129,9 @@ export default function FullscreenZenMode({
 
   if (!isOpen) return null;
 
+  // Sketch strips the overlay back to the timer and its transport controls
+  const isSketch = theme === 'sketch';
+
   const mins = Math.floor(timeLeft / 60);
   const secs = timeLeft % 60;
   const formattedTime = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -197,6 +200,7 @@ export default function FullscreenZenMode({
         {/* Visualizer Switcher + Actions */}
         <div className="zen-top-actions auto-hide-element flex items-center gap-3">
           {/* Visualizer Type Switcher */}
+          {!isSketch && (
           <div className="zen-viz-switcher flex items-center gap-1">
             <ShinyButton
               variant="pill"
@@ -226,8 +230,9 @@ export default function FullscreenZenMode({
               <span>◌</span>
             </ShinyButton>
           </div>
+          )}
 
-          {weather && (
+          {weather && !isSketch && (
             <div
               className="zen-weather-pill"
               title={`Live Weather: ${weather.city} • ${weather.condition} (${weather.tempC}°C)`}
@@ -251,7 +256,7 @@ export default function FullscreenZenMode({
 
       {/* ══════════ 2. CENTER: ENLARGED VISUALIZER ══════════ */}
       <div className="zen-center-visualizer">
-        {visualizerType === 'minimal' ? (
+        {isSketch || visualizerType === 'minimal' ? (
           <MinimalVisualizer {...vizProps} />
         ) : visualizerType === 'globe' ? (
           <GlobeVisualizer {...vizProps} />
@@ -263,7 +268,7 @@ export default function FullscreenZenMode({
       {/* ══════════ 3. BOTTOM: TIMER INFO DOCK ══════════ */}
       <div className="zen-bottom-dock">
         {/* Zen Advice */}
-        {zenAdvice?.advice?.trim() && (
+        {zenAdvice?.advice?.trim() && !isSketch && (
           <p className="zen-advice-quote auto-hide-element">
             "{zenAdvice.advice}"
           </p>

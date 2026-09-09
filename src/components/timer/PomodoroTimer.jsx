@@ -92,10 +92,16 @@ export default function PomodoroTimer({
     }
   };
 
+  // Sketch is a stripped-back skin: the decorative visualizers, radio,
+  // soundscapes, companion and gamification are dropped from the tree entirely
+  // rather than hidden, so nothing keeps rendering (or running WebGL) offscreen.
+  const isSketch = theme === 'sketch';
+
   // Shared Subcomponents
   const visualizerElement = (
     <div className="timer-visualizer-deck flex flex-col items-start w-full">
       {/* Visualizer Mode Switcher (Turntable vs 3D Global Flow) */}
+      {!isSketch && (
       <div className="visualizer-toggle-capsule flex items-center justify-start gap-2 mb-2 px-4">
         <ShinyButton
           variant="pill"
@@ -128,8 +134,9 @@ export default function PomodoroTimer({
           <span>◌ Minimal</span>
         </ShinyButton>
       </div>
+      )}
 
-      {visualizerType === 'minimal' ? (
+      {isSketch || visualizerType === 'minimal' ? (
         <MinimalVisualizer
           timeLeft={timeLeft}
           totalDuration={totalDuration}
@@ -325,9 +332,11 @@ export default function PomodoroTimer({
       </div>
 
       {/* 4. Focus Atmosphere Generator */}
-      <div className="timer-control-row timer-row-soundscapes">
-        {soundscapesElement}
-      </div>
+      {!isSketch && (
+        <div className="timer-control-row timer-row-soundscapes">
+          {soundscapesElement}
+        </div>
+      )}
     </div>
   );
 
@@ -355,26 +364,26 @@ export default function PomodoroTimer({
           {/* Left Wing / Deck: 3D Turntable Hero Visualizer & Vintage Radio Player */}
           <div className="timer-landscape-left-deck">
             {visualizerElement}
-            {radioElement}
+            {!isSketch && radioElement}
           </div>
 
           {/* Right Wing / Deck: Companion, Control Console & Analytics */}
           <div className="timer-landscape-right-deck">
-            {xpElement}
-            {companionElement}
+            {!isSketch && xpElement}
+            {!isSketch && companionElement}
             {masterControlConsole}
-            {statsElement}
+            {!isSketch && statsElement}
           </div>
         </div>
       ) : (
         /* ══════════ PORTRAIT LAYOUT FOR OTHERS (Mobile, Tablets, Portrait Displays) ══════════ */
         <div className="timer-portrait-stack">
-          {xpElement}
-          {companionElement}
+          {!isSketch && xpElement}
+          {!isSketch && companionElement}
           {visualizerElement}
           {masterControlConsole}
-          {radioElement}
-          {statsElement}
+          {!isSketch && radioElement}
+          {!isSketch && statsElement}
         </div>
       )}
     </div>

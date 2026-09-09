@@ -21,8 +21,10 @@ export default function Header({
   openSettings,
   openFullscreen,
   companionType = 'dino',
-  openCompanionPicker
+  openCompanionPicker,
+  toggleSketchMode
 }) {
+  const isSketch = theme === 'sketch';
   const [radioState, setRadioState] = useState(() => jazzRadio.getState());
 
   useEffect(() => {
@@ -39,6 +41,7 @@ export default function Header({
     <header className="app-header">
       <div className="header-left">
         {/* Pet Wardrobe Switcher Button */}
+        {!isSketch && (
         <button
           className={`theme-mode-trigger-btn pet-wardrobe-trigger-btn ${companionType === 'none' ? 'pet-disabled' : ''}`}
           onClick={openCompanionPicker}
@@ -51,16 +54,19 @@ export default function Header({
             {companionType === 'none' ? '+ Add Pet' : 'Pets'}
           </span>
         </button>
+        )}
 
-        {/* Crisp Light / Dark Toggle Button */}
-        <MagnetButton
-          className="icon-btn theme-toggle-btn"
-          onClick={toggleTheme}
-          title={theme === 'dark' ? 'Switch to Crisp Light Mode' : 'Switch to Crisp Dark Mode'}
-          aria-label="Toggle Theme"
-        >
-          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-        </MagnetButton>
+        {/* Crisp Light / Dark Toggle — sketch is light-only, so it has no meaning there */}
+        {!isSketch && (
+          <MagnetButton
+            className="icon-btn theme-toggle-btn"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to Crisp Light Mode' : 'Switch to Crisp Dark Mode'}
+            aria-label="Toggle Theme"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </MagnetButton>
+        )}
 
         {/* Sound toggle */}
         <MagnetButton
@@ -74,13 +80,21 @@ export default function Header({
       </div>
 
       <div className="header-center">
-        <div className="brand-container symbol-only" title="Zencus">
+        <button
+          type="button"
+          className={`brand-container symbol-only brand-sketch-toggle ${isSketch ? 'is-sketch' : ''}`}
+          onClick={toggleSketchMode}
+          title={isSketch ? 'Zencus — leave Sketch Mode' : 'Zencus — switch to Sketch Mode'}
+          aria-label={isSketch ? 'Leave Sketch Mode' : 'Switch to Sketch Mode'}
+          aria-pressed={isSketch}
+        >
           <FocusLogo size={38} className="brand-logo-icon" />
-        </div>
+        </button>
       </div>
 
       <div className="header-right">
         {/* Quick Relaxing Sax & Jazz Radio Mini Widget */}
+        {!isSketch && (
         <button
           className={`header-radio-pill flex items-center gap-1.5 px-2.5 py-1 rounded border-2 border-[#121212] font-mono text-xs font-bold transition-all shadow-[2px_2px_0px_#121212] active:translate-x-0.5 active:translate-y-0.5 ${
             radioState.isPlaying
@@ -106,6 +120,7 @@ export default function Header({
             </div>
           )}
         </button>
+        )}
 
         <MagnetButton
           className="icon-btn"

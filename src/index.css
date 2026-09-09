@@ -9425,3 +9425,644 @@ html[data-zen-transition] .particles-bg-layer {
 [data-theme='light'] .fullscreen-zen-overlay .zen-brand-text * {
   color: #121212 !important;
 }
+
+/* ══════════ 19. SKETCH MODE — BLACK & WHITE PAPER THEME ══════════ */
+/*
+  A light-only, hand-drawn wireframe skin toggled from the header logo.
+
+  The app carries 230+ literal hex colours across CSS, inline styles, SVG fill
+  attributes and a WebGL canvas, so tokens alone cannot desaturate it. The
+  filter below does it in one stroke. It must sit on the ROOT element: on any
+  descendant (.app-layout included) a filter becomes the containing block for
+  fixed children and drags the fullscreen zen overlay out of the viewport.
+*/
+html[data-theme='sketch'] {
+  filter: grayscale(1) contrast(1.06);
+}
+
+[data-theme='sketch'] {
+  --font-sans: 'Architects Daughter', 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Architects Daughter', 'Plus Jakarta Sans', sans-serif;
+
+  --ink: #12100e;
+  --paper: #fbfaf7;
+
+  --bg-primary: #fbfaf7;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #ededea;
+  --bg-elevated: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.96);
+
+  --border-subtle: #12100e;
+  --border-active: #12100e;
+  --border-focus: #12100e;
+
+  --text-primary: #12100e;
+  --text-secondary: #454340;
+  --text-tertiary: #6b6966;
+  --text-muted: #8d8b87;
+
+  --accent-glow: rgba(18, 16, 14, 0.22);
+  --accent-primary: #12100e;
+  --accent-text: #ffffff;
+
+  --badge-high-bg: #ffffff;
+  --badge-high-text: #12100e;
+  --badge-med-bg: #ffffff;
+  --badge-med-text: #12100e;
+  --badge-low-bg: #ffffff;
+  --badge-low-text: #12100e;
+
+  /* Chunky, Material-ish corners rather than pills */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 3px 3px 0px #12100e;
+  --shadow-md: 5px 5px 0px #12100e;
+  --shadow-lg: 8px 8px 0px #12100e;
+  --shadow-glow: none;
+}
+
+/* Faint ruled-paper tooth so flat white reads as a sketch pad */
+[data-theme='sketch'] body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(rgba(18, 16, 14, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 16, 14, 0.045) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+/* ── Thick ink outlines on every interactive surface ── */
+[data-theme='sketch'] button,
+[data-theme='sketch'] input,
+[data-theme='sketch'] select,
+[data-theme='sketch'] textarea,
+[data-theme='sketch'] .modal-card,
+[data-theme='sketch'] .settings-section,
+[data-theme='sketch'] .note-card,
+[data-theme='sketch'] .task-item,
+[data-theme='sketch'] .timer-visualizer-deck,
+[data-theme='sketch'] .minimal-stats-strip,
+[data-theme='sketch'] .app-header,
+[data-theme='sketch'] .dock-nav {
+  border: 3px solid var(--ink) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  background-color: var(--bg-secondary);
+  color: var(--ink);
+}
+
+/* Press-down feedback instead of glow */
+[data-theme='sketch'] button:active {
+  transform: translate(3px, 3px) !important;
+  box-shadow: none !important;
+}
+
+[data-theme='sketch'] button:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* Active/selected reads as filled ink */
+[data-theme='sketch'] .mode-btn.active,
+[data-theme='sketch'] .dock-item.active,
+[data-theme='sketch'] button[class*='active'] {
+  background-color: var(--ink) !important;
+  color: var(--paper) !important;
+}
+
+/* Headings and numerals in the hand-drawn face */
+[data-theme='sketch'] h1,
+[data-theme='sketch'] h2,
+[data-theme='sketch'] h3,
+[data-theme='sketch'] h4,
+[data-theme='sketch'] .modal-title,
+[data-theme='sketch'] .timer-editorial-digits,
+[data-theme='sketch'] .zen-bottom-digits {
+  font-family: var(--font-display) !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Strip the soft/glassy treatments that fight a pen-on-paper look */
+[data-theme='sketch'] * {
+  backdrop-filter: none !important;
+  text-shadow: none !important;
+}
+
+[data-theme='sketch'] .zen-viz-switcher,
+[data-theme='sketch'] .zen-weather-pill,
+[data-theme='sketch'] .zen-close-btn {
+  background: var(--bg-secondary) !important;
+  border: 3px solid var(--ink) !important;
+  color: var(--ink) !important;
+}
+
+/* The ambient particle mesh is noise on paper */
+[data-theme='sketch'] .particles-bg-layer {
+  display: none !important;
+}
+
+/*
+  Fullscreen zen inherits the paper, not the atmospheric gradients. Those mode
+  backgrounds carry (0,8,0) specificity plus !important, so the selector chain
+  has to be repeated here to outrank them — a plain [data-theme] prefix loses
+  and the overlay renders black.
+*/
+[data-theme='sketch'] .fullscreen-zen-overlay,
+[data-theme='sketch'] .fullscreen-zen-overlay.zen-bg-auto.mode-work,
+[data-theme='sketch'] .fullscreen-zen-overlay.mode-work:not([class*="zen-bg-"]):not(.zen-bg-space):not(.zen-bg-forest):not(.zen-bg-sunset):not(.zen-bg-cafe):not(.zen-bg-oled),
+[data-theme='sketch'] .fullscreen-zen-overlay.zen-bg-auto.mode-shortBreak,
+[data-theme='sketch'] .fullscreen-zen-overlay.mode-shortBreak:not([class*="zen-bg-"]):not(.zen-bg-space):not(.zen-bg-forest):not(.zen-bg-sunset):not(.zen-bg-cafe):not(.zen-bg-oled),
+[data-theme='sketch'] .fullscreen-zen-overlay.zen-bg-auto.mode-longBreak,
+[data-theme='sketch'] .fullscreen-zen-overlay.mode-longBreak:not([class*="zen-bg-"]):not(.zen-bg-space):not(.zen-bg-forest):not(.zen-bg-sunset):not(.zen-bg-cafe):not(.zen-bg-oled),
+[data-theme='sketch'] .fullscreen-zen-overlay.zen-bg-auto.mode-chill,
+[data-theme='sketch'] .fullscreen-zen-overlay.mode-chill:not([class*="zen-bg-"]):not(.zen-bg-space):not(.zen-bg-forest):not(.zen-bg-sunset):not(.zen-bg-cafe):not(.zen-bg-oled) {
+  background: var(--paper) !important;
+  background-color: var(--paper) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme='sketch'] .zen-bottom-digits,
+[data-theme='sketch'] .zen-bottom-mode-tag,
+[data-theme='sketch'] .zen-bottom-hint,
+[data-theme='sketch'] .zen-brand-text,
+[data-theme='sketch'] .zen-brand-text *,
+[data-theme='sketch'] .zen-advice-quote {
+  color: var(--ink) !important;
+}
+
+[data-theme='sketch'] .zen-bottom-progress-track {
+  background: #ffffff !important;
+  border: 3px solid var(--ink) !important;
+}
+
+[data-theme='sketch'] .zen-mode-aurora-layer {
+  display: none !important;
+}
+
+/* Logo doubles as the Sketch Mode switch — keep it looking like a logo */
+.brand-sketch-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  line-height: 0;
+  border-radius: var(--radius-md);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.brand-sketch-toggle:hover {
+  transform: scale(1.08) rotate(-4deg);
+}
+
+.brand-sketch-toggle:active {
+  transform: scale(0.94);
+}
+
+.brand-sketch-toggle:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 4px;
+}
+
+/* Exempt it from the sketch theme's blanket button treatment */
+[data-theme='sketch'] .brand-sketch-toggle {
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
+}
+
+[data-theme='sketch'] .brand-sketch-toggle:active {
+  transform: scale(0.94) !important;
+}
+
+/*
+  Gradients survive greyscale as muddy mid-tones, which reads as "washed out
+  colour" rather than ink. Flatten every fill, then repaint the emphasis states
+  as solid black-on-paper.
+*/
+[data-theme='sketch'] button,
+[data-theme='sketch'] .mode-btn,
+[data-theme='sketch'] .preset-pill,
+[data-theme='sketch'] .dock-item {
+  background-image: none !important;
+}
+
+[data-theme='sketch'] .hero-start-btn,
+[data-theme='sketch'] .btn-action.primary,
+[data-theme='sketch'] .mode-btn.active,
+[data-theme='sketch'] .preset-pill.active,
+[data-theme='sketch'] .dock-item.active,
+[data-theme='sketch'] .visualizer-toggle-btn.active,
+[data-theme='sketch'] .zen-viz-btn.active,
+[data-theme='sketch'] .header-radio-pill.playing,
+[data-theme='sketch'] .editorial-mode-stamp {
+  background: var(--ink) !important;
+  background-image: none !important;
+  color: var(--paper) !important;
+  border-color: var(--ink) !important;
+}
+
+[data-theme='sketch'] .hero-start-btn svg,
+[data-theme='sketch'] .btn-action.primary svg,
+[data-theme='sketch'] .mode-btn.active svg,
+[data-theme='sketch'] .dock-item.active svg {
+  color: var(--paper) !important;
+  stroke: var(--paper) !important;
+}
+
+/* Progress fills read as solid ink rather than grey */
+[data-theme='sketch'] .zen-bottom-progress-fill,
+[data-theme='sketch'] .timer-progress-meter > *,
+[data-theme='sketch'] .stats-icon {
+  background: var(--ink) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+
+/* Give the strip room so its outline doesn't crop the text */
+[data-theme='sketch'] .minimal-stats-strip {
+  padding: 10px 16px !important;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ── Sketch: essentials only ── */
+/*
+  The dial illustration is decoration; the readout above it (mode, digits,
+  progress) is the actual timer, so only the canvas stage goes.
+*/
+[data-theme='sketch'] .minimal-canvas-stage,
+[data-theme='sketch'] .turntable-canvas-stage,
+[data-theme='sketch'] .globe-canvas-stage,
+[data-theme='sketch'] .click-spark-canvas,
+[data-theme='sketch'] .companion-speech-bubble,
+[data-theme='sketch'] .streak-badge-container,
+[data-theme='sketch'] .timer-top-xp-row {
+  display: none !important;
+}
+
+/* Without the dial the deck frame is an empty box — let the readout breathe */
+[data-theme='sketch'] .timer-visualizer-deck {
+  padding: 20px 4px !important;
+}
+
+[data-theme='sketch'] .minimal-visualizer-hero,
+[data-theme='sketch'] .globe-visualizer-hero {
+  margin: 0 !important;
+}
+
+/* Fullscreen: the centred readout becomes the whole screen, so the dock keeps
+   only the transport controls rather than repeating the time. */
+[data-theme='sketch'] .zen-center-visualizer .timer-display-panel {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center;
+  text-align: center !important;
+  width: 100%;
+  margin: 0 auto !important;
+}
+
+/* The children carry align-self:flex-start from the left-aligned deck layout,
+   which beats the parent's align-items — override it per child. */
+[data-theme='sketch'] .zen-center-visualizer .timer-display-panel > * {
+  align-self: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+[data-theme='sketch'] .zen-center-visualizer .timer-editorial-digits {
+  font-size: clamp(4rem, 16vw, 12rem) !important;
+  line-height: 0.95 !important;
+}
+
+[data-theme='sketch'] .zen-bottom-timer-info,
+[data-theme='sketch'] .zen-bottom-progress-container {
+  display: none !important;
+}
+
+[data-theme='sketch'] .zen-bottom-timer-row {
+  justify-content: center;
+}
+
+/*
+  Thicker buttons plus their offset shadows outgrow the mode selector's own
+  capsule, so the last item gets clipped. Drop the container's frame and let the
+  buttons be the outlines.
+*/
+[data-theme='sketch'] .mode-selector,
+[data-theme='sketch'] .preset-pills,
+[data-theme='sketch'] .minimal-timer-controls,
+[data-theme='sketch'] .timer-controls-flow {
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
+  overflow: visible !important;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 !important;
+}
+
+[data-theme='sketch'] .mode-btn {
+  flex: 0 0 auto;
+}
+
+/* ══════════ 20. SKETCH MODE TRANSITION — THE EXTRAS FALL AWAY ══════════ */
+/*
+  Entering sketch tips each non-essential element off its shelf and drops it
+  through the bottom of the screen while the colour drains out; leaving drops
+  them back in. Only transform/opacity animate, so it stays on the compositor.
+*/
+/*
+  Weight comes from anticipation then acceleration: each element sags, rocks off
+  balance, hangs for a beat, then tumbles away under gravity. Alternating the
+  tumble direction stops the screen emptying like one sliding slab.
+*/
+@keyframes sketchFallAwayL {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  10% {
+    transform: translate3d(0, 4px, 0) rotate(-1deg);
+    opacity: 1;
+  }
+  22% {
+    transform: translate3d(-6px, -14px, 0) rotate(-9deg);
+    opacity: 1;
+  }
+  32% {
+    transform: translate3d(-10px, -6px, 0) rotate(-14deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-90px, 130vh, 0) rotate(-108deg);
+    opacity: 0;
+  }
+}
+
+@keyframes sketchFallAwayR {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  10% {
+    transform: translate3d(0, 5px, 0) rotate(1.5deg);
+    opacity: 1;
+  }
+  22% {
+    transform: translate3d(8px, -16px, 0) rotate(11deg);
+    opacity: 1;
+  }
+  32% {
+    transform: translate3d(12px, -7px, 0) rotate(17deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(120px, 130vh, 0) rotate(132deg);
+    opacity: 0;
+  }
+}
+
+@keyframes sketchFallIn {
+  0% {
+    transform: translate3d(40px, -130vh, 0) rotate(78deg);
+    opacity: 0;
+  }
+  45% {
+    opacity: 1;
+  }
+  68% {
+    transform: translate3d(0, 14px, 0) rotate(-4deg);
+    opacity: 1;
+  }
+  82% {
+    transform: translate3d(0, -6px, 0) rotate(2deg);
+    opacity: 1;
+  }
+  92% {
+    transform: translate3d(0, 3px, 0) rotate(-1deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Colour drains in step with the fall, and returns on the way back */
+html {
+  transition: filter 1500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html[data-sketch-anim='out'] {
+  filter: grayscale(1) contrast(1.06);
+}
+
+/* Everything sketch mode strips out, in the order it should let go */
+[data-sketch-anim] .minimal-stats-strip,
+[data-sketch-anim] .streak-badge-container,
+[data-sketch-anim] .timer-top-xp-row,
+[data-sketch-anim] .focus-companion-container,
+[data-sketch-anim] .minimal-radio-deck,
+[data-sketch-anim] .jazz-radio-compact-bar,
+[data-sketch-anim] .ambient-soundscape-bar,
+[data-sketch-anim] .timer-row-soundscapes,
+[data-sketch-anim] .visualizer-toggle-capsule,
+[data-sketch-anim] .zen-viz-switcher,
+[data-sketch-anim] .header-radio-pill,
+[data-sketch-anim] .pet-wardrobe-trigger-btn,
+[data-sketch-anim] .turntable-canvas-stage,
+[data-sketch-anim] .globe-canvas-stage,
+[data-sketch-anim] .minimal-canvas-stage {
+  /* Near-flat start then a steep plunge — the curve is the weight */
+  animation: sketchFallAwayR 1150ms cubic-bezier(0.7, 0, 0.95, 0.35) forwards;
+  pointer-events: none !important;
+  will-change: transform, opacity;
+  transform-origin: 50% 120%;
+}
+
+/* Alternate which way each piece topples */
+[data-sketch-anim] .streak-badge-container,
+[data-sketch-anim] .timer-top-xp-row,
+[data-sketch-anim] .ambient-soundscape-bar,
+[data-sketch-anim] .timer-row-soundscapes,
+[data-sketch-anim] .visualizer-toggle-capsule,
+[data-sketch-anim] .zen-viz-switcher,
+[data-sketch-anim] .pet-wardrobe-trigger-btn {
+  animation-name: sketchFallAwayL;
+  transform-origin: 20% 120%;
+}
+
+[data-sketch-anim='in'] .minimal-stats-strip,
+[data-sketch-anim='in'] .streak-badge-container,
+[data-sketch-anim='in'] .timer-top-xp-row,
+[data-sketch-anim='in'] .focus-companion-container,
+[data-sketch-anim='in'] .minimal-radio-deck,
+[data-sketch-anim='in'] .jazz-radio-compact-bar,
+[data-sketch-anim='in'] .ambient-soundscape-bar,
+[data-sketch-anim='in'] .timer-row-soundscapes,
+[data-sketch-anim='in'] .visualizer-toggle-capsule,
+[data-sketch-anim='in'] .zen-viz-switcher,
+[data-sketch-anim='in'] .header-radio-pill,
+[data-sketch-anim='in'] .pet-wardrobe-trigger-btn,
+[data-sketch-anim='in'] .turntable-canvas-stage,
+[data-sketch-anim='in'] .globe-canvas-stage,
+[data-sketch-anim='in'] .minimal-canvas-stage {
+  animation: sketchFallIn 1150ms cubic-bezier(0.3, 0.9, 0.25, 1) backwards;
+  transform-origin: 50% 50%;
+}
+
+/* Stagger so they let go one after another rather than as a slab */
+[data-sketch-anim] .header-radio-pill { animation-delay: 0ms; }
+[data-sketch-anim] .pet-wardrobe-trigger-btn { animation-delay: 110ms; }
+[data-sketch-anim] .streak-badge-container,
+[data-sketch-anim] .timer-top-xp-row { animation-delay: 210ms; }
+[data-sketch-anim] .minimal-stats-strip { animation-delay: 300ms; }
+[data-sketch-anim] .ambient-soundscape-bar,
+[data-sketch-anim] .timer-row-soundscapes { animation-delay: 390ms; }
+[data-sketch-anim] .minimal-radio-deck,
+[data-sketch-anim] .jazz-radio-compact-bar { animation-delay: 470ms; }
+[data-sketch-anim] .focus-companion-container { animation-delay: 550ms; }
+[data-sketch-anim] .visualizer-toggle-capsule,
+[data-sketch-anim] .zen-viz-switcher { animation-delay: 630ms; }
+/* The centrepiece goes last, and lands hardest */
+[data-sketch-anim] .turntable-canvas-stage,
+[data-sketch-anim] .globe-canvas-stage,
+[data-sketch-anim] .minimal-canvas-stage { animation-delay: 720ms; }
+
+/* Falling elements must not stretch the page. The scroller is the root element,
+   so clipping body does nothing — it has to go on html itself. */
+html[data-sketch-anim] {
+  overflow: hidden !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { transition: none; }
+  [data-sketch-anim] * {
+    animation: none !important;
+  }
+}
+
+/* What stays behind takes the weight — a short shudder as the last piece lands */
+@keyframes sketchSettleThud {
+  0%, 76% { transform: translate3d(0, 0, 0); }
+  81% { transform: translate3d(0, 6px, 0); }
+  87% { transform: translate3d(0, -3px, 0); }
+  93% { transform: translate3d(0, 1px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+[data-sketch-anim='out'] .timer-controls-flow,
+[data-sketch-anim='out'] .dock-nav,
+[data-sketch-anim='out'] .app-header {
+  animation: sketchSettleThud 1900ms cubic-bezier(0.3, 0, 0.2, 1);
+}
+
+/* ══════════ 21. SKETCH MODE — MATERIAL DEPTH & DRAWN GRAPHICS ══════════ */
+/*
+  Material elevation (a soft ambient cast under the hard ink offset) plus
+  technical-drawing marks: a doubled "drawn twice" outline, crosshatch fills and
+  corner registration ticks. All of it is box-shadow / background-image, so no
+  pseudo-elements are borrowed from components that already use them.
+*/
+[data-theme='sketch'] {
+  --hatch: repeating-linear-gradient(
+    45deg,
+    var(--ink) 0px,
+    var(--ink) 1.5px,
+    transparent 1.5px,
+    transparent 5px
+  );
+}
+
+/* Paper tooth: fibre noise over the ruled grid */
+[data-theme='sketch'] body {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
+    linear-gradient(rgba(18, 16, 14, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 16, 14, 0.045) 1px, transparent 1px);
+  background-size: 160px 160px, 26px 26px, 26px 26px;
+}
+
+/* Material elevation layered under the hard sketch offset */
+[data-theme='sketch'] button,
+[data-theme='sketch'] .modal-card,
+[data-theme='sketch'] .settings-section,
+[data-theme='sketch'] .timer-visualizer-deck,
+[data-theme='sketch'] .app-header,
+[data-theme='sketch'] .dock-nav {
+  box-shadow:
+    3px 3px 0 var(--ink),
+    0 5px 14px rgba(18, 16, 14, 0.16),
+    0 1px 3px rgba(18, 16, 14, 0.2) !important;
+}
+
+[data-theme='sketch'] button:hover {
+  box-shadow:
+    5px 5px 0 var(--ink),
+    0 10px 22px rgba(18, 16, 14, 0.22),
+    0 2px 5px rgba(18, 16, 14, 0.24) !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='sketch'] button:active {
+  transform: translate(3px, 3px) !important;
+  box-shadow: 0 1px 2px rgba(18, 16, 14, 0.3) !important;
+}
+
+/*
+  "Drawn twice": a paper gap then a second ink ring outside the border, so the
+  main panels read as pencil gone round the shape more than once.
+*/
+[data-theme='sketch'] .timer-visualizer-deck,
+[data-theme='sketch'] .modal-card {
+  box-shadow:
+    0 0 0 3px var(--paper),
+    0 0 0 5px var(--ink),
+    7px 8px 0 -1px var(--ink),
+    0 10px 26px rgba(18, 16, 14, 0.18) !important;
+}
+
+/* Corner registration ticks, like a wireframe callout */
+[data-theme='sketch'] .timer-visualizer-deck {
+  background-image:
+    linear-gradient(var(--ink) 0 0), linear-gradient(var(--ink) 0 0),
+    linear-gradient(var(--ink) 0 0), linear-gradient(var(--ink) 0 0),
+    linear-gradient(var(--ink) 0 0), linear-gradient(var(--ink) 0 0),
+    linear-gradient(var(--ink) 0 0), linear-gradient(var(--ink) 0 0);
+  background-size:
+    16px 3px, 3px 16px,
+    16px 3px, 3px 16px,
+    16px 3px, 3px 16px,
+    16px 3px, 3px 16px;
+  background-position:
+    10px 10px, 10px 10px,
+    calc(100% - 10px) 10px, calc(100% - 10px) 10px,
+    10px calc(100% - 10px), 10px calc(100% - 10px),
+    calc(100% - 10px) calc(100% - 10px), calc(100% - 10px) calc(100% - 10px);
+  background-repeat: no-repeat;
+}
+
+/* Crosshatch the progress fill and the mode stamp rather than flat black */
+[data-theme='sketch'] .timer-progress-meter > *,
+[data-theme='sketch'] .zen-bottom-progress-fill {
+  background: var(--hatch) !important;
+  background-color: var(--ink) !important;
+}
+
+[data-theme='sketch'] .editorial-mode-stamp {
+  background-color: var(--ink) !important;
+  background-image: var(--hatch) !important;
+  background-blend-mode: overlay;
+}
+
+/* Give the digits a drawn baseline rule */
+[data-theme='sketch'] .timer-editorial-digits {
+  padding-bottom: 6px;
+  border-bottom: 3px solid var(--ink);
+}

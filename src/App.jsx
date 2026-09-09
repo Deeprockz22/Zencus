@@ -110,6 +110,55 @@ export default function App() {
   // Keep the display awake for the length of a running session
   useWakeLock(isRunning);
 
+  // Sketch is a light-only skin, so leaving it restores whatever theme the user
+  // was on rather than guessing light.
+  //
+  // The extras are dropped from the tree by `theme === 'sketch'`, so switching
+  // straight away would delete them before they could animate. Entering runs the
+  // fall-away first and flips the theme once it lands; leaving flips immediately
+  // so the extras are mounted to drop back in.
+  // Last element lets go at 720ms and takes 1150ms to clear the screen
+  const SKETCH_FALL_MS = 1900;
+  const [sketchAnim, setSketchAnim] = useState(null); // 'out' | 'in' | null
+  const sketchAnimTimer = useRef(null);
+
+  useEffect(() => {
+    if (sketchAnim) document.documentElement.dataset.sketchAnim = sketchAnim;
+    else delete document.documentElement.dataset.sketchAnim;
+  }, [sketchAnim]);
+
+  useEffect(() => () => clearTimeout(sketchAnimTimer.current), []);
+
+  const toggleSketchMode = () => {
+    if (sketchAnimTimer.current) return; // mid-transition
+
+    const leaving = theme === 'sketch';
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduceMotion) {
+      if (leaving) setTheme(Storage.get('theme_before_sketch', 'light'));
+      else {
+        Storage.set('theme_before_sketch', theme);
+        setTheme('sketch');
+      }
+      return;
+    }
+
+    if (leaving) {
+      setTheme(Storage.get('theme_before_sketch', 'light'));
+      setSketchAnim('in');
+    } else {
+      Storage.set('theme_before_sketch', theme);
+      setSketchAnim('out');
+    }
+
+    sketchAnimTimer.current = setTimeout(() => {
+      if (!leaving) setTheme('sketch');
+      setSketchAnim(null);
+      sketchAnimTimer.current = null;
+    }, SKETCH_FALL_MS);
+  };
+
   // Tasks State
   const [tasks, setTasks] = useState(() => Storage.getArray('tasks'));
 
@@ -419,24 +468,30 @@ export default function App() {
 
   return (
     <div className={`app-layout theme-${theme} mode-${mode}`} data-timer-mode={mode}>
-      {/* Background Ambient Particles */}
-      <ParticlesBackground
-        particleCount={20}
-        particleColor={theme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}
-        lineColor={theme === 'dark' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)'}
-      />
+      {/* Background Ambient Particles — both run render loops, so sketch drops
+          them from the tree rather than hiding them */}
+      {theme !== 'sketch' && (
+        <ParticlesBackground
+          particleCount={20}
+          particleColor={theme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}
+          lineColor={theme === 'dark' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)'}
+        />
+      )}
 
       {/* Tactile Click Sparks */}
-      <ClickSpark
-        sparkColor={theme === 'dark' ? '#ffffff' : '#0f172a'}
-        sparkCount={6}
-        sparkSize={7}
-      />
+      {theme !== 'sketch' && (
+        <ClickSpark
+          sparkColor={theme === 'dark' ? '#ffffff' : '#0f172a'}
+          sparkCount={6}
+          sparkSize={7}
+        />
+      )}
 
       {/* Persistent App Header */}
       <Header
         theme={theme}
         setTheme={setTheme}
+        toggleSketchMode={toggleSketchMode}
         soundEnabled={soundEnabled}
         toggleSound={toggleSound}
         openSettings={() => setIsSettingsOpen(true)}
