@@ -9,6 +9,7 @@ import StreakBadge from '../companion/StreakBadge';
 import AmbientSoundscapes from '../ambient/AmbientSoundscapes';
 import JazzRadioPlayer from '../ambient/JazzRadioPlayer';
 import IsometricEditorialDial from './IsometricEditorialDial';
+import GlobeVisualizer from './GlobeVisualizer';
 
 const PRESETS = [
   { label: '15m', duration: 15 * 60 },
@@ -38,6 +39,7 @@ export default function PomodoroTimer({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editMinutes, setEditMinutes] = useState(Math.floor(totalDuration / 60));
+  const [visualizerType, setVisualizerType] = useState('turntable'); // 'turntable' | 'globe'
 
   const hasCompanion = companionType && companionType !== 'none';
 
@@ -88,19 +90,61 @@ export default function PomodoroTimer({
 
   // Shared Subcomponents
   const visualizerElement = (
-    <IsometricEditorialDial
-      timeLeft={timeLeft}
-      totalDuration={totalDuration}
-      isRunning={isRunning}
-      mode={mode}
-      getModeTitle={getModeTitle}
-      formatTime={formatTime}
-      isEditing={isEditing}
-      editMinutes={editMinutes}
-      setEditMinutes={setEditMinutes}
-      handleEditSubmit={handleEditSubmit}
-      setIsEditing={setIsEditing}
-    />
+    <div className="timer-visualizer-deck flex flex-col items-center w-full">
+      {/* Visualizer Mode Switcher (Turntable vs 3D Global Flow) */}
+      <div className="visualizer-toggle-capsule flex items-center justify-center gap-2 mb-1">
+        <ShinyButton
+          variant="pill"
+          size="sm"
+          active={visualizerType === 'turntable'}
+          onClick={() => setVisualizerType('turntable')}
+          className="visualizer-toggle-btn"
+          title="Switch to Hi-Fi Turntable Vinyl Dial"
+        >
+          <span>📻 Turntable</span>
+        </ShinyButton>
+        <ShinyButton
+          variant="pill"
+          size="sm"
+          active={visualizerType === 'globe'}
+          onClick={() => setVisualizerType('globe')}
+          className="visualizer-toggle-btn"
+          title="Switch to React Bits Interactive 3D Globe"
+        >
+          <span>🌍 3D Globe</span>
+        </ShinyButton>
+      </div>
+
+      {visualizerType === 'globe' ? (
+        <GlobeVisualizer
+          timeLeft={timeLeft}
+          totalDuration={totalDuration}
+          isRunning={isRunning}
+          mode={mode}
+          getModeTitle={getModeTitle}
+          formatTime={formatTime}
+          isEditing={isEditing}
+          editMinutes={editMinutes}
+          setEditMinutes={setEditMinutes}
+          handleEditSubmit={handleEditSubmit}
+          setIsEditing={setIsEditing}
+        />
+      ) : (
+        <IsometricEditorialDial
+          timeLeft={timeLeft}
+          totalDuration={totalDuration}
+          isRunning={isRunning}
+          mode={mode}
+          getModeTitle={getModeTitle}
+          formatTime={formatTime}
+          isEditing={isEditing}
+          editMinutes={editMinutes}
+          setEditMinutes={setEditMinutes}
+          handleEditSubmit={handleEditSubmit}
+          setIsEditing={setIsEditing}
+        />
+      )}
+    </div>
   );
 
   const radioElement = <JazzRadioPlayer />;

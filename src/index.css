@@ -8587,3 +8587,44 @@ body {
   border: none !important;
   box-shadow: none !important;
 }
+
+/* ══════════ 15. VISUALIZER SWITCHER & 3D GLOBE HERO ══════════ */
+.timer-visualizer-deck {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.visualizer-toggle-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  user-select: none;
+}
+
+.visualizer-toggle-btn {
+  font-size: 0.76rem !important;
+  padding: 5px 14px !important;
+  border-radius: var(--radius-full) !important;
+}
+
+.globe-visualizer-hero {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+
+.rb-globe-wrapper {
+  user-select: none;
+  touch-action: none;
+}
+
+.rb-globe-wrapper canvas {
+  user-select: none;
+  touch-action: none;
+}
+
