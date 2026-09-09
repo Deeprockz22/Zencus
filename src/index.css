@@ -41,14 +41,14 @@
   --radius-lg: 12px;
   --radius-full: 9999px;
 
-  /* 🌙 Crisp Solid White Block Shadows for Editorial Dark Mode */
-  --shadow-sm: 3px 3px 0px #ffffff;
-  --shadow-md: 5px 5px 0px #ffffff;
-  --shadow-lg: 8px 8px 0px #ffffff;
-  --shadow-white: 4px 4px 0px #ffffff;
-  --shadow-white-sm: 2px 2px 0px #ffffff;
-  --shadow-white-lg: 6px 6px 0px #ffffff;
-  --shadow-glow: 0 0 30px rgba(255, 255, 255, 0.25);
+  /* 🌙 Subtle Luminous White Shadows for Editorial Dark Mode */
+  --shadow-sm: 2px 2px 0px rgba(255, 255, 255, 0.22);
+  --shadow-md: 3px 3px 0px rgba(255, 255, 255, 0.28);
+  --shadow-lg: 5px 5px 0px rgba(255, 255, 255, 0.35);
+  --shadow-white: 3px 3px 0px rgba(255, 255, 255, 0.25);
+  --shadow-white-sm: 2px 2px 0px rgba(255, 255, 255, 0.18);
+  --shadow-white-lg: 4px 4px 0px rgba(255, 255, 255, 0.35);
+  --shadow-glow: 0 0 20px rgba(255, 255, 255, 0.15);
 }
 
 /* 👾 Retro 8-Bit Pixel Arcade Theme */
@@ -2905,10 +2905,10 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   🌙 CRISP WHITE SHADOWS IN DARK MODE (WITHOUT ALL-WHITE BUTTONS)
+   🌙 SUBTLE WHITE SHADOWS IN DARK MODE (REFINED & ELEGANT)
    ───────────────────────────────────────────────────────────── */
 
-/* Interactive action buttons in dark mode have crisp white shadows */
+/* Interactive action buttons in dark mode have subtle white shadows */
 [data-theme='dark'] .btn-action,
 [data-theme='dark'] .btn-primary,
 [data-theme='dark'] .btn-secondary,
@@ -2917,8 +2917,8 @@ body {
 [data-theme='dark'] .add-task-btn,
 [data-theme='dark'] .new-note-btn,
 [data-theme='dark'] .pet-wardrobe-trigger-btn {
-  border: 2px solid #ffffff;
-  box-shadow: 4px 4px 0px #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.22);
   transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), 
               box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), 
               background-color 0.15s ease, 
@@ -2934,7 +2934,8 @@ body {
 [data-theme='dark'] .add-task-btn:hover,
 [data-theme='dark'] .new-note-btn:hover,
 [data-theme='dark'] .pet-wardrobe-trigger-btn:hover {
-  box-shadow: 6px 6px 0px #ffffff;
+  border-color: rgba(255, 255, 255, 0.65);
+  box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.35);
   transform: translate(-1px, -1px);
 }
 
@@ -2946,7 +2947,7 @@ body {
 [data-theme='dark'] .add-task-btn:active,
 [data-theme='dark'] .new-note-btn:active,
 [data-theme='dark'] .pet-wardrobe-trigger-btn:active {
-  box-shadow: 1px 1px 0px #ffffff;
+  box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.18);
   transform: translate(2px, 2px);
 }
 
@@ -2959,8 +2960,8 @@ body {
 [data-theme='dark'] .modal-save-btn {
   background: #ff3b30 !important;
   color: #ffffff !important;
-  border: 2px solid #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.28) !important;
 }
 
 [data-theme='dark'] .btn-action.primary:hover,
@@ -2971,7 +2972,8 @@ body {
 [data-theme='dark'] .modal-save-btn:hover {
   background: #ff2417 !important;
   color: #ffffff !important;
-  box-shadow: 6px 6px 0px #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 4.5px 4.5px 0px rgba(255, 255, 255, 0.42) !important;
   transform: translate(-1px, -1px);
 }
 
@@ -2981,89 +2983,48 @@ body {
 [data-theme='dark'] .add-task-btn:active,
 [data-theme='dark'] .new-note-btn:active,
 [data-theme='dark'] .modal-save-btn:active {
-  box-shadow: 1px 1px 0px #ffffff !important;
-  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.18) !important;
+  transform: translate(2px, 2px);
 }
 
 [data-theme='dark'] .btn-action.primary.btn-running {
   background: #10b981 !important;
   color: #ffffff !important;
-  border: 2px solid #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.28) !important;
 }
 
-/* Secondary Action Buttons in Dark Mode: Deep Charcoal (NOT plain white!) */
+/* Secondary Action Buttons in Dark Mode: Deep Charcoal */
 [data-theme='dark'] .btn-action.secondary,
 [data-theme='dark'] .btn-secondary,
 [data-theme='dark'] .secondary-btn {
   background: #1e1e24 !important;
-  border: 2px solid #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
   color: #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.22) !important;
 }
 
 [data-theme='dark'] .btn-action.secondary:hover,
 [data-theme='dark'] .btn-secondary:hover,
 [data-theme='dark'] .secondary-btn:hover {
   background: #2a2a32 !important;
+  border-color: rgba(255, 255, 255, 0.65) !important;
   color: #ffffff !important;
-  box-shadow: 6px 6px 0px #ffffff !important;
+  box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.35) !important;
   transform: translate(-1px, -1px);
 }
 
 [data-theme='dark'] .btn-action.secondary:active,
 [data-theme='dark'] .btn-secondary:active,
 [data-theme='dark'] .secondary-btn:active {
-  box-shadow: 1px 1px 0px #ffffff !important;
-  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.18) !important;
+  transform: translate(2px, 2px);
 }
 
-/* Mode Selector */
-.mode-selector {
-  display: flex;
-  gap: 6px;
-  background: #deded6;
-  padding: 6px;
-  border-radius: var(--radius-md);
-  border: 2px solid #121212;
-  box-shadow: 3px 3px 0px #121212;
-  width: 100%;
-}
-
-.mode-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-  background: transparent;
-  color: #27272a;
-  font-size: 0.8rem;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  user-select: none;
-}
-
-.mode-btn:hover {
-  color: #121212;
-  background: rgba(0, 0, 0, 0.06);
-}
-
-.mode-btn.active {
-  background: #ff3b30 !important;
-  color: #ffffff !important;
-  border: 1.5px solid #121212 !important;
-  box-shadow: 2px 2px 0px #121212 !important;
-}
-
+/* Mode Selector in Dark Mode */
 [data-theme='dark'] .mode-selector {
-  border: 2px solid #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.2) !important;
   background: #141418 !important;
 }
 
@@ -3082,57 +3043,22 @@ body {
 [data-theme='dark'] .mode-btn.active {
   background: #ff3b30 !important;
   color: #ffffff !important;
-  border: 1.5px solid #ffffff !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.22) !important;
 }
 
-/* Preset Pills */
-.preset-pills {
-  display: flex;
-  gap: 8px;
-  width: 100%;
-}
-
-.preset-pill {
-  flex: 1;
-  padding: 8px 10px;
-  border-radius: var(--radius-md);
-  background: #e2e2da;
-  border: 2px solid #121212;
-  color: #121212;
-  font-size: 0.82rem;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  cursor: pointer;
-  text-align: center;
-  box-shadow: 2px 2px 0px #121212;
-  transition: all 0.12s ease;
-}
-
-.preset-pill:hover {
-  background: #f4f4ec;
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px #121212;
-}
-
-.preset-pill.active {
-  background: #121212 !important;
-  color: #ffffff !important;
-  border-color: #121212 !important;
-  box-shadow: 2px 2px 0px #ff3b30 !important;
-}
-
+/* Preset Pills in Dark Mode */
 [data-theme='dark'] .preset-pill {
-  border: 1.5px solid #3f3f46 !important;
-  box-shadow: 2px 2px 0px #121212 !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.15) !important;
   background: #1c1c22 !important;
   color: #d4d4d8 !important;
 }
 
 [data-theme='dark'] .preset-pill:hover {
-  border-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
   color: #ffffff !important;
-  box-shadow: 3px 3px 0px #ffffff !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.28) !important;
   transform: translate(-1px, -1px);
 }
 
@@ -3140,74 +3066,76 @@ body {
   border-color: #ffffff !important;
   color: #121212 !important;
   background: #ffffff !important;
-  box-shadow: 3px 3px 0px #ff3b30 !important;
+  box-shadow: 2.5px 2.5px 0px #ff3b30 !important;
   font-weight: 800 !important;
 }
 
 /* 6. Focus Soundscape Bar & Buttons */
 [data-theme='dark'] .ambient-soundscape-bar {
-  border: 2px solid #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.2) !important;
   background: var(--bg-secondary) !important;
 }
 
 [data-theme='dark'] .ambient-btn {
-  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.15) !important;
   background: var(--bg-primary) !important;
   color: var(--text-primary) !important;
 }
 
 [data-theme='dark'] .ambient-btn:hover {
-  border-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
   color: #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.28) !important;
   transform: translate(-1px, -1px);
 }
 
 [data-theme='dark'] .ambient-btn.active {
-  border-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
   background: var(--bg-tertiary) !important;
   color: #ffffff !important;
-  box-shadow: 3px 3px 0px #ffffff !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.22) !important;
 }
 
 /* 7. Header Controls (Theme Toggle, Settings, Fullscreen, Pets, Radio) */
 [data-theme='dark'] .icon-btn {
-  border: 1.5px solid #ffffff !important;
-  box-shadow: 3px 3px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.2) !important;
   background: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
 }
 
 [data-theme='dark'] .icon-btn:hover {
+  border-color: rgba(255, 255, 255, 0.6) !important;
   color: #ffffff !important;
-  box-shadow: 5px 5px 0px #ffffff !important;
+  box-shadow: 3.5px 3.5px 0px rgba(255, 255, 255, 0.32) !important;
   transform: translate(-1px, -1px);
 }
 
 [data-theme='dark'] .icon-btn:active {
-  box-shadow: 1px 1px 0px #ffffff !important;
+  box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.15) !important;
   transform: translate(2px, 2px);
 }
 
 [data-theme='dark'] .pet-wardrobe-trigger-btn,
 [data-theme='dark'] .header-radio-pill {
-  border: 2px solid #ffffff !important;
-  box-shadow: 3px 3px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.22) !important;
   background: var(--bg-secondary) !important;
   color: #ffffff !important;
 }
 
 [data-theme='dark'] .pet-wardrobe-trigger-btn:hover,
 [data-theme='dark'] .header-radio-pill:hover {
-  box-shadow: 5px 5px 0px #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.65) !important;
+  box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.35) !important;
   transform: translate(-1px, -1px);
 }
 
 [data-theme='dark'] .pet-wardrobe-trigger-btn:active,
 [data-theme='dark'] .header-radio-pill:active {
-  box-shadow: 1px 1px 0px #ffffff !important;
+  box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.18) !important;
   transform: translate(2px, 2px);
 }
 
@@ -3216,8 +3144,8 @@ body {
 [data-theme='dark'] .cat-tab,
 [data-theme='dark'] .smart-tag-pill,
 [data-theme='dark'] .view-mode-btn {
-  border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.16) !important;
   background: var(--bg-secondary) !important;
   color: var(--text-secondary) !important;
 }
@@ -3226,9 +3154,9 @@ body {
 [data-theme='dark'] .cat-tab:hover,
 [data-theme='dark'] .smart-tag-pill:hover,
 [data-theme='dark'] .view-mode-btn:hover {
-  border-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
   color: #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.28) !important;
   transform: translate(-1px, -1px);
 }
 
@@ -3236,10 +3164,10 @@ body {
 [data-theme='dark'] .cat-tab.active,
 [data-theme='dark'] .smart-tag-pill.active,
 [data-theme='dark'] .view-mode-btn.active {
-  border-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
   background: var(--bg-tertiary) !important;
   color: #ffffff !important;
-  box-shadow: 3px 3px 0px #ffffff !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.24) !important;
 }
 
 /* 9. Card Actions & Note Tools (Pin, Delete, Edit, Search Clear) */
@@ -3250,8 +3178,8 @@ body {
 [data-theme='dark'] .search-indicator-clear,
 [data-theme='dark'] .folder-add-btn,
 [data-theme='dark'] .new-folder-submit {
-  border: 1.5px solid #ffffff !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.18) !important;
   background: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
 }
@@ -3263,7 +3191,8 @@ body {
 [data-theme='dark'] .search-indicator-clear:hover,
 [data-theme='dark'] .folder-add-btn:hover,
 [data-theme='dark'] .new-folder-submit:hover {
-  box-shadow: 4px 4px 0px #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.3) !important;
   color: #ffffff !important;
   transform: translate(-1px, -1px);
 }
@@ -3273,7 +3202,7 @@ body {
 [data-theme='dark'] .pin-btn:active,
 [data-theme='dark'] .folder-add-btn:active,
 [data-theme='dark'] .new-folder-submit:active {
-  box-shadow: 1px 1px 0px #ffffff !important;
+  box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.15) !important;
   transform: translate(1px, 1px);
 }
 
@@ -3287,8 +3216,8 @@ body {
 [data-theme='dark'] .switch-pet-btn,
 [data-theme='dark'] .remove-pet-btn,
 [data-theme='dark'] .remove-pet-header-btn {
-  border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.18) !important;
   background: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
 }
@@ -3302,107 +3231,96 @@ body {
 [data-theme='dark'] .switch-pet-btn:hover,
 [data-theme='dark'] .remove-pet-btn:hover,
 [data-theme='dark'] .remove-pet-header-btn:hover {
-  border-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
   color: #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.3) !important;
   transform: translate(-1px, -1px);
 }
 
-[data-theme='dark'] .toolbar-btn:active,
-[data-theme='dark'] .sketch-icon-btn:active,
-[data-theme='dark'] .sketch-text-btn:active,
-[data-theme='dark'] .btn-setting-action:active,
-[data-theme='dark'] .footer-btn:active,
-[data-theme='dark'] .close-modal-btn:active,
-[data-theme='dark'] .switch-pet-btn:active,
-[data-theme='dark'] .remove-pet-btn:active,
-[data-theme='dark'] .remove-pet-header-btn:active {
-  box-shadow: 1px 1px 0px #ffffff !important;
-  transform: translate(1px, 1px);
-}
-
 [data-theme='dark'] .color-dot-btn {
-  border: 2px solid #ffffff !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.2) !important;
 }
 
 [data-theme='dark'] .color-dot-btn.active {
-  box-shadow: 3px 3px 0px #ffffff !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.35) !important;
   transform: scale(1.15);
 }
 
 /* 11. Navigation Dock, Mini Timer & Indicators */
 [data-theme='dark'] .dock-nav {
-  border: 2px solid #ffffff !important;
-  box-shadow: 5px 5px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.22) !important;
   background: var(--bg-secondary) !important;
 }
 
 [data-theme='dark'] .dock-indicator {
-  border: 1.5px solid #ffffff !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.2) !important;
 }
 
 [data-theme='dark'] .mini-timer-pill {
-  border: 2px solid #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.22) !important;
 }
 
 [data-theme='dark'] .mini-timer-toggle {
-  border: 1.5px solid #ffffff !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.18) !important;
 }
 
 [data-theme='dark'] .mini-timer-toggle:hover {
-  box-shadow: 3px 3px 0px #ffffff !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.28) !important;
 }
 
 /* 12. Cards & Containers (Stats, Notes, Tasks, Tuner, Modals) */
 [data-theme='dark'] .stat-card,
 [data-theme='dark'] .editorial-stat-card {
-  border: 2px solid #ffffff !important;
-  box-shadow: 5px 5px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 3.5px 3.5px 0px rgba(255, 255, 255, 0.22) !important;
 }
 
 [data-theme='dark'] .spotlight-card,
 [data-theme='dark'] .note-card,
 [data-theme='dark'] .task-item-card,
 [data-theme='dark'] .companion-select-card {
-  border: 1.5px solid #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.18) !important;
 }
 
 [data-theme='dark'] .spotlight-card:hover,
 [data-theme='dark'] .note-card:hover,
 [data-theme='dark'] .task-item-card:hover,
 [data-theme='dark'] .companion-select-card:hover {
-  box-shadow: 6px 6px 0px #ffffff !important;
-  transform: translate(-2px, -2px);
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 4.5px 4.5px 0px rgba(255, 255, 255, 0.3) !important;
+  transform: translate(-1px, -1px);
 }
 
 /* 13. Vintage Jazz & Saxophone Radio Player */
 [data-theme='dark'] .vintage-radio-tuner-card {
-  border: 2px solid #ffffff !important;
-  box-shadow: 6px 6px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 4.5px 4.5px 0px rgba(255, 255, 255, 0.22) !important;
 }
 
 [data-theme='dark'] .vintage-radio-tuner-card button {
-  border: 1.5px solid #ffffff !important;
-  box-shadow: 3px 3px 0px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.18) !important;
 }
 
 [data-theme='dark'] .vintage-radio-tuner-card button:hover {
-  box-shadow: 5px 5px 0px #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.3) !important;
   transform: translate(-1px, -1px);
 }
 
 [data-theme='dark'] .vintage-radio-tuner-card button:active {
-  box-shadow: 1px 1px 0px #ffffff !important;
+  box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.15) !important;
   transform: translate(2px, 2px);
 }
 
 [data-theme='dark'] .vintage-radio-tuner-card .analog-display-screen {
-  border: 2px solid #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -7978,8 +7896,8 @@ body {
 
 [data-theme='dark'] .studio-master-console {
   background: #18181c !important;
-  border: 2px solid #ffffff !important;
-  box-shadow: 6px 6px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 4.5px 4.5px 0px rgba(255, 255, 255, 0.22) !important;
 }
 
 .console-header {
@@ -7989,7 +7907,7 @@ body {
 }
 
 [data-theme='dark'] .console-header {
-  border-bottom-color: #ffffff !important;
+  border-bottom-color: rgba(255, 255, 255, 0.35) !important;
 }
 
 .console-module {
@@ -8031,8 +7949,8 @@ body {
 
 [data-theme='dark'] .studio-master-console .ambient-soundscape-bar {
   background: #121215 !important;
-  border: 1.5px solid #ffffff !important;
-  box-shadow: 3px 3px 0px #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.18) !important;
 }
 
 .studio-master-console .ambient-btn {
@@ -8048,9 +7966,9 @@ body {
 
 [data-theme='dark'] .studio-master-console .ambient-btn {
   background: #1e1e24 !important;
-  border: 1.5px solid #3f3f46 !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
   color: #d4d4d8 !important;
-  box-shadow: 2px 2px 0px #121212 !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.15) !important;
 }
 
 .studio-master-console .ambient-btn:hover {
@@ -8060,9 +7978,9 @@ body {
 }
 
 [data-theme='dark'] .studio-master-console .ambient-btn:hover {
-  border-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
   color: #ffffff !important;
-  box-shadow: 3px 3px 0px #ffffff !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.28) !important;
 }
 
 .studio-master-console .ambient-btn.active {
@@ -8075,6 +7993,6 @@ body {
 [data-theme='dark'] .studio-master-console .ambient-btn.active {
   background: #ff3b30 !important;
   color: #ffffff !important;
-  border-color: #ffffff !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.25) !important;
 }
