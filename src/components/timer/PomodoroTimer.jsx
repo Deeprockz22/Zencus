@@ -213,6 +213,74 @@ export default function PomodoroTimer({
 
   const soundscapesElement = <AmbientSoundscapes />;
 
+  const masterControlConsole = (
+    <div className="studio-master-console">
+      {/* Console Top Header Banner */}
+      <div className="console-header flex items-center justify-between pb-3 mb-3 border-b-2 border-[#121212] dark:border-[#ffffff]">
+        <div className="flex items-center gap-2">
+          <div className={`w-2.5 h-2.5 rounded-full ${isRunning ? 'bg-[#22c55e] animate-ping' : 'bg-[#ff3b30]'} border border-[#121212] dark:border-[#ffffff] shadow-sm`} />
+          <span className="text-xs font-mono font-black tracking-widest uppercase text-[var(--text-primary)]">
+            STUDIO CONTROL CONSOLE • {mode === 'work' ? 'FOCUS' : mode.toUpperCase()}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold">
+          <span className={`px-2 py-0.5 rounded border border-[#121212] dark:border-[#ffffff] ${isRunning ? 'bg-[#22c55e] text-white' : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'}`}>
+            {isRunning ? '● ACTIVE REC' : 'STANDBY'}
+          </span>
+        </div>
+      </div>
+
+      {/* 01. Focus Mode Selector */}
+      <div className="console-module mb-3.5">
+        <div className="console-module-label mb-2 flex items-center justify-between">
+          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[var(--text-secondary)]">
+            01 / SESSION RHYTHM
+          </span>
+          <span className="text-[10px] font-mono text-[#ff3b30] font-bold">
+            {getModeTitle().toUpperCase()}
+          </span>
+        </div>
+        {modeSelectorElement}
+      </div>
+
+      {/* 02. Duration Presets */}
+      <div className="console-module mb-3.5">
+        <div className="console-module-label mb-2 flex items-center justify-between">
+          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[var(--text-secondary)]">
+            02 / INTERVAL PRESET
+          </span>
+          <span className="text-[10px] font-mono text-[var(--text-secondary)]">
+            TARGET: {Math.floor(totalDuration / 60)} MIN
+          </span>
+        </div>
+        {presetsElement}
+      </div>
+
+      {/* 03. Master Transport Action Controls */}
+      <div className="console-module mb-4">
+        <div className="console-module-label mb-2 flex items-center justify-between">
+          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[var(--text-secondary)]">
+            03 / TRANSPORT CONTROLS
+          </span>
+          <span className="text-[10px] font-mono text-[var(--text-secondary)]">
+            {isRunning ? 'CLICK PAUSE' : 'CLICK TO START'}
+          </span>
+        </div>
+        {controlsElement}
+      </div>
+
+      {/* 04. Focus Atmosphere Generator */}
+      <div className="console-module">
+        <div className="console-module-label mb-2 flex items-center justify-between">
+          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[var(--text-secondary)]">
+            04 / ATMOSPHERE GENERATOR
+          </span>
+        </div>
+        {soundscapesElement}
+      </div>
+    </div>
+  );
+
   const statsElement = (
     <div className="stats-row">
       <div className="stat-card editorial-stat-card">
@@ -244,14 +312,11 @@ export default function PomodoroTimer({
             {radioElement}
           </div>
 
-          {/* Right Wing / Deck: Control Console, Soundscapes & Analytics */}
+          {/* Right Wing / Deck: Companion, Control Console & Analytics */}
           <div className="timer-landscape-right-deck">
             {xpElement}
             {companionElement}
-            {modeSelectorElement}
-            {presetsElement}
-            {controlsElement}
-            {soundscapesElement}
+            {masterControlConsole}
             {statsElement}
           </div>
         </div>
@@ -260,11 +325,8 @@ export default function PomodoroTimer({
         <div className="timer-portrait-stack">
           {xpElement}
           {companionElement}
-          {modeSelectorElement}
-          {presetsElement}
           {visualizerElement}
-          {controlsElement}
-          {soundscapesElement}
+          {masterControlConsole}
           {radioElement}
           {statsElement}
         </div>

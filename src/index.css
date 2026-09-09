@@ -2835,34 +2835,42 @@ body {
   gap: 12px;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   🔘 HIGH-PRECISION TACTILE BUTTON SPECIFICATION
+   Editorial Line Art, Hard-Cast Shadows, Zero Plain-White Buttons
+   ═══════════════════════════════════════════════════════════════ */
 .btn-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 11px 22px;
+  padding: 12px 22px;
   border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 0.9rem;
+  font-family: var(--font-mono);
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), 
+              background 0.15s ease;
   user-select: none;
   letter-spacing: -0.01em;
 }
 
+/* Primary Action: Start Focus / Pause */
 .btn-action.primary {
-  background: var(--accent-primary);
-  color: #ffffff;
-  border: 1.5px solid var(--border-subtle);
-  box-shadow: var(--shadow-sm);
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border: 2px solid #121212;
+  box-shadow: 4px 4px 0px #121212;
 }
 
 .btn-action.primary:hover {
-  background: #ff2a2a;
+  background: #ff2417 !important;
   transform: translate(-1px, -1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 6px 6px 0px #121212;
 }
 
 .btn-action.primary:active {
@@ -2871,40 +2879,46 @@ body {
 }
 
 .btn-action.primary.btn-running {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 1.5px solid var(--border-active);
-  box-shadow: var(--shadow-sm);
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border: 2px solid #121212;
 }
 
+/* Secondary Action: Reset / Skip (Never plain white, sleek dark ink tactile switches) */
 .btn-action.secondary {
-  background: var(--bg-secondary);
-  border: 1.5px solid var(--border-subtle);
-  color: var(--text-primary);
-  box-shadow: var(--shadow-sm);
+  background: #18181b !important;
+  border: 2px solid #18181b !important;
+  color: #ffffff !important;
+  box-shadow: 3px 3px 0px #ff3b30 !important;
 }
 
 .btn-action.secondary:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+  background: #27272a !important;
+  color: #ffffff !important;
   transform: translate(-1px, -1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 5px 5px 0px #ff3b30 !important;
 }
 
 .btn-action.secondary:active {
   transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px #121212;
+  box-shadow: 1px 1px 0px #ff3b30 !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   🌙 UNIVERSAL DARK MODE WHITE SHADOW SPECIFICATION FOR ALL BUTTONS
-   Tactile, Crisp High-Contrast Neo-Editorial & Cyber-Brutalist Aesthetic
+   🌙 CRISP WHITE SHADOWS IN DARK MODE (WITHOUT ALL-WHITE BUTTONS)
    ───────────────────────────────────────────────────────────── */
 
-/* 1. Global Fallback: All interactive buttons in dark mode have crisp white shadows */
-[data-theme='dark'] button:not(.no-shadow):not(.dock-tab) {
-  border: 1.5px solid #ffffff;
-  box-shadow: 3px 3px 0px #ffffff;
+/* Interactive action buttons in dark mode have crisp white shadows */
+[data-theme='dark'] .btn-action,
+[data-theme='dark'] .btn-primary,
+[data-theme='dark'] .btn-secondary,
+[data-theme='dark'] .icon-btn,
+[data-theme='dark'] .modal-save-btn,
+[data-theme='dark'] .add-task-btn,
+[data-theme='dark'] .new-note-btn,
+[data-theme='dark'] .pet-wardrobe-trigger-btn {
+  border: 2px solid #ffffff;
+  box-shadow: 4px 4px 0px #ffffff;
   transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), 
               box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), 
               background-color 0.15s ease, 
@@ -2912,26 +2926,40 @@ body {
               color 0.15s ease;
 }
 
-[data-theme='dark'] button:not(.no-shadow):not(.dock-tab):hover {
-  box-shadow: 5px 5px 0px #ffffff;
+[data-theme='dark'] .btn-action:hover,
+[data-theme='dark'] .btn-primary:hover,
+[data-theme='dark'] .btn-secondary:hover,
+[data-theme='dark'] .icon-btn:hover,
+[data-theme='dark'] .modal-save-btn:hover,
+[data-theme='dark'] .add-task-btn:hover,
+[data-theme='dark'] .new-note-btn:hover,
+[data-theme='dark'] .pet-wardrobe-trigger-btn:hover {
+  box-shadow: 6px 6px 0px #ffffff;
   transform: translate(-1px, -1px);
 }
 
-[data-theme='dark'] button:not(.no-shadow):not(.dock-tab):active {
+[data-theme='dark'] .btn-action:active,
+[data-theme='dark'] .btn-primary:active,
+[data-theme='dark'] .btn-secondary:active,
+[data-theme='dark'] .icon-btn:active,
+[data-theme='dark'] .modal-save-btn:active,
+[data-theme='dark'] .add-task-btn:active,
+[data-theme='dark'] .new-note-btn:active,
+[data-theme='dark'] .pet-wardrobe-trigger-btn:active {
   box-shadow: 1px 1px 0px #ffffff;
   transform: translate(2px, 2px);
 }
 
-/* 2. Primary Action Buttons (Start Focus, Add Task, New Note, Done, Save, Embed) */
+/* Primary Action in Dark Mode */
 [data-theme='dark'] .btn-action.primary,
 [data-theme='dark'] .btn-primary,
 [data-theme='dark'] .primary-btn,
 [data-theme='dark'] .add-task-btn,
 [data-theme='dark'] .new-note-btn,
 [data-theme='dark'] .modal-save-btn {
-  background: var(--accent-primary) !important;
+  background: #ff3b30 !important;
   color: #ffffff !important;
-  border: 1.5px solid #ffffff !important;
+  border: 2px solid #ffffff !important;
   box-shadow: 4px 4px 0px #ffffff !important;
 }
 
@@ -2941,7 +2969,7 @@ body {
 [data-theme='dark'] .add-task-btn:hover,
 [data-theme='dark'] .new-note-btn:hover,
 [data-theme='dark'] .modal-save-btn:hover {
-  background: #ff2a2a !important;
+  background: #ff2417 !important;
   color: #ffffff !important;
   box-shadow: 6px 6px 0px #ffffff !important;
   transform: translate(-1px, -1px);
@@ -2958,19 +2986,18 @@ body {
 }
 
 [data-theme='dark'] .btn-action.primary.btn-running {
-  background: var(--bg-tertiary) !important;
+  background: #10b981 !important;
   color: #ffffff !important;
-  border: 1.5px solid #ffffff !important;
+  border: 2px solid #ffffff !important;
   box-shadow: 4px 4px 0px #ffffff !important;
 }
 
-/* 3. Secondary Action Buttons (Reset, Skip, Done, Cancel) */
-[data-theme='dark'] .btn-action,
+/* Secondary Action Buttons in Dark Mode: Deep Charcoal (NOT plain white!) */
 [data-theme='dark'] .btn-action.secondary,
 [data-theme='dark'] .btn-secondary,
 [data-theme='dark'] .secondary-btn {
-  background: var(--bg-secondary) !important;
-  border: 1.5px solid #ffffff !important;
+  background: #1e1e24 !important;
+  border: 2px solid #ffffff !important;
   color: #ffffff !important;
   box-shadow: 4px 4px 0px #ffffff !important;
 }
@@ -2978,7 +3005,7 @@ body {
 [data-theme='dark'] .btn-action.secondary:hover,
 [data-theme='dark'] .btn-secondary:hover,
 [data-theme='dark'] .secondary-btn:hover {
-  background: var(--bg-tertiary) !important;
+  background: #2a2a32 !important;
   color: #ffffff !important;
   box-shadow: 6px 6px 0px #ffffff !important;
   transform: translate(-1px, -1px);
@@ -2991,54 +3018,130 @@ body {
   transform: translate(3px, 3px);
 }
 
-/* 4. Timer Mode Selector & Mode Buttons */
+/* Mode Selector */
+.mode-selector {
+  display: flex;
+  gap: 6px;
+  background: #deded6;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: 2px solid #121212;
+  box-shadow: 3px 3px 0px #121212;
+  width: 100%;
+}
+
+.mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: #27272a;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.mode-btn:hover {
+  color: #121212;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.mode-btn.active {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border: 1.5px solid #121212 !important;
+  box-shadow: 2px 2px 0px #121212 !important;
+}
+
 [data-theme='dark'] .mode-selector {
   border: 2px solid #ffffff !important;
   box-shadow: 4px 4px 0px #ffffff !important;
-  background: var(--bg-secondary) !important;
+  background: #141418 !important;
 }
 
 [data-theme='dark'] .mode-btn {
   border: 1px solid transparent !important;
   box-shadow: none !important;
-  color: var(--text-secondary) !important;
+  color: #a1a1aa !important;
+  background: transparent !important;
 }
 
 [data-theme='dark'] .mode-btn:hover {
   color: #ffffff !important;
-  border: 1.5px solid #ffffff !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
-  transform: translate(-1px, -1px);
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 [data-theme='dark'] .mode-btn.active {
-  background: var(--accent-primary) !important;
+  background: #ff3b30 !important;
   color: #ffffff !important;
   border: 1.5px solid #ffffff !important;
-  box-shadow: 3px 3px 0px #ffffff !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
 }
 
-/* 5. Preset Duration Pills */
+/* Preset Pills */
+.preset-pills {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.preset-pill {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: #e2e2da;
+  border: 2px solid #121212;
+  color: #121212;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 2px 2px 0px #121212;
+  transition: all 0.12s ease;
+}
+
+.preset-pill:hover {
+  background: #f4f4ec;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #121212;
+}
+
+.preset-pill.active {
+  background: #121212 !important;
+  color: #ffffff !important;
+  border-color: #121212 !important;
+  box-shadow: 2px 2px 0px #ff3b30 !important;
+}
+
 [data-theme='dark'] .preset-pill {
-  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
-  background: var(--bg-secondary) !important;
-  color: var(--text-primary) !important;
+  border: 1.5px solid #3f3f46 !important;
+  box-shadow: 2px 2px 0px #121212 !important;
+  background: #1c1c22 !important;
+  color: #d4d4d8 !important;
 }
 
 [data-theme='dark'] .preset-pill:hover {
   border-color: #ffffff !important;
   color: #ffffff !important;
-  background: var(--bg-tertiary) !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  box-shadow: 3px 3px 0px #ffffff !important;
   transform: translate(-1px, -1px);
 }
 
 [data-theme='dark'] .preset-pill.active {
   border-color: #ffffff !important;
-  color: #ffffff !important;
-  background: var(--accent-primary) !important;
-  box-shadow: 3px 3px 0px #ffffff !important;
+  color: #121212 !important;
+  background: #ffffff !important;
+  box-shadow: 3px 3px 0px #ff3b30 !important;
+  font-weight: 800 !important;
 }
 
 /* 6. Focus Soundscape Bar & Buttons */
@@ -7822,33 +7925,14 @@ body {
     margin-bottom: 2px;
   }
 
-  .timer-landscape-right-deck .mode-selector {
+  .timer-landscape-right-deck .studio-master-console {
     width: 100%;
-    max-width: 480px;
-    justify-content: center;
-  }
-
-  .timer-landscape-right-deck .preset-pills {
-    width: 100%;
-    max-width: 480px;
-    justify-content: center;
-  }
-
-  .timer-landscape-right-deck .timer-controls {
-    width: 100%;
-    max-width: 480px;
-    justify-content: center;
-  }
-
-  .timer-landscape-right-deck .ambient-soundscape-bar {
-    width: 100%;
-    max-width: 480px;
-    justify-content: center;
+    max-width: 520px;
   }
 
   .timer-landscape-right-deck .stats-row {
     width: 100%;
-    max-width: 480px;
+    max-width: 520px;
   }
 
   /* Tasks multi-column bento board on desktop landscape */
@@ -7872,4 +7956,125 @@ body {
   .notes-grid.bento-grid {
     grid-template-columns: repeat(3, 1fr) !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   🎛️ STUDIO MASTER CONTROL CONSOLE
+   Unified, high-precision engineering console matching the turntable & tuner
+   ═══════════════════════════════════════════════════════════════ */
+.studio-master-console {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f0f0e8;
+  border: 2px solid #121212;
+  border-radius: var(--radius-lg);
+  box-shadow: 6px 6px 0px #121212;
+  position: relative;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+[data-theme='dark'] .studio-master-console {
+  background: #18181c !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 6px 6px 0px #ffffff !important;
+}
+
+.console-header {
+  border-bottom: 2px solid #121212;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+[data-theme='dark'] .console-header {
+  border-bottom-color: #ffffff !important;
+}
+
+.console-module {
+  width: 100%;
+}
+
+.console-module-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Control buttons inside console */
+.timer-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.timer-controls .btn-action.primary {
+  flex: 1.4;
+}
+
+.timer-controls .btn-action.secondary {
+  flex: 1;
+}
+
+/* Atmospheric Soundscapes inside Console */
+.studio-master-console .ambient-soundscape-bar {
+  background: #e2e2da;
+  border: 1.5px solid #121212;
+  box-shadow: 2px 2px 0px #121212;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  margin-top: 0;
+  width: 100%;
+}
+
+[data-theme='dark'] .studio-master-console .ambient-soundscape-bar {
+  background: #121215 !important;
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 3px 3px 0px #ffffff !important;
+}
+
+.studio-master-console .ambient-btn {
+  background: #deded6;
+  border: 1.5px solid #121212;
+  color: #121212;
+  box-shadow: 2px 2px 0px #121212;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 6px 12px;
+}
+
+[data-theme='dark'] .studio-master-console .ambient-btn {
+  background: #1e1e24 !important;
+  border: 1.5px solid #3f3f46 !important;
+  color: #d4d4d8 !important;
+  box-shadow: 2px 2px 0px #121212 !important;
+}
+
+.studio-master-console .ambient-btn:hover {
+  background: #ffffff;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px #121212;
+}
+
+[data-theme='dark'] .studio-master-console .ambient-btn:hover {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  box-shadow: 3px 3px 0px #ffffff !important;
+}
+
+.studio-master-console .ambient-btn.active {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border-color: #121212 !important;
+  box-shadow: 2px 2px 0px #121212 !important;
+}
+
+[data-theme='dark'] .studio-master-console .ambient-btn.active {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
 }
