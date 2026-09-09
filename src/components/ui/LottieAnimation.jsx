@@ -25,93 +25,52 @@ export default function LottieAnimation({
           >
             <style>
               {`
-                @keyframes floatIsoBook {
-                  0%, 100% { transform: translateY(0px); }
-                  50% { transform: translateY(-6px); }
+                @keyframes spinLottieVinyl {
+                  from { transform: rotate(0deg); }
+                  to { transform: rotate(360deg); }
                 }
-                @keyframes pulseAuraRed {
-                  0%, 100% { opacity: 0.75; transform: scale(0.95); }
-                  50% { opacity: 1; transform: scale(1.08); }
+                @keyframes tonearmFloatMini {
+                  0%, 100% { transform: rotate(0deg); }
+                  50% { transform: rotate(-3deg); }
                 }
-                .lottie-iso-book { animation: floatIsoBook 4s ease-in-out infinite; transform-origin: center; }
-                .lottie-aura-red { animation: pulseAuraRed 3.5s ease-in-out infinite; transform-origin: 80px 85px; }
+                .lottie-vinyl-rot { animation: spinLottieVinyl 3s linear infinite; transform-origin: 75px 85px; }
+                .lottie-tonearm { animation: tonearmFloatMini 2s ease-in-out infinite; transform-origin: 120px 60px; }
               `}
             </style>
 
             {/* Hard-Cast Block Shadow */}
-            <polygon
-              points="30,110 80,135 130,110 80,85"
-              fill="#121212"
-              fillOpacity="0.8"
-              transform="translate(6, 6)"
-            />
+            <ellipse cx="75" cy="85" rx="52" ry="28" fill="#121212" fillOpacity="0.8" transform="translate(6, 6)" />
 
-            {/* Isometric Book Base */}
-            <g className="lottie-iso-book">
-              {/* Book Spine Edge */}
-              <polygon
-                points="30,95 80,120 80,130 30,105"
-                fill="var(--bg-tertiary, #d7d7ce)"
-                stroke="#121212"
-                strokeWidth="2"
-              />
-              {/* Book Pages Edge */}
-              <polygon
-                points="80,120 130,95 130,105 80,130"
-                fill="#ffffff"
-                stroke="#121212"
-                strokeWidth="2"
-              />
-              {/* Book Cover Surface */}
-              <polygon
-                points="30,95 80,70 130,95 80,120"
-                fill="var(--bg-secondary, #ffffff)"
-                stroke="#121212"
-                strokeWidth="2"
-              />
+            {/* Isometric Turntable Platter */}
+            <ellipse cx="75" cy="85" rx="50" ry="27" fill="#27272a" stroke="#121212" strokeWidth="2" />
 
-              {/* Radiant Red Diffuse Aura on Cover */}
-              <ellipse
-                cx="80"
-                cy="95"
-                rx="28"
-                ry="16"
-                fill="url(#paint_lottie_aura_red)"
-                className="lottie-aura-red"
-              />
+            {/* Rotating Vinyl Record */}
+            <g className="lottie-vinyl-rot">
+              <ellipse cx="75" cy="85" rx="46" ry="25" fill="#09090b" stroke="#121212" strokeWidth="1.5" />
+              <ellipse cx="75" cy="85" rx="38" ry="20.5" stroke="#27272a" strokeWidth="1" fill="none" strokeDasharray="120 6" />
+              <ellipse cx="75" cy="85" rx="30" ry="16" stroke="#1c1c1f" strokeWidth="0.8" fill="none" />
+              <ellipse cx="75" cy="85" rx="22" ry="12" stroke="#27272a" strokeWidth="0.8" fill="none" strokeDasharray="80 4" />
 
-              {/* 4-Blade Ribbon Mark on Cover */}
-              <g transform="translate(48, 92) scale(0.35)">
+              {/* Scarlet Red Center Label */}
+              <ellipse cx="75" cy="85" rx="14" ry="7.5" fill="#ff3b30" stroke="#121212" strokeWidth="1" />
+              {/* Spindle & 4-Blade Ribbon */}
+              <g transform="translate(75, 85) scale(0.25)">
                 <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#121212" />
-                <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#ff3b30" />
+                <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#ffffff" />
                 <path d="M0,0 L-8,-8 L0,-16 L8,-8 Z" fill="#121212" />
-                <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="#ff3b30" />
+                <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="#ffffff" />
               </g>
-
-              {/* Technical Label Line */}
-              <line x1="68" y1="105" x2="112" y2="83" stroke="#121212" strokeWidth="1.5" />
+              <circle cx="75" cy="85" r="1.5" fill="#121212" />
             </g>
 
-            {/* Floating Editorial Drafting Pen */}
-            <g transform="translate(105, 35) rotate(24)">
-              <rect x="0" y="0" width="5" height="28" rx="2" fill="#121212" />
-              <polygon points="0,28 5,28 2.5,34" fill="#ff3b30" />
+            {/* Tonearm */}
+            <g className="lottie-tonearm">
+              <ellipse cx="120" cy="60" rx="6" ry="3.5" fill="#71717a" stroke="#121212" strokeWidth="1.2" />
+              <line x1="120" y1="60" x2="88" y2="78" stroke="#121212" strokeWidth="2" strokeLinecap="round" />
+              <line x1="120" y1="60" x2="88" y2="78" stroke="#e4e4e7" strokeWidth="1.2" strokeLinecap="round" />
+              <line x1="88" y1="78" x2="82" y2="84" stroke="#ff3b30" strokeWidth="2" strokeLinecap="round" />
+              <circle cx="81.5" cy="84.5" r="1" fill="#121212" />
             </g>
-
-            <defs>
-              <radialGradient
-                id="paint_lottie_aura_red"
-                cx="0"
-                cy="0"
-                r="1"
-                gradientUnits="userSpaceOnUse"
-                gradientTransform="translate(80 95) scale(28 16)"
-              >
-                <stop stopColor="#ff2e2e" stopOpacity="0.9" />
-                <stop offset="0.6" stopColor="#ff3b30" stopOpacity="0.4" />
-                <stop offset="1" stopColor="#ff3b30" stopOpacity="0" />
-              </radialGradient>
-            </defs>
           </svg>
         );
 
