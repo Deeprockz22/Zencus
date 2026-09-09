@@ -10,6 +10,7 @@ import AmbientSoundscapes from '../ambient/AmbientSoundscapes';
 import JazzRadioPlayer from '../ambient/JazzRadioPlayer';
 import IsometricEditorialDial from './IsometricEditorialDial';
 import GlobeVisualizer from './GlobeVisualizer';
+import MinimalVisualizer from './MinimalVisualizer';
 
 const PRESETS = [
   { label: '15m', duration: 15 * 60 },
@@ -114,9 +115,35 @@ export default function PomodoroTimer({
         >
           <span>🌍 3D Globe</span>
         </ShinyButton>
+        <ShinyButton
+          variant="pill"
+          size="sm"
+          active={visualizerType === 'minimal'}
+          onClick={() => setVisualizerType('minimal')}
+          className="visualizer-toggle-btn"
+          title="Switch to Ultra-Clean Minimal Focus Dial"
+        >
+          <span>◌ Minimal</span>
+        </ShinyButton>
       </div>
 
-      {visualizerType === 'globe' ? (
+      {visualizerType === 'minimal' ? (
+        <MinimalVisualizer
+          timeLeft={timeLeft}
+          totalDuration={totalDuration}
+          isRunning={isRunning}
+          mode={mode}
+          getModeTitle={getModeTitle}
+          formatTime={formatTime}
+          isEditing={isEditing}
+          editMinutes={editMinutes}
+          setEditMinutes={setEditMinutes}
+          handleEditSubmit={handleEditSubmit}
+          setIsEditing={setIsEditing}
+          startTimer={startTimer}
+          pauseTimer={pauseTimer}
+        />
+      ) : visualizerType === 'globe' ? (
         <GlobeVisualizer
           timeLeft={timeLeft}
           totalDuration={totalDuration}

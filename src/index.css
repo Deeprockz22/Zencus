@@ -8680,7 +8680,8 @@ body {
 }
 
 .globe-visualizer-hero,
-.isometric-editorial-hero {
+.isometric-editorial-hero,
+.minimal-visualizer-hero {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -8740,7 +8741,8 @@ body {
 }
 
 .globe-canvas-stage,
-.turntable-canvas-stage {
+.turntable-canvas-stage,
+.minimal-canvas-stage {
   align-self: center !important;
   margin: 0 auto;
 }
@@ -8863,5 +8865,114 @@ body {
   background: rgba(255, 255, 255, 0.08) !important;
   backdrop-filter: blur(12px);
 }
+
+/* ══════════ 17. MINIMAL FOCUS VISUALIZER & PURE MINIMAL ZEN MODE ══════════ */
+.minimal-canvas-stage {
+  user-select: none;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.minimal-canvas-stage:hover {
+  transform: scale(1.015);
+}
+
+.minimal-canvas-stage:active {
+  transform: scale(0.985);
+}
+
+@keyframes zenBreathPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.96;
+  }
+  50% {
+    transform: scale(1.035);
+    opacity: 1;
+  }
+}
+
+.minimal-zen-hub.zen-breathing {
+  animation: zenBreathPulse 4s ease-in-out infinite;
+}
+
+/* Fullscreen Minimal Mode Toggle Button */
+.fullscreen-zen-overlay .zen-minimal-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary, #ffffff);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+[data-theme='light'] .fullscreen-zen-overlay .zen-minimal-toggle-btn {
+  color: #121212 !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+.fullscreen-zen-overlay .zen-minimal-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.fullscreen-zen-overlay .zen-minimal-toggle-btn.active {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border-color: #ff3b30 !important;
+  box-shadow: 0 0 14px rgba(255, 59, 48, 0.5);
+}
+
+/* Pure Minimalist Fullscreen State */
+.fullscreen-zen-overlay.zen-pure-minimal .zen-mode-tag,
+.fullscreen-zen-overlay.zen-pure-minimal .zen-advice-quote,
+.fullscreen-zen-overlay.zen-pure-minimal .zen-weather-pill,
+.fullscreen-zen-overlay.zen-pure-minimal .zen-brand-text,
+.fullscreen-zen-overlay.zen-pure-minimal .zen-minimal-bar-meta {
+  display: none !important;
+}
+
+.fullscreen-zen-overlay.zen-pure-minimal .zen-digits {
+  font-size: clamp(6.5rem, 18vw, 12.5rem) !important;
+  letter-spacing: -0.06em !important;
+  margin: 1rem 0 !important;
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-theme='light'] .fullscreen-zen-overlay.zen-pure-minimal .zen-digits {
+  text-shadow: none !important;
+}
+
+.fullscreen-zen-overlay.zen-pure-minimal .zen-minimal-bar-container {
+  max-width: 320px !important;
+  margin: 1.5rem auto !important;
+}
+
+.fullscreen-zen-overlay.zen-pure-minimal .zen-minimal-bar-track {
+  height: 3px !important;
+  border: none !important;
+  background: var(--border-subtle, rgba(255, 255, 255, 0.15)) !important;
+}
+
+.fullscreen-zen-overlay.zen-pure-minimal .fullscreen-top-bar {
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+}
+
+.fullscreen-zen-overlay.zen-pure-minimal .fullscreen-top-bar:hover {
+  opacity: 1;
+}
+
 
 

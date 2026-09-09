@@ -24,6 +24,9 @@ export default function FullscreenZenMode({
   const [isMouseActive, setIsMouseActive] = useState(true);
   const mouseTimerRef = useRef(null);
 
+  // Pure Minimal Mode Toggle (distraction-free single focus)
+  const [isMinimalMode, setIsMinimalMode] = useState(false);
+
   // Weather & Zen advice
   const [weather, setWeather] = useState(null);
   const [zenAdvice, setZenAdvice] = useState(null);
@@ -142,7 +145,7 @@ export default function FullscreenZenMode({
 
   return (
     <div
-      className={`fullscreen-zen-overlay mode-${mode} ${!isMouseActive ? 'zen-idle' : 'zen-active'}`}
+      className={`fullscreen-zen-overlay mode-${mode} ${!isMouseActive ? 'zen-idle' : 'zen-active'} ${isMinimalMode ? 'zen-pure-minimal' : ''}`}
       data-mode={mode}
     >
       {/* ══════════ 1. TOP BAR ══════════ */}
@@ -169,6 +172,15 @@ export default function FullscreenZenMode({
               <span className="zen-weather-city">{weather.city}</span>
             </div>
           )}
+
+          {/* Minimal Mode Toggle Button */}
+          <button
+            className={`zen-minimal-toggle-btn ${isMinimalMode ? 'active' : ''}`}
+            onClick={() => setIsMinimalMode(!isMinimalMode)}
+            title={isMinimalMode ? 'Switch to Standard Zen View' : 'Switch to Pure Minimal Mode'}
+          >
+            <span>{isMinimalMode ? '● Standard' : '◌ Minimal'}</span>
+          </button>
 
           {/* Close / Minimize Button */}
           <button
