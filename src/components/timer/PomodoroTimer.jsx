@@ -91,9 +91,9 @@ export default function PomodoroTimer({
 
   // Shared Subcomponents
   const visualizerElement = (
-    <div className="timer-visualizer-deck flex flex-col items-center w-full">
+    <div className="timer-visualizer-deck flex flex-col items-start w-full">
       {/* Visualizer Mode Switcher (Turntable vs 3D Global Flow) */}
-      <div className="visualizer-toggle-capsule flex items-center justify-center gap-2 mb-1">
+      <div className="visualizer-toggle-capsule flex items-center justify-start gap-2 mb-2 px-4">
         <ShinyButton
           variant="pill"
           size="sm"

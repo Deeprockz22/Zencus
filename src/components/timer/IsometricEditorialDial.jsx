@@ -26,9 +26,9 @@ export default function IsometricEditorialDial({
   const isDiscSpinning = isRunning || radioState.isPlaying;
 
   return (
-    <div className="isometric-editorial-hero relative flex flex-col items-center justify-center my-4 select-none w-full max-w-xl mx-auto">
-      {/* ══════════ 1. SWISS EDITORIAL TIMER DISPLAY ══════════ */}
-      <div className="timer-display-panel flex flex-col items-center justify-center z-10 w-full mb-1">
+    <div className="isometric-editorial-hero relative flex flex-col items-start justify-center my-4 select-none w-full max-w-xl mx-auto">
+      {/* ══════════ 1. SWISS EDITORIAL TIMER DISPLAY (Left-Aligned) ══════════ */}
+      <div className="timer-display-panel flex flex-col items-start text-left z-10 w-full mb-1 px-4">
         {/* Mode Badge */}
         <div className="editorial-mode-stamp mb-2 px-3 py-1 rounded border-2 border-[#121212] dark:border-[rgba(255,255,255,0.4)] bg-[#121212] text-white text-[11px] font-mono tracking-widest uppercase font-bold shadow-[2px_2px_0px_#ff3b30] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.25)]">
           <DecryptedText text={getModeTitle()} speed={30} maxIterations={8} />
@@ -66,7 +66,7 @@ export default function IsometricEditorialDial({
         )}
 
         {/* Progress Ribbon VU Meter */}
-        <div className="w-48 h-2.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border-2 border-[#121212] dark:border-[rgba(255,255,255,0.4)] shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.22)] my-2">
+        <div className="timer-progress-meter w-48 h-2.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border-2 border-[#121212] dark:border-[rgba(255,255,255,0.4)] shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.22)] my-2">
           <div
             className="h-full bg-[#ff3b30] transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -75,7 +75,7 @@ export default function IsometricEditorialDial({
       </div>
 
       {/* ══════════ 2. 3D ISOMETRIC TURNTABLE & COFFEE HERO ILLUSTRATION ══════════ */}
-      <div className="relative w-[340px] sm:w-[450px] h-[300px] flex items-center justify-center mt-1">
+      <div className="turntable-canvas-stage relative w-[340px] sm:w-[450px] h-[300px] flex items-center justify-center mt-1 self-center mx-auto">
         <svg
           className="w-full h-full overflow-visible"
           viewBox="0 0 480 360"
