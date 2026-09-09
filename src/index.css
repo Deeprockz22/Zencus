@@ -8706,6 +8706,25 @@ body {
   text-align: left !important;
   display: inline-flex;
   align-items: center;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border-subtle, rgba(255, 255, 255, 0.2));
+  background: var(--bg-secondary, #18181b);
+  color: var(--text-primary, #ffffff);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 2px 2px 0px #ff3b30;
+  margin-bottom: 8px;
+}
+
+[data-theme='light'] .editorial-mode-stamp {
+  background: #121212;
+  color: #ffffff;
+  border-color: #121212;
+  box-shadow: 2px 2px 0px #ff3b30;
 }
 
 .timer-editorial-digits,
@@ -8713,7 +8732,7 @@ body {
   align-self: flex-start !important;
   text-align: left !important;
   font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif !important;
-  font-size: clamp(3.6rem, 7vw, 5rem) !important;
+  font-size: clamp(3.6rem, 7vw, 5.2rem) !important;
   font-weight: 900 !important;
   letter-spacing: -0.04em !important;
   line-height: 1 !important;
@@ -8737,14 +8756,70 @@ body {
 
 .timer-display-panel .timer-progress-meter {
   align-self: flex-start !important;
-  margin-top: 4px;
+  width: 220px !important;
+  max-width: 100% !important;
+  height: 8px !important;
+  background: var(--bg-tertiary, #27272a);
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1.5px solid var(--border-subtle, rgba(255, 255, 255, 0.15));
+  margin: 6px 0 10px 0 !important;
 }
 
-.globe-canvas-stage,
-.turntable-canvas-stage,
-.minimal-canvas-stage {
+[data-theme='light'] .timer-display-panel .timer-progress-meter {
+  border-color: #121212;
+  box-shadow: 2px 2px 0px #121212;
+}
+
+/* ══════════ HERO STAGES (TURNTABLE, GLOBE, MINIMAL) ══════════ */
+.turntable-canvas-stage {
+  width: 100% !important;
+  max-width: 480px !important;
+  height: 320px !important;
+  min-height: 290px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   align-self: center !important;
-  margin: 0 auto;
+  margin: 4px auto 16px auto !important;
+  position: relative !important;
+  overflow: visible !important;
+  user-select: none;
+}
+
+.turntable-canvas-stage svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 480px !important;
+  max-height: 320px !important;
+  display: block !important;
+  overflow: visible !important;
+}
+
+.globe-canvas-stage {
+  width: 100% !important;
+  max-width: 420px !important;
+  height: 360px !important;
+  min-height: 320px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+  margin: 4px auto 16px auto !important;
+  position: relative !important;
+}
+
+.minimal-canvas-stage {
+  width: 100% !important;
+  max-width: 380px !important;
+  height: 360px !important;
+  min-height: 320px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+  margin: 4px auto 16px auto !important;
+  position: relative !important;
 }
 
 .rb-globe-wrapper {

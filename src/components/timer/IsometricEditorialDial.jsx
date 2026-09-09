@@ -75,12 +75,16 @@ export default function IsometricEditorialDial({
       </div>
 
       {/* ══════════ 2. 3D ISOMETRIC TURNTABLE & COFFEE HERO ILLUSTRATION ══════════ */}
-      <div className="turntable-canvas-stage relative w-[340px] sm:w-[450px] h-[300px] flex items-center justify-center mt-1 self-center mx-auto">
+      <div
+        className="turntable-canvas-stage relative flex items-center justify-center self-center mx-auto"
+        style={{ width: '100%', maxWidth: '480px', height: '320px', minHeight: '300px' }}
+      >
         <svg
           className="w-full h-full overflow-visible"
           viewBox="0 0 480 360"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          style={{ width: '100%', height: '100%', maxHeight: '320px', display: 'block' }}
         >
           <style>
             {`
