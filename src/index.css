@@ -8832,21 +8832,17 @@ body {
   touch-action: none;
 }
 
-/* ══════════ 16. FULLSCREEN ZEN OVERLAY (TRUE FULLSCREEN FIXED) ══════════ */
+/* ══════════ 16. FULLSCREEN ZEN OVERLAY (VISUALIZER CENTER + TIMER BOTTOM) ══════════ */
 .fullscreen-zen-overlay {
   position: fixed !important;
   inset: 0 !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
   z-index: 999999 !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  padding: clamp(24px, 4.5vw, 48px) !important;
+  padding: clamp(16px, 3vw, 36px) !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
   user-select: none;
@@ -8863,70 +8859,271 @@ body {
   color: #121212 !important;
 }
 
-.fullscreen-zen-overlay .zen-digits {
-  font-family: 'Plus Jakarta Sans', 'Inter', var(--font-mono), sans-serif !important;
-  font-size: clamp(5.5rem, 14vw, 9rem) !important;
-  font-weight: 900 !important;
-  letter-spacing: -0.05em !important;
-  line-height: 0.95 !important;
-  color: var(--text-primary, #ffffff) !important;
-  cursor: pointer;
-  user-select: none;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+/* ── Top Bar ── */
+.fullscreen-zen-overlay .fullscreen-top-bar {
+  flex-shrink: 0;
+  z-index: 50;
 }
 
-[data-theme='light'] .fullscreen-zen-overlay .zen-digits {
-  text-shadow: none !important;
-  color: #121212 !important;
+/* ── Visualizer Switcher Buttons ── */
+.zen-viz-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
 }
 
-.fullscreen-zen-overlay .zen-digits:hover {
-  transform: scale(1.02);
+[data-theme='light'] .zen-viz-switcher {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
-.fullscreen-zen-overlay .zen-mode-tag {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace) !important;
-  font-size: 0.85rem !important;
-  letter-spacing: 0.2em !important;
-  font-weight: 800 !important;
-  color: #ff3b30 !important;
+.zen-viz-btn {
+  padding: 5px 10px !important;
+  min-width: 0 !important;
+  font-size: 1rem !important;
+  line-height: 1 !important;
+  border-radius: 9999px !important;
+}
+
+/* ── Center: Enlarged Visualizer ── */
+.zen-center-visualizer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 25;
+  min-height: 0;
+  overflow: visible;
+}
+
+/* Scale up visualizer content inside fullscreen */
+.zen-center-visualizer > * {
+  max-width: min(92vw, 1100px);
+  width: 100%;
+  align-items: center;
+}
+
+/* Available height between the top bar and the bottom dock */
+.zen-center-visualizer {
+  --zen-stage-h: min(68vh, 92vw, 900px);
+}
+
+/* Turntable hero in fullscreen: enlarge the SVG stage */
+.zen-center-visualizer .turntable-canvas-stage {
+  max-width: min(88vw, 1000px) !important;
+  width: 100% !important;
+  height: var(--zen-stage-h) !important;
+  min-height: 0 !important;
+}
+
+/* The inline rules pin the artwork to 480x320; release both axes so it can
+   actually scale up to the fullscreen stage. */
+.zen-center-visualizer .turntable-canvas-stage svg {
+  max-width: none !important;
+  max-height: none !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.zen-center-visualizer .globe-canvas-stage canvas,
+.zen-center-visualizer .globe-canvas-stage .rb-globe-wrapper,
+.zen-center-visualizer .minimal-canvas-stage svg {
+  max-width: none !important;
+  max-height: none !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/*
+  These caption pills are written as Tailwind utilities, but this project has no
+  Tailwind build — so they render as loose inline text beside the dial and pull
+  the whole composition off-centre. Pin them for real inside the overlay.
+*/
+.zen-center-visualizer .minimal-canvas-stage > .absolute,
+.zen-center-visualizer .globe-canvas-stage > .absolute {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: 4px !important;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+/* Globe in fullscreen: enlarge the canvas */
+.zen-center-visualizer .globe-canvas-stage {
+  max-width: var(--zen-stage-h) !important;
+  width: var(--zen-stage-h) !important;
+  height: var(--zen-stage-h) !important;
+  min-height: 0 !important;
+}
+
+/* Minimal dial in fullscreen: enlarge */
+.zen-center-visualizer .minimal-canvas-stage {
+  max-width: var(--zen-stage-h) !important;
+  width: var(--zen-stage-h) !important;
+  height: var(--zen-stage-h) !important;
+}
+
+/* Hide the timer display panel inside visualizers when in fullscreen (they show in bottom dock) */
+.zen-center-visualizer .timer-display-panel {
+  display: none !important;
+}
+
+/* Hide the editorial progress bar inside visualizers when in fullscreen */
+.zen-center-visualizer .editorial-precision-meter {
+  display: none !important;
+}
+
+/* ── Bottom: Timer Info Dock ── */
+.zen-bottom-dock {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 50;
+  padding-bottom: 8px;
+}
+
+.zen-bottom-timer-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.zen-bottom-timer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.zen-bottom-mode-tag {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  font-weight: 800;
+  color: #ff3b30;
   text-transform: uppercase;
 }
 
-.fullscreen-zen-overlay .zen-advice-quote {
-  font-size: 1rem;
-  font-style: italic;
-  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
-  max-width: 500px;
-  text-align: center;
-  line-height: 1.6;
-  margin: 8px 0;
+.zen-bottom-digits {
+  font-family: 'Plus Jakarta Sans', 'Inter', var(--font-mono), sans-serif;
+  font-size: clamp(2.5rem, 5vw, 3.8rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--text-primary, #ffffff);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
 }
 
-.fullscreen-zen-overlay .zen-minimal-bar-track {
-  width: 100%;
-  height: 7px;
+[data-theme='light'] .zen-bottom-digits {
+  text-shadow: none;
+  color: #121212;
+}
+
+.zen-bottom-digits:hover {
+  transform: scale(1.02);
+}
+
+/* Bottom progress bar */
+.zen-bottom-progress-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 280px;
+}
+
+.zen-bottom-progress-track {
+  flex: 1;
+  height: 6px;
   background: var(--bg-tertiary, rgba(255, 255, 255, 0.12));
   border-radius: 9999px;
   overflow: hidden;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.15));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
 }
 
-.fullscreen-zen-overlay .zen-minimal-bar-fill {
+.zen-bottom-progress-fill {
   height: 100%;
-  background: #ff3b30 !important;
-  box-shadow: 0 0 16px rgba(255, 59, 48, 0.85) !important;
+  background: #ff3b30;
+  box-shadow: 0 0 12px rgba(255, 59, 48, 0.7);
+  border-radius: 9999px;
   transition: width 0.4s linear;
 }
 
-.fullscreen-zen-overlay .zen-controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 12px;
+.zen-bottom-progress-meta {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted, rgba(255, 255, 255, 0.5));
+  letter-spacing: 0.06em;
+  min-width: 32px;
+  text-align: right;
 }
 
+/* Bottom controls */
+.zen-bottom-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.zen-bottom-controls .zen-main-btn {
+  font-size: 0.82rem !important;
+  padding: 8px 20px !important;
+}
+
+.zen-bottom-controls .zen-reset-btn {
+  padding: 8px 12px !important;
+}
+
+/* Bottom hint */
+.zen-bottom-hint {
+  text-align: center;
+  opacity: 0.35;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  margin-top: 4px;
+}
+
+/* Zen advice quote */
+.fullscreen-zen-overlay .zen-advice-quote {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+  max-width: 520px;
+  text-align: center;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Weather pill & close button */
 .fullscreen-zen-overlay .zen-weather-pill {
   color: var(--text-primary) !important;
   border-color: var(--border-subtle, rgba(255, 255, 255, 0.15)) !important;
@@ -8941,7 +9138,36 @@ body {
   backdrop-filter: blur(12px);
 }
 
-/* ══════════ 17. MINIMAL FOCUS VISUALIZER & PURE MINIMAL ZEN MODE ══════════ */
+/* ── Responsive: Stack bottom dock vertically on small screens ── */
+@media (max-width: 640px) {
+  .zen-bottom-timer-row {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .zen-bottom-timer-info {
+    align-items: center;
+  }
+
+  .zen-bottom-progress-container {
+    max-width: 200px;
+  }
+
+  /* Never cap below the inline size — the fullscreen stage must still read as
+     an enlargement on narrow screens, not a shrink. */
+  .zen-center-visualizer {
+    --zen-stage-h: min(52vh, 94vw);
+  }
+
+  .zen-center-visualizer .turntable-canvas-stage,
+  .zen-center-visualizer .globe-canvas-stage {
+    height: var(--zen-stage-h) !important;
+    min-height: 320px !important;
+  }
+}
+
+/* ══════════ 17. MINIMAL FOCUS VISUALIZER ══════════ */
 .minimal-canvas-stage {
   user-select: none;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -8970,84 +9196,232 @@ body {
   animation: zenBreathPulse 4s ease-in-out infinite;
 }
 
-/* Fullscreen Minimal Mode Toggle Button */
-.fullscreen-zen-overlay .zen-minimal-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 9999px;
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--text-primary, #ffffff);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
-  backdrop-filter: blur(12px);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  user-select: none;
+
+
+/* ══════════ 17. ZEN FULLSCREEN MORPH (VIEW TRANSITIONS) ══════════ */
+/*
+  The visualizer stage carries one shared view-transition-name across both its
+  inline slot and the fullscreen stage, so the browser interpolates the two
+  boxes on the compositor. `.viz-handed-off` drops the name from the inline copy
+  while the overlay is mounted — a duplicate name would abort the transition.
+*/
+.turntable-canvas-stage,
+.globe-canvas-stage,
+.minimal-canvas-stage {
+  view-transition-name: zen-stage;
 }
 
-[data-theme='light'] .fullscreen-zen-overlay .zen-minimal-toggle-btn {
+.timer-view.viz-handed-off .turntable-canvas-stage,
+.timer-view.viz-handed-off .globe-canvas-stage,
+.timer-view.viz-handed-off .minimal-canvas-stage {
+  view-transition-name: none;
+}
+
+.fullscreen-zen-overlay {
+  view-transition-name: zen-backdrop;
+}
+
+.fullscreen-zen-overlay .fullscreen-top-bar {
+  view-transition-name: zen-topbar;
+}
+
+.fullscreen-zen-overlay .zen-bottom-dock {
+  view-transition-name: zen-dock;
+}
+
+/* ── Stage morph: keep aspect ratio instead of stretching the snapshot ── */
+::view-transition-old(zen-stage),
+::view-transition-new(zen-stage) {
+  height: 100%;
+  object-fit: contain;
+  overflow: clip;
+}
+
+::view-transition-group(zen-stage) {
+  animation-duration: 620ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+::view-transition-old(zen-stage) {
+  animation: zenStageFadeOut 260ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(zen-stage) {
+  animation: zenStageFadeIn 420ms cubic-bezier(0, 0, 0.2, 1) 140ms both;
+}
+
+@keyframes zenStageFadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes zenStageFadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ── Backdrop: plain opacity fade, no layout work ── */
+::view-transition-group(zen-backdrop) {
+  animation-duration: 480ms;
+}
+
+::view-transition-new(zen-backdrop) {
+  animation: zenBackdropIn 420ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+::view-transition-old(zen-backdrop) {
+  animation: zenBackdropOut 320ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes zenBackdropIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes zenBackdropOut {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ── Chrome slides in from the edges it lives on ── */
+::view-transition-new(zen-dock) {
+  animation: zenDockIn 520ms cubic-bezier(0.32, 0.72, 0, 1) 120ms both;
+}
+
+::view-transition-old(zen-dock) {
+  animation: zenDockOut 260ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes zenDockIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+@keyframes zenDockOut {
+  to {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+::view-transition-new(zen-topbar) {
+  animation: zenTopBarIn 520ms cubic-bezier(0.32, 0.72, 0, 1) 120ms both;
+}
+
+::view-transition-old(zen-topbar) {
+  animation: zenTopBarOut 260ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes zenTopBarIn {
+  from {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+}
+
+@keyframes zenTopBarOut {
+  to {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+}
+
+/* ── The page behind the overlay just cross-fades ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/*
+  Snapshots are static images, so any live animation underneath is wasted work
+  that competes with the compositor for frames.
+*/
+html[data-zen-transition] .rb-globe-wrapper canvas,
+html[data-zen-transition] .particles-bg-layer {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* ══════════ 18. ZEN FULLSCREEN — LIGHT THEME ══════════ */
+/*
+  The mode backgrounds in section "DYNAMIC ATMOSPHERIC MODE BACKGROUNDS" are
+  dark-only and carry (0,8,0) specificity plus !important, so they outrank the
+  plain [data-theme='light'] override and left light mode with dark text on a
+  dark ground. These repeat that selector chain, prefixed, to win it back.
+*/
+[data-theme='light'] .fullscreen-zen-overlay.zen-bg-auto.mode-work,
+[data-theme='light'] .fullscreen-zen-overlay.mode-work:not([class*="zen-bg-"]):not(.zen-bg-space):not(.zen-bg-forest):not(.zen-bg-sunset):not(.zen-bg-cafe):not(.zen-bg-oled) {
+  background: radial-gradient(circle at 50% 45%, #ffffff 0%, #eef0f5 65%, #e0e4ec 100%) !important;
+}
+
+[data-theme='light'] .fullscreen-zen-overlay.zen-bg-auto.mode-shortBreak,
+[data-theme='light'] .fullscreen-zen-overlay.mode-shortBreak:not([class*="zen-bg-"]):not(.zen-bg-space):not(.zen-bg-forest):not(.zen-bg-sunset):not(.zen-bg-cafe):not(.zen-bg-oled) {
+  background: radial-gradient(circle at 50% 40%, #ffffff 0%, #e9f6ef 65%, #d9ede2 100%) !important;
+}
+
+[data-theme='light'] .fullscreen-zen-overlay.zen-bg-auto.mode-longBreak,
+[data-theme='light'] .fullscreen-zen-overlay.mode-longBreak:not([class*="zen-bg-"]):not(.zen-bg-space):not(.zen-bg-forest):not(.zen-bg-sunset):not(.zen-bg-cafe):not(.zen-bg-oled) {
+  background: radial-gradient(circle at 50% 35%, #fffdf9 0%, #f4ecf6 65%, #e8dff0 100%) !important;
+}
+
+[data-theme='light'] .fullscreen-zen-overlay.zen-bg-auto.mode-chill,
+[data-theme='light'] .fullscreen-zen-overlay.mode-chill:not([class*="zen-bg-"]):not(.zen-bg-space):not(.zen-bg-forest):not(.zen-bg-sunset):not(.zen-bg-cafe):not(.zen-bg-oled) {
+  background: radial-gradient(circle at 50% 30%, #fdfbff 0%, #f0ecf9 55%, #e4ddf2 100%) !important;
+}
+
+/* Aurora washes are tuned for a dark ground; soften them on light */
+[data-theme='light'] .fullscreen-zen-overlay .zen-mode-aurora-layer {
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+/* ── Chrome: the translucent-white fills vanish on a light ground ── */
+[data-theme='light'] .fullscreen-zen-overlay .zen-weather-pill,
+[data-theme='light'] .fullscreen-zen-overlay .zen-close-btn {
   color: #121212 !important;
-  background: rgba(0, 0, 0, 0.05) !important;
-  border-color: rgba(0, 0, 0, 0.15) !important;
+  border-color: rgba(0, 0, 0, 0.14) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.fullscreen-zen-overlay .zen-minimal-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
+[data-theme='light'] .fullscreen-zen-overlay .zen-close-btn:hover {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.24) !important;
 }
 
-.fullscreen-zen-overlay .zen-minimal-toggle-btn.active {
-  background: #ff3b30 !important;
-  color: #ffffff !important;
-  border-color: #ff3b30 !important;
-  box-shadow: 0 0 14px rgba(255, 59, 48, 0.5);
+[data-theme='light'] .zen-bottom-progress-track {
+  background: rgba(0, 0, 0, 0.09);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Pure Minimalist Fullscreen State */
-.fullscreen-zen-overlay.zen-pure-minimal .zen-mode-tag,
-.fullscreen-zen-overlay.zen-pure-minimal .zen-advice-quote,
-.fullscreen-zen-overlay.zen-pure-minimal .zen-weather-pill,
-.fullscreen-zen-overlay.zen-pure-minimal .zen-brand-text,
-.fullscreen-zen-overlay.zen-pure-minimal .zen-minimal-bar-meta {
-  display: none !important;
+[data-theme='light'] .zen-bottom-progress-meta {
+  color: rgba(0, 0, 0, 0.55);
 }
 
-.fullscreen-zen-overlay.zen-pure-minimal .zen-digits {
-  font-size: clamp(6.5rem, 18vw, 12.5rem) !important;
-  letter-spacing: -0.06em !important;
-  margin: 1rem 0 !important;
-  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+[data-theme='light'] .fullscreen-zen-overlay .zen-advice-quote {
+  color: rgba(0, 0, 0, 0.6);
 }
 
-[data-theme='light'] .fullscreen-zen-overlay.zen-pure-minimal .zen-digits {
-  text-shadow: none !important;
+[data-theme='light'] .zen-bottom-hint {
+  color: #121212;
+  opacity: 0.45;
 }
 
-.fullscreen-zen-overlay.zen-pure-minimal .zen-minimal-bar-container {
-  max-width: 320px !important;
-  margin: 1.5rem auto !important;
+[data-theme='light'] .fullscreen-zen-overlay .zen-brand-text,
+[data-theme='light'] .fullscreen-zen-overlay .zen-brand-text * {
+  color: #121212 !important;
 }
-
-.fullscreen-zen-overlay.zen-pure-minimal .zen-minimal-bar-track {
-  height: 3px !important;
-  border: none !important;
-  background: var(--border-subtle, rgba(255, 255, 255, 0.15)) !important;
-}
-
-.fullscreen-zen-overlay.zen-pure-minimal .fullscreen-top-bar {
-  opacity: 0.65;
-  transition: opacity 0.2s ease;
-}
-
-.fullscreen-zen-overlay.zen-pure-minimal .fullscreen-top-bar:hover {
-  opacity: 1;
-}
-
-
-

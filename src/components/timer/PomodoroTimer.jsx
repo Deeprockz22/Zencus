@@ -37,11 +37,13 @@ export default function PomodoroTimer({
   onOpenPicker,
   onSelectCompanion,
   onOpenFullscreen,
-  theme = 'light'
+  visualizerType = 'turntable',
+  setVisualizerType,
+  theme = 'light',
+  isFullscreen = false
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editMinutes, setEditMinutes] = useState(Math.floor(totalDuration / 60));
-  const [visualizerType, setVisualizerType] = useState('turntable'); // 'turntable' | 'globe'
 
   const hasCompanion = companionType && companionType !== 'none';
 
@@ -346,7 +348,7 @@ export default function PomodoroTimer({
   );
 
   return (
-    <div className={`timer-view editorial-theme-view ${isDesktopLandscape ? 'layout-landscape' : 'layout-portrait'} ${!hasCompanion ? 'no-companion' : ''}`}>
+    <div className={`timer-view editorial-theme-view ${isDesktopLandscape ? 'layout-landscape' : 'layout-portrait'} ${!hasCompanion ? 'no-companion' : ''} ${isFullscreen ? 'viz-handed-off' : ''}`}>
       {isDesktopLandscape ? (
         /* ══════════ DESKTOP LANDSCAPE STUDIO CONSOLE ══════════ */
         <div className="timer-landscape-grid">

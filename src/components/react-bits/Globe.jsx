@@ -41,14 +41,75 @@ const DEFAULT_GLOBAL_MARKERS = [
   { location: [-23.5505, -46.6333], size: 0.06, label: 'São Paulo' }
 ];
 
-const DEFAULT_GLOBAL_ARCS = [
+// Live routes flown across the globe. Unlike arcs these draw no standing line —
+// each is travelled by a moving aircraft that trails a short vapour wake.
+const DEFAULT_FLIGHT_ROUTES = [
   { from: [37.7749, -122.4194], to: [35.6762, 139.6503] }, // SF -> Tokyo
   { from: [40.7128, -74.006], to: [51.5074, -0.1278] },    // NYC -> London
   { from: [51.5074, -0.1278], to: [28.6139, 77.209] },     // London -> Delhi
   { from: [35.6762, 139.6503], to: [-33.8688, 151.2093] }, // Tokyo -> Sydney
-  { from: [48.8566, 2.3522], to: [1.3521, 103.8198] },    // Paris -> Singapore
-  { from: [-23.5505, -46.6333], to: [40.7128, -74.006] }   // São Paulo -> NYC
+  { from: [48.8566, 2.3522], to: [1.3521, 103.8198] },     // Paris -> Singapore
+  { from: [-23.5505, -46.6333], to: [40.7128, -74.006] },  // São Paulo -> NYC
+  { from: [52.52, 13.405], to: [37.7749, -122.4194] },     // Berlin -> SF
+  { from: [1.3521, 103.8198], to: [-33.8688, 151.2093] }   // Singapore -> Sydney
 ];
+
+const DEG = Math.PI / 180;
+
+// Same mapping cobe uses internally, so overlaid aircraft land exactly on the
+// globe its shader draws.
+function locationToVec3([lat, lon]) {
+  const la = lat * DEG;
+  const lo = lon * DEG - Math.PI;
+  const cosLat = Math.cos(la);
+  return [-cosLat * Math.cos(lo), Math.sin(la), cosLat * Math.sin(lo)];
+}
+
+// Mirrors cobe's marker vertex shader: rotate by phi/theta, then project
+// orthographically. Returns viewBox units plus a visibility flag.
+const GLOBE_RADIUS = 0.8;
+const VIEW = 1000;
+
+function projectToView(p, phi, theta, elevation) {
+  const s = GLOBE_RADIUS + elevation;
+  const ax = p[0] * s;
+  const ay = p[1] * s;
+  const az = p[2] * s;
+  const c = Math.cos(theta);
+  const d = Math.sin(theta);
+  const e = Math.cos(phi);
+  const f = Math.sin(phi);
+
+  const lx = e * ax + f * az;
+  const ly = f * d * ax + c * ay - e * d * az;
+  const lz = -f * c * ax + d * ay + e * c * az;
+
+  return {
+    x: (lx * 0.5 + 0.5) * VIEW,
+    y: (0.5 - ly * 0.5) * VIEW,
+    // Aircraft orbit above the surface, so cobe's silhouette test would let them
+    // escape past the limb. Gate on the hemisphere instead and fade them out as
+    // they cross the horizon.
+    depth: lz,
+    opacity: Math.max(0, Math.min(1, lz / 0.12))
+  };
+}
+
+// Material "flight" glyph, nose pointing up, centred on 12,12
+const PLANE_PATH =
+  'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z';
+
+/** Great-circle interpolation, so aircraft follow the path a real flight would. */
+function slerp(a, b, t, omega, sinOmega) {
+  if (sinOmega < 1e-6) return a;
+  const k0 = Math.sin((1 - t) * omega) / sinOmega;
+  const k1 = Math.sin(t * omega) / sinOmega;
+  return [
+    a[0] * k0 + b[0] * k1,
+    a[1] * k0 + b[1] * k1,
+    a[2] * k0 + b[2] * k1
+  ];
+}
 
 /**
  * Globe - React Bits Pro Component
@@ -70,7 +131,11 @@ export default function Globe({
   enableZoom = false,
   interactive = true,
   markers = DEFAULT_GLOBAL_MARKERS,
-  arcs = DEFAULT_GLOBAL_ARCS,
+  arcs = [],
+  flights = DEFAULT_FLIGHT_ROUTES,
+  showFlights = true,
+  flightSpeed = 1,
+  flightColor,
   onReady,
   onGlobeClick,
   dark,
@@ -78,6 +143,7 @@ export default function Globe({
 }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
+  const overlayRef = useRef(null);
   const pointerInteracting = useRef(null);
   const pointerInteractionMovement = useRef(0);
   const [activeMarker, setActiveMarker] = useState(null);
@@ -89,10 +155,68 @@ export default function Globe({
   const primaryRGB = parseColorToRGB(primaryColor, [1, 0.23, 0.19]); // #ff3b30
   const neutralRGB = parseColorToRGB(neutralColor, isDarkMode ? [0.6, 0.6, 0.65] : [0.35, 0.35, 0.4]);
   const glowRGB = parseColorToRGB(glowColor || atmosphereColor, isDarkMode ? [0.25, 0.28, 0.4] : [0.92, 0.92, 0.96]);
+  // White reads as an aircraft light on the night globe but disappears on the
+  // pale one, so the default follows the theme.
+  const flightRGB = parseColorToRGB(flightColor, isDarkMode ? [1, 1, 1] : [0.07, 0.09, 0.15]);
+
+  // Read live inside the loop so speed changes don't restart the globe
+  const flightSpeedRef = useRef(flightSpeed);
+  flightSpeedRef.current = flightSpeed;
 
   useEffect(() => {
     let phi = 0;
     let theta = 0.2;
+
+    // ── Flight plan: precompute each great-circle so the loop only interpolates ──
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const TRAIL_SAMPLES = 14;
+    const TRAIL_SPAN = 0.13; // how far back the contrail reaches, in route progress
+    const PLANE_ELEVATION = 0.05; // cruise just above the surface
+
+    const routes = (showFlights ? flights : []).map((f, i) => {
+      const a = locationToVec3(f.from);
+      const b = locationToVec3(f.to);
+      const dot = Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]));
+      const omega = Math.acos(dot);
+      return {
+        a,
+        b,
+        omega,
+        sinOmega: Math.sin(omega),
+        // Longer legs take proportionally longer, so every aircraft cruises
+        // at roughly the same ground speed.
+        duration: Math.max(4, omega * 7) / (f.speed || 1),
+        progress: f.phase != null ? f.phase : i / Math.max(1, flights.length)
+      };
+    });
+
+    // Build the aircraft layer once; the loop only rewrites transforms and paths.
+    const overlay = overlayRef.current;
+    const flightNodes = [];
+    if (overlay && routes.length) {
+      overlay.innerHTML = '';
+      const flightHex = `rgb(${flightRGB.map((v) => Math.round(v * 255)).join(',')})`;
+
+      for (let i = 0; i < routes.length; i++) {
+        const trail = document.createElementNS(SVG_NS, 'path');
+        trail.setAttribute('fill', 'none');
+        trail.setAttribute('stroke', flightHex);
+        trail.setAttribute('stroke-width', '3.5');
+        trail.setAttribute('stroke-linecap', 'round');
+        trail.setAttribute('stroke-opacity', '0.28');
+
+        const plane = document.createElementNS(SVG_NS, 'g');
+        const glyph = document.createElementNS(SVG_NS, 'path');
+        glyph.setAttribute('d', PLANE_PATH);
+        glyph.setAttribute('fill', flightHex);
+        glyph.setAttribute('transform', 'translate(-12,-12)');
+        plane.appendChild(glyph);
+
+        overlay.appendChild(trail);
+        overlay.appendChild(plane);
+        flightNodes.push({ trail, plane });
+      }
+    }
     let widthPx = containerRef.current?.offsetWidth || 420;
     let globeInstance = null;
     let rafId = null;
@@ -150,18 +274,20 @@ export default function Globe({
           to: a.to,
           color: a.color ? parseColorToRGB(a.color) : primaryRGB
         })),
-        arcColor: primaryRGB,
-        arcWidth: 1.3,
-        arcHeight: 0.32,
+        // Seat hub markers on the surface; cobe's default lifts them clear of
+        // the sphere, so near the limb they drift off the globe's edge.
+        markerElevation: 0,
         opacity: 0.95
       });
 
       // ══════════ CONTINUOUS 60FPS ANIMATION LOOP ══════════
       // Cobe v2 requires manual requestAnimationFrame calling globeInstance.update()
+      let lastTs = 0;
       const animate = (timestamp) => {
         if (isDestroyed) return;
 
-        const time = timestamp * 0.001;
+        const dt = lastTs ? Math.min(0.05, (timestamp - lastTs) * 0.001) : 0;
+        lastTs = timestamp;
 
         if (!isDragging) {
           // Apply inertia momentum decay
@@ -178,11 +304,61 @@ export default function Globe({
         }
 
         if (globeInstance) {
-          globeInstance.update({
-            phi: phi,
-            theta: theta,
-            arcHeight: 0.32 + 0.025 * Math.sin(time * 2.5) // Dynamic pulsating arcs
-          });
+          globeInstance.update({ phi, theta });
+        }
+
+        // ── Fly the aircraft layer in lockstep with the globe's rotation ──
+        if (flightNodes.length) {
+          const speed = flightSpeedRef.current;
+
+          for (let i = 0; i < routes.length; i++) {
+            const r = routes[i];
+            const node = flightNodes[i];
+            r.progress = (r.progress + (dt * speed) / r.duration) % 1;
+
+            const at = (t) =>
+              projectToView(
+                slerp(r.a, r.b, Math.max(0, Math.min(1, t)), r.omega, r.sinOmega),
+                phi,
+                theta,
+                PLANE_ELEVATION
+              );
+
+            // Contrail, broken wherever it passes behind the globe
+            let d = '';
+            let pen = false;
+            for (let s = TRAIL_SAMPLES; s >= 1; s--) {
+              const t = r.progress - (s / TRAIL_SAMPLES) * TRAIL_SPAN;
+              if (t <= 0) {
+                pen = false;
+                continue;
+              }
+              const p = at(t);
+              if (p.depth <= 0) {
+                pen = false;
+                continue;
+              }
+              d += `${pen ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+              pen = true;
+            }
+            node.trail.setAttribute('d', d);
+
+            const head = at(r.progress);
+            if (head.depth > 0) {
+              // Heading from a point just behind, measured in screen space so the
+              // nose always follows the path as drawn
+              const prev = at(r.progress - 0.004);
+              const angle = (Math.atan2(head.y - prev.y, head.x - prev.x) * 180) / Math.PI;
+              node.plane.setAttribute(
+                'transform',
+                `translate(${head.x.toFixed(1)} ${head.y.toFixed(1)}) rotate(${(angle + 90).toFixed(1)}) scale(1.5)`
+              );
+              node.plane.setAttribute('opacity', head.opacity.toFixed(2));
+              node.plane.style.display = '';
+            } else {
+              node.plane.style.display = 'none';
+            }
+          }
         }
 
         rafId = requestAnimationFrame(animate);
@@ -271,7 +447,17 @@ export default function Globe({
         } catch (_) {}
       }
     };
-  }, [isDarkMode, autoRotateSpeed, showAtmosphere, JSON.stringify(primaryRGB), JSON.stringify(markers), JSON.stringify(arcs)]);
+  }, [
+    isDarkMode,
+    autoRotateSpeed,
+    showAtmosphere,
+    showFlights,
+    JSON.stringify(primaryRGB),
+    JSON.stringify(flightRGB),
+    JSON.stringify(markers),
+    JSON.stringify(arcs),
+    JSON.stringify(flights)
+  ]);
 
   return (
     <div
@@ -302,6 +488,26 @@ export default function Globe({
           contain: 'layout paint size'
         }}
       />
+
+      {/* Aircraft layer — projected onto the globe using cobe's own transform */}
+      {showFlights && (
+        <svg
+          ref={overlayRef}
+          className="rb-globe-flights"
+          aria-hidden="true"
+          viewBox={`0 0 ${VIEW} ${VIEW}`}
+          preserveAspectRatio="xMidYMid meet"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            overflow: 'visible',
+            zIndex: 2
+          }}
+        />
+      )}
 
       {/* Subtle Atmosphere Halo Glow in Background */}
       {showAtmosphere && (

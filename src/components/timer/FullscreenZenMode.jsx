@@ -2,7 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Minimize2, Play, Pause, RotateCcw } from 'lucide-react';
 import MagnetButton from '../react-bits/MagnetButton';
 import ShinyText from '../react-bits/ShinyText';
+import ShinyButton from '../react-bits/ShinyButton';
 import FocusLogo from '../brand/FocusLogo';
+import IsometricEditorialDial from './IsometricEditorialDial';
+import GlobeVisualizer from './GlobeVisualizer';
+import MinimalVisualizer from './MinimalVisualizer';
 import {
   fetchDailyZenAdvice,
   fetchLocalWeather
@@ -18,35 +22,32 @@ export default function FullscreenZenMode({
   pauseTimer,
   resetTimer,
   mode = 'work',
-  theme = 'dark'
+  theme = 'dark',
+  visualizerType = 'turntable',
+  setVisualizerType
 }) {
   // Mouse activity tracking for auto-hiding controls during idle focus
   const [isMouseActive, setIsMouseActive] = useState(true);
   const mouseTimerRef = useRef(null);
 
-  // Pure Minimal Mode Toggle (distraction-free single focus)
-  const [isMinimalMode, setIsMinimalMode] = useState(false);
+  // Editing state for inline duration editing
+  const [isEditing, setIsEditing] = useState(false);
+  const [editMinutes, setEditMinutes] = useState(Math.floor(totalDuration / 60));
 
   // Weather & Zen advice
   const [weather, setWeather] = useState(null);
   const [zenAdvice, setZenAdvice] = useState(null);
 
-  // Lock body scroll and handle browser fullscreen
+  // Lock body scroll (native fullscreen is driven by the caller so it can be
+  // sequenced around the view transition)
   useEffect(() => {
     if (!isOpen) return;
 
     const origOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }
-
     return () => {
       document.body.style.overflow = origOverflow;
-      if (document.exitFullscreen && document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
-      }
     };
   }, [isOpen]);
 
@@ -54,20 +55,25 @@ export default function FullscreenZenMode({
     if (!isOpen) return;
     let isMounted = true;
 
-    fetchLocalWeather()
-      .then((w) => {
-        if (isMounted && w) setWeather(w);
-      })
-      .catch(console.warn);
+    // Held off until the open morph has settled so the requests and their
+    // re-renders don't land in the same frame as the transition snapshot.
+    const kickoff = setTimeout(() => {
+      fetchLocalWeather()
+        .then((w) => {
+          if (isMounted && w) setWeather(w);
+        })
+        .catch(console.warn);
 
-    fetchDailyZenAdvice()
-      .then((adv) => {
-        if (isMounted && adv) setZenAdvice(adv);
-      })
-      .catch(console.warn);
+      fetchDailyZenAdvice()
+        .then((adv) => {
+          if (isMounted && adv) setZenAdvice(adv);
+        })
+        .catch(console.warn);
+    }, 700);
 
     return () => {
       isMounted = false;
+      clearTimeout(kickoff);
     };
   }, [isOpen]);
 
@@ -131,21 +137,49 @@ export default function FullscreenZenMode({
   const getModeTitle = () => {
     switch (mode) {
       case 'work':
-        return 'DEEP FOCUS SESSION';
+        return 'Deep Focus Session';
       case 'shortBreak':
-        return 'QUICK REFRESH BREAK';
+        return 'Quick Refresh Break';
       case 'longBreak':
-        return 'RESTORATIVE LONG BREAK';
+        return 'Restorative Long Break';
       case 'chill':
-        return 'RELAX & COMPANION LOUNGE';
+        return 'Relax & Companion Lounge';
       default:
-        return 'FOCUS SESSION';
+        return 'Focus Session';
     }
+  };
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    setIsEditing(false);
+  };
+
+  // Shared visualizer props
+  const vizProps = {
+    timeLeft,
+    totalDuration,
+    isRunning,
+    mode,
+    getModeTitle,
+    formatTime,
+    isEditing,
+    editMinutes,
+    setEditMinutes,
+    handleEditSubmit,
+    setIsEditing,
+    startTimer,
+    pauseTimer
   };
 
   return (
     <div
-      className={`fullscreen-zen-overlay mode-${mode} ${!isMouseActive ? 'zen-idle' : 'zen-active'} ${isMinimalMode ? 'zen-pure-minimal' : ''}`}
+      className={`fullscreen-zen-overlay mode-${mode} ${!isMouseActive ? 'zen-idle' : 'zen-active'}`}
       data-mode={mode}
     >
       {/* ══════════ 1. TOP BAR ══════════ */}
@@ -160,8 +194,39 @@ export default function FullscreenZenMode({
           </div>
         </div>
 
-        {/* Actions & Weather Capsule */}
+        {/* Visualizer Switcher + Actions */}
         <div className="zen-top-actions auto-hide-element flex items-center gap-3">
+          {/* Visualizer Type Switcher */}
+          <div className="zen-viz-switcher flex items-center gap-1">
+            <ShinyButton
+              variant="pill"
+              size="sm"
+              active={visualizerType === 'turntable'}
+              onClick={() => setVisualizerType('turntable')}
+              className="zen-viz-btn"
+            >
+              <span>📻</span>
+            </ShinyButton>
+            <ShinyButton
+              variant="pill"
+              size="sm"
+              active={visualizerType === 'globe'}
+              onClick={() => setVisualizerType('globe')}
+              className="zen-viz-btn"
+            >
+              <span>🌍</span>
+            </ShinyButton>
+            <ShinyButton
+              variant="pill"
+              size="sm"
+              active={visualizerType === 'minimal'}
+              onClick={() => setVisualizerType('minimal')}
+              className="zen-viz-btn"
+            >
+              <span>◌</span>
+            </ShinyButton>
+          </div>
+
           {weather && (
             <div
               className="zen-weather-pill"
@@ -172,15 +237,6 @@ export default function FullscreenZenMode({
               <span className="zen-weather-city">{weather.city}</span>
             </div>
           )}
-
-          {/* Minimal Mode Toggle Button */}
-          <button
-            className={`zen-minimal-toggle-btn ${isMinimalMode ? 'active' : ''}`}
-            onClick={() => setIsMinimalMode(!isMinimalMode)}
-            title={isMinimalMode ? 'Switch to Standard Zen View' : 'Switch to Pure Minimal Mode'}
-          >
-            <span>{isMinimalMode ? '● Standard' : '◌ Minimal'}</span>
-          </button>
 
           {/* Close / Minimize Button */}
           <button
@@ -193,64 +249,78 @@ export default function FullscreenZenMode({
         </div>
       </div>
 
-      {/* ══════════ 2. CENTER DISPLAY ══════════ */}
-      <div className="fullscreen-center-content">
-        <div className="zen-mode-tag auto-hide-element">
-          {getModeTitle()}
-        </div>
+      {/* ══════════ 2. CENTER: ENLARGED VISUALIZER ══════════ */}
+      <div className="zen-center-visualizer">
+        {visualizerType === 'minimal' ? (
+          <MinimalVisualizer {...vizProps} />
+        ) : visualizerType === 'globe' ? (
+          <GlobeVisualizer {...vizProps} />
+        ) : (
+          <IsometricEditorialDial {...vizProps} />
+        )}
+      </div>
 
-        {/* The Time Digits (Always Visible with High Contrast) */}
-        <div
-          className="zen-digits"
-          onClick={isRunning ? pauseTimer : startTimer}
-          title="Click to Pause/Resume (Space)"
-        >
-          {formattedTime}
-        </div>
-
-        {/* Clean Minimalist Linear Progress Bar */}
-        <div className="zen-minimal-bar-container" aria-label="Timer progress">
-          <div className="zen-minimal-bar-track">
-            <div
-              className="zen-minimal-bar-fill"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="zen-minimal-bar-meta auto-hide-element">
-            <span>{Math.round(progress)}% COMPLETED</span>
-          </div>
-        </div>
-
-        {/* Zen Advice / Quote */}
-        {zenAdvice && (
+      {/* ══════════ 3. BOTTOM: TIMER INFO DOCK ══════════ */}
+      <div className="zen-bottom-dock">
+        {/* Zen Advice */}
+        {zenAdvice?.advice?.trim() && (
           <p className="zen-advice-quote auto-hide-element">
             "{zenAdvice.advice}"
           </p>
         )}
 
-        {/* Controls: Pause & Reset */}
-        <div className="zen-controls auto-hide-element">
-          <MagnetButton
-            className="btn-action primary zen-main-btn"
-            onClick={isRunning ? pauseTimer : startTimer}
-          >
-            {isRunning ? <Pause size={20} /> : <Play size={20} fill="currentColor" />}
-            <span>{isRunning ? 'Pause' : 'Resume'}</span>
-          </MagnetButton>
+        {/* Timer Digits + Progress */}
+        <div className="zen-bottom-timer-row">
+          <div className="zen-bottom-timer-info">
+            <div className="zen-bottom-mode-tag auto-hide-element">
+              {getModeTitle().toUpperCase()}
+            </div>
+            <div
+              className="zen-bottom-digits"
+              onClick={isRunning ? pauseTimer : startTimer}
+              title="Click to Pause/Resume (Space)"
+            >
+              {formattedTime}
+            </div>
+          </div>
 
-          <MagnetButton
-            className="btn-action secondary zen-reset-btn"
-            onClick={resetTimer}
-            title="Reset Timer"
-          >
-            <RotateCcw size={18} />
-          </MagnetButton>
+          {/* Progress Bar */}
+          <div className="zen-bottom-progress-container">
+            <div className="zen-bottom-progress-track">
+              <div
+                className="zen-bottom-progress-fill"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <span className="zen-bottom-progress-meta auto-hide-element">
+              {Math.round(progress)}%
+            </span>
+          </div>
+
+          {/* Controls */}
+          <div className="zen-bottom-controls auto-hide-element">
+            <MagnetButton
+              className="btn-action primary zen-main-btn"
+              onClick={isRunning ? pauseTimer : startTimer}
+            >
+              {isRunning ? <Pause size={18} /> : <Play size={18} fill="currentColor" />}
+              <span>{isRunning ? 'Pause' : 'Resume'}</span>
+            </MagnetButton>
+
+            <MagnetButton
+              className="btn-action secondary zen-reset-btn"
+              onClick={resetTimer}
+              title="Reset Timer"
+            >
+              <RotateCcw size={16} />
+            </MagnetButton>
+          </div>
         </div>
-      </div>
 
-      {/* ══════════ 3. BOTTOM SUBTLE FOOTER HINT ══════════ */}
-      <div className="zen-bottom-bar auto-hide-element text-center opacity-40 font-mono text-[11px] select-none pointer-events-none">
-        PRESS ESC TO EXIT • SPACE TO PAUSE
+        {/* Subtle footer */}
+        <div className="zen-bottom-hint auto-hide-element">
+          PRESS ESC TO EXIT • SPACE TO PAUSE
+        </div>
       </div>
     </div>
   );

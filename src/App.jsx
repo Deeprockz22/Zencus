@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import Header from './components/Header';
 import DockNav from './components/DockNav';
 import PomodoroTimer from './components/timer/PomodoroTimer';
@@ -31,6 +32,53 @@ export default function App() {
   // Settings & Fullscreen Modals
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [visualizerType, setVisualizerType] = useState('turntable');
+
+  // Morph the visualizer between its inline deck slot and the fullscreen stage.
+  // View Transitions interpolate on the compositor, so the 60fps is free.
+  const isMorphingRef = useRef(false);
+
+  const setFullscreenAnimated = async (next) => {
+    // Starting a second transition aborts the first, which can drop its pending
+    // state update — ignore toggles until the current morph settles.
+    if (isMorphingRef.current) return;
+    isMorphingRef.current = true;
+
+    try {
+      if (
+        !document.startViewTransition ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
+        setIsFullscreen(next);
+      } else {
+        document.documentElement.dataset.zenTransition = next ? 'enter' : 'exit';
+        const transition = document.startViewTransition(() => {
+          flushSync(() => setIsFullscreen(next));
+        });
+        transition.ready.catch(() => {});
+        try {
+          await transition.finished;
+        } catch {
+          /* aborted mid-flight; fall through and settle the state below */
+        }
+        delete document.documentElement.dataset.zenTransition;
+        setIsFullscreen(next);
+      }
+
+      // Native fullscreen is toggled *after* the morph, in both directions.
+      // Requesting it first resizes the viewport while the snapshots are being
+      // captured, which swallowed the enlarge animation entirely.
+      if (next) {
+        if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else if (document.exitFullscreen && document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+    } finally {
+      isMorphingRef.current = false;
+    }
+  };
 
   // Gamification & XP
   const [xp, setXp] = useState(() => Storage.getNumber('focus_xp', 0));
@@ -417,7 +465,10 @@ export default function App() {
               setCompanionType(newPet);
               Storage.set('active_companion', newPet);
             }}
-            onOpenFullscreen={() => setIsFullscreen(true)}
+            onOpenFullscreen={() => setFullscreenAnimated(true)}
+            isFullscreen={isFullscreen}
+            visualizerType={visualizerType}
+            setVisualizerType={setVisualizerType}
           />
         )}
 
@@ -475,7 +526,7 @@ export default function App() {
       {/* Fullscreen Zen Focus Mode */}
       <FullscreenZenMode
         isOpen={isFullscreen}
-        onClose={() => setIsFullscreen(false)}
+        onClose={() => setFullscreenAnimated(false)}
         timeLeft={timeLeft}
         totalDuration={totalDuration}
         isRunning={isRunning}
@@ -486,6 +537,8 @@ export default function App() {
         theme={theme}
         companionType={companionType}
         setCompanionType={setCompanionType}
+        visualizerType={visualizerType}
+        setVisualizerType={setVisualizerType}
       />
 
       {/* Global Settings & Backup Modal */}

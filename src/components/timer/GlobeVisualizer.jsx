@@ -79,13 +79,15 @@ export default function GlobeVisualizer({
           autoRotateSpeed={isRunning ? 1.2 : 0.65}
           showAtmosphere={true}
           interactive={true}
+          showFlights={true}
+          flightSpeed={isRunning ? 1.35 : 0.5}
           className="cursor-grab active:cursor-grabbing"
         />
 
         {/* Interactive Floating Hint Badge */}
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[10px] font-mono text-[var(--text-secondary)] shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.12)] pointer-events-none whitespace-nowrap">
           <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-ping" />
-          <span>DRAG TO EXPLORE • GLOBAL FOCUS NETWORK</span>
+          <span>DRAG TO EXPLORE • LIVE FOCUS FLIGHTS</span>
         </div>
       </div>
     </div>
