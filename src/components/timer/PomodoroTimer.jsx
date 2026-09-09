@@ -32,10 +32,13 @@ export default function PomodoroTimer({
   xp = 0,
   companionType = 'dino',
   onOpenPicker,
+  onSelectCompanion,
   theme = 'light'
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editMinutes, setEditMinutes] = useState(Math.floor(totalDuration / 60));
+
+  const hasCompanion = companionType && companionType !== 'none';
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -68,21 +71,24 @@ export default function PomodoroTimer({
   };
 
   return (
-    <div className="timer-view editorial-theme-view">
+    <div className={`timer-view editorial-theme-view ${!hasCompanion ? 'no-companion' : ''}`}>
       {/* Top XP & Level Bar */}
       <div className="timer-top-xp-row">
         <StreakBadge xp={xp} sessions={sessionsCompleted} />
       </div>
 
       {/* Interactive Companion Mascot & Dialogue */}
-      <FocusCompanion
-        state={isRunning ? 'working' : mode === 'work' ? 'idle' : 'breakTime'}
-        sessionsCompleted={sessionsCompleted}
-        streak={sessionsCompleted}
-        theme={theme}
-        companionType={companionType}
-        onOpenPicker={onOpenPicker}
-      />
+      {hasCompanion && (
+        <FocusCompanion
+          state={isRunning ? 'working' : mode === 'work' ? 'idle' : 'breakTime'}
+          sessionsCompleted={sessionsCompleted}
+          streak={sessionsCompleted}
+          theme={theme}
+          companionType={companionType}
+          onOpenPicker={onOpenPicker}
+          onRemovePet={() => onSelectCompanion?.('none')}
+        />
+      )}
 
       {/* Mode Selector */}
       <div className="mode-selector editorial-mode-selector">

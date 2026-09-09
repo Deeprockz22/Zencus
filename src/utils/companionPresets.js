@@ -4,6 +4,14 @@
 
 export const COMPANIONS = [
   {
+    id: 'none',
+    name: 'None',
+    title: 'Solo Focus (No Pet)',
+    icon: '🚫',
+    description: 'Remove companion pets to maximize vertical screen space and eliminate distractions.',
+    specialty: 'Minimalist & Clean Space'
+  },
+  {
     id: 'dino',
     name: 'Neo',
     title: 'The Pixel Dino',

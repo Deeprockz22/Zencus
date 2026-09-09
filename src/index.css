@@ -1567,10 +1567,17 @@ body {
 .companion-interactive-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
-.switch-pet-btn {
+.companion-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.switch-pet-btn,
+.remove-pet-btn {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
@@ -1579,13 +1586,76 @@ body {
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all 0.2s ease;
-  font-weight: 500;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .switch-pet-btn:hover {
   color: var(--text-primary);
   border-color: var(--border-active);
   background: var(--bg-secondary);
+}
+
+.remove-pet-btn:hover {
+  color: #ff3b30;
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.1);
+}
+
+.remove-pet-header-btn {
+  background: rgba(255, 59, 48, 0.1);
+  border: 1.5px solid #ff3b30;
+  color: #ff3b30;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.remove-pet-header-btn:hover {
+  background: #ff3b30;
+  color: #ffffff;
+  transform: translate(-1px, -1px);
+}
+
+.none-companion-card {
+  border: 1.5px dashed var(--border-subtle) !important;
+}
+
+.none-companion-card:hover {
+  border-color: #ff3b30 !important;
+  background: rgba(255, 59, 48, 0.04) !important;
+}
+
+.none-companion-card.selected {
+  border-color: #ff3b30 !important;
+  box-shadow: 0 0 15px rgba(255, 59, 48, 0.25) !important;
+}
+
+/* Spacing collapse when companion pet is removed */
+.timer-view.no-companion {
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.timer-view.no-companion .timer-top-xp-row {
+  margin-bottom: 0px;
+}
+
+.timer-view.no-companion .mode-selector {
+  margin-top: 0px;
+}
+
+.pet-wardrobe-trigger-btn.pet-disabled {
+  opacity: 0.9;
+  border-style: dashed;
 }
 
 /* ===================================
@@ -3110,7 +3180,10 @@ body {
 [data-theme='dark'] .sketch-text-btn,
 [data-theme='dark'] .btn-setting-action,
 [data-theme='dark'] .footer-btn,
-[data-theme='dark'] .close-modal-btn {
+[data-theme='dark'] .close-modal-btn,
+[data-theme='dark'] .switch-pet-btn,
+[data-theme='dark'] .remove-pet-btn,
+[data-theme='dark'] .remove-pet-header-btn {
   border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
   box-shadow: 2px 2px 0px #ffffff !important;
   background: var(--bg-secondary) !important;
@@ -3122,7 +3195,10 @@ body {
 [data-theme='dark'] .sketch-text-btn:hover,
 [data-theme='dark'] .btn-setting-action:hover,
 [data-theme='dark'] .footer-btn:hover,
-[data-theme='dark'] .close-modal-btn:hover {
+[data-theme='dark'] .close-modal-btn:hover,
+[data-theme='dark'] .switch-pet-btn:hover,
+[data-theme='dark'] .remove-pet-btn:hover,
+[data-theme='dark'] .remove-pet-header-btn:hover {
   border-color: #ffffff !important;
   color: #ffffff !important;
   box-shadow: 4px 4px 0px #ffffff !important;
@@ -3134,7 +3210,10 @@ body {
 [data-theme='dark'] .sketch-text-btn:active,
 [data-theme='dark'] .btn-setting-action:active,
 [data-theme='dark'] .footer-btn:active,
-[data-theme='dark'] .close-modal-btn:active {
+[data-theme='dark'] .close-modal-btn:active,
+[data-theme='dark'] .switch-pet-btn:active,
+[data-theme='dark'] .remove-pet-btn:active,
+[data-theme='dark'] .remove-pet-header-btn:active {
   box-shadow: 1px 1px 0px #ffffff !important;
   transform: translate(1px, 1px);
 }

@@ -413,6 +413,10 @@ export default function App() {
             theme={theme}
             companionType={companionType}
             onOpenPicker={() => setIsCompanionPickerOpen(true)}
+            onSelectCompanion={(newPet) => {
+              setCompanionType(newPet);
+              Storage.set('active_companion', newPet);
+            }}
           />
         )}
 
@@ -439,6 +443,10 @@ export default function App() {
             theme={theme}
             companionType={companionType}
             onOpenPicker={() => setIsCompanionPickerOpen(true)}
+            onSelectCompanion={(newPet) => {
+              setCompanionType(newPet);
+              Storage.set('active_companion', newPet);
+            }}
           />
         )}
       </main>
@@ -488,6 +496,11 @@ export default function App() {
         onClearAllData={handleClearAllData}
         onExportAllData={handleExportAllData}
         onImportAllData={handleImportAllData}
+        companionType={companionType}
+        onSelectCompanion={(newPet) => {
+          setCompanionType(newPet);
+          Storage.set('active_companion', newPet);
+        }}
       />
 
       {/* Focus Pet Wardrobe Modal */}

@@ -33,9 +33,21 @@ export default function CompanionPickerModal({
             <h2 className="modal-title">🐾 Focus Pet Wardrobe</h2>
             <span className="companion-header-sub">Choose your loyal productivity companion</span>
           </div>
-          <button className="icon-btn close-modal-btn" onClick={onClose} aria-label="Close">
-            <X size={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            {activeCompanion && activeCompanion !== 'none' && (
+              <button
+                type="button"
+                className="remove-pet-header-btn"
+                onClick={() => handleSelect('none')}
+                title="Remove Pet & Collapse Space"
+              >
+                🚫 Remove Pet
+              </button>
+            )}
+            <button className="icon-btn close-modal-btn" onClick={onClose} aria-label="Close">
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         <div className="companion-grid-body">
@@ -45,7 +57,7 @@ export default function CompanionPickerModal({
             return (
               <SpotlightCard
                 key={comp.id}
-                className={`companion-select-card ${isSelected ? 'selected' : ''}`}
+                className={`companion-select-card ${isSelected ? 'selected' : ''} ${comp.id === 'none' ? 'none-companion-card' : ''}`}
                 onClick={() => handleSelect(comp.id)}
               >
                 <div className="companion-card-inner">
@@ -65,10 +77,12 @@ export default function CompanionPickerModal({
                     {isSelected ? (
                       <span className="comp-active-pill">
                         <Check size={13} />
-                        <span>Active Partner</span>
+                        <span>{comp.id === 'none' ? 'No Pet (Active)' : 'Active Partner'}</span>
                       </span>
                     ) : (
-                      <span className="comp-select-prompt">Click to Adopt</span>
+                      <span className="comp-select-prompt">
+                        {comp.id === 'none' ? 'Click to Remove Pet' : 'Click to Adopt'}
+                      </span>
                     )}
                   </div>
                 </div>

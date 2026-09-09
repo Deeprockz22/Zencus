@@ -40,14 +40,16 @@ export default function Header({
       <div className="header-left">
         {/* Pet Wardrobe Switcher Button */}
         <button
-          className="theme-mode-trigger-btn pet-wardrobe-trigger-btn"
+          className={`theme-mode-trigger-btn pet-wardrobe-trigger-btn ${companionType === 'none' ? 'pet-disabled' : ''}`}
           onClick={openCompanionPicker}
-          title="Change Active Companion Pet"
+          title={companionType === 'none' ? 'Adopt a Focus Companion Pet' : 'Change or Remove Active Companion Pet'}
         >
           <span className="theme-mode-icon">
-            {COMPANIONS.find((c) => c.id === companionType)?.icon || '🦖'}
+            {companionType === 'none' ? '🐾' : COMPANIONS.find((c) => c.id === companionType)?.icon || '🦖'}
           </span>
-          <span className="theme-mode-name">Pets</span>
+          <span className="theme-mode-name">
+            {companionType === 'none' ? '+ Add Pet' : 'Pets'}
+          </span>
         </button>
 
         {/* Crisp Light / Dark Toggle Button */}

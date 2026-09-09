@@ -9,9 +9,14 @@ export default function FocusCompanion({
   streak = 0,
   theme = 'dark',
   context = 'general', // 'general' | 'notes' | 'timer'
-  companionType = 'dino', // 'dino' | 'cat' | 'owl' | 'dragon' | 'astronaut' | 'bot' | 'ghost'
-  onOpenPicker
+  companionType = 'dino', // 'dino' | 'cat' | 'owl' | 'dragon' | 'astronaut' | 'bot' | 'ghost' | 'none'
+  onOpenPicker,
+  onRemovePet
 }) {
+  if (!companionType || companionType === 'none') {
+    return null;
+  }
+
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [petCount, setPetCount] = useState(0);
 
@@ -249,15 +254,29 @@ export default function FocusCompanion({
           )}
         </motion.div>
 
-        {onOpenPicker && (
-          <button
-            className="switch-pet-btn"
-            onClick={onOpenPicker}
-            title="Open Pet Wardrobe (Change Mascot)"
-          >
-            🐾 Switch Pet
-          </button>
-        )}
+        <div className="companion-actions-group">
+          {onOpenPicker && (
+            <button
+              type="button"
+              className="switch-pet-btn"
+              onClick={onOpenPicker}
+              title="Open Pet Wardrobe (Change Mascot)"
+            >
+              🐾 Switch Pet
+            </button>
+          )}
+
+          {onRemovePet && (
+            <button
+              type="button"
+              className="remove-pet-btn"
+              onClick={onRemovePet}
+              title="Remove companion pet and collapse workspace"
+            >
+              ✕ Remove
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

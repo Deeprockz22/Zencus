@@ -36,7 +36,8 @@ export default function NotesHub({
   deleteCustomFolder,
   theme = 'dark',
   companionType = 'dino',
-  onOpenPicker
+  onOpenPicker,
+  onSelectCompanion
 }) {
   const [currentFolder, setCurrentFolder] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -192,15 +193,18 @@ export default function NotesHub({
       {/* Main Notes Content Area */}
       <div className="notes-main-area">
         {/* Cognitive Offloading Companion Banner */}
-        <div className="notes-companion-banner">
-          <FocusCompanion
-            context="notes"
-            theme={theme}
-            state="idle"
-            companionType={companionType}
-            onOpenPicker={onOpenPicker}
-          />
-        </div>
+        {companionType && companionType !== 'none' && (
+          <div className="notes-companion-banner">
+            <FocusCompanion
+              context="notes"
+              theme={theme}
+              state="idle"
+              companionType={companionType}
+              onOpenPicker={onOpenPicker}
+              onRemovePet={() => onSelectCompanion?.('none')}
+            />
+          </div>
+        )}
 
         {/* View Header */}
         <div className="view-header">

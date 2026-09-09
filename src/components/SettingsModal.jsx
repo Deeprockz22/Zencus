@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Clock, Database, Info, Download, Upload, Trash2 } from 'lucide-react';
+import { X, Clock, Database, Info, Download, Upload, Trash2, Sparkles } from 'lucide-react';
 import MagnetButton from './react-bits/MagnetButton';
 import AsciiImage from './ui/AsciiImage';
+import { COMPANIONS } from '../utils/companionPresets';
 
 export default function SettingsModal({
   isOpen,
@@ -10,7 +11,9 @@ export default function SettingsModal({
   saveTimerSettings,
   onClearAllData,
   onExportAllData,
-  onImportAllData
+  onImportAllData,
+  companionType = 'dino',
+  onSelectCompanion
 }) {
   const [workMins, setWorkMins] = useState(timerSettings.workDuration || 25);
   const [breakMins, setBreakMins] = useState(timerSettings.breakDuration || 5);
@@ -113,6 +116,42 @@ export default function SettingsModal({
                   className="setting-input"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Focus Companion Pet Section */}
+          <div className="settings-section">
+            <div className="settings-section-title">
+              <Sparkles size={16} />
+              <span>Focus Companion Pet</span>
+            </div>
+
+            <div className="flex items-center justify-between p-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] gap-3">
+              <div>
+                <div className="font-bold text-sm text-[var(--text-primary)] flex items-center gap-2">
+                  <span>{companionType === 'none' ? '🚫 Companion Mascot Disabled' : `${COMPANIONS.find(c => c.id === companionType)?.icon || '🦖'} ${COMPANIONS.find(c => c.id === companionType)?.name || 'Neo'}`}</span>
+                  {companionType !== 'none' && (
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] text-[var(--text-secondary)]">
+                      ACTIVE
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                  {companionType === 'none'
+                    ? 'Pets are hidden and the UI space is cleanly collapsed with zero distractions.'
+                    : 'Interactive motivational pet companion on timer and notes.'}
+                </p>
+              </div>
+
+              {onSelectCompanion && (
+                <button
+                  type="button"
+                  className={`btn-setting-action ${companionType === 'none' ? '' : 'danger'} whitespace-nowrap`}
+                  onClick={() => onSelectCompanion(companionType === 'none' ? 'dino' : 'none')}
+                >
+                  {companionType === 'none' ? '🐾 Enable Pet' : '🚫 Remove Pet'}
+                </button>
+              )}
             </div>
           </div>
 
