@@ -41,10 +41,14 @@
   --radius-lg: 12px;
   --radius-full: 9999px;
 
-  --shadow-sm: 3px 3px 0px #000000;
-  --shadow-md: 6px 6px 0px #000000;
-  --shadow-lg: 10px 10px 0px #000000;
-  --shadow-glow: 0 0 40px rgba(255, 59, 48, 0.4);
+  /* 🌙 Crisp Solid White Block Shadows for Editorial Dark Mode */
+  --shadow-sm: 3px 3px 0px #ffffff;
+  --shadow-md: 5px 5px 0px #ffffff;
+  --shadow-lg: 8px 8px 0px #ffffff;
+  --shadow-white: 4px 4px 0px #ffffff;
+  --shadow-white-sm: 2px 2px 0px #ffffff;
+  --shadow-white-lg: 6px 6px 0px #ffffff;
+  --shadow-glow: 0 0 30px rgba(255, 255, 255, 0.25);
 }
 
 /* 👾 Retro 8-Bit Pixel Arcade Theme */
@@ -2820,6 +2824,403 @@ body {
 .btn-action.secondary:active {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0px #121212;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🌙 UNIVERSAL DARK MODE WHITE SHADOW SPECIFICATION FOR ALL BUTTONS
+   Tactile, Crisp High-Contrast Neo-Editorial & Cyber-Brutalist Aesthetic
+   ───────────────────────────────────────────────────────────── */
+
+/* 1. Global Fallback: All interactive buttons in dark mode have crisp white shadows */
+[data-theme='dark'] button:not(.no-shadow):not(.dock-tab) {
+  border: 1.5px solid #ffffff;
+  box-shadow: 3px 3px 0px #ffffff;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 0.15s ease, 
+              border-color 0.15s ease, 
+              color 0.15s ease;
+}
+
+[data-theme='dark'] button:not(.no-shadow):not(.dock-tab):hover {
+  box-shadow: 5px 5px 0px #ffffff;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] button:not(.no-shadow):not(.dock-tab):active {
+  box-shadow: 1px 1px 0px #ffffff;
+  transform: translate(2px, 2px);
+}
+
+/* 2. Primary Action Buttons (Start Focus, Add Task, New Note, Done, Save, Embed) */
+[data-theme='dark'] .btn-action.primary,
+[data-theme='dark'] .btn-primary,
+[data-theme='dark'] .primary-btn,
+[data-theme='dark'] .add-task-btn,
+[data-theme='dark'] .new-note-btn,
+[data-theme='dark'] .modal-save-btn {
+  background: var(--accent-primary) !important;
+  color: #ffffff !important;
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+}
+
+[data-theme='dark'] .btn-action.primary:hover,
+[data-theme='dark'] .btn-primary:hover,
+[data-theme='dark'] .primary-btn:hover,
+[data-theme='dark'] .add-task-btn:hover,
+[data-theme='dark'] .new-note-btn:hover,
+[data-theme='dark'] .modal-save-btn:hover {
+  background: #ff2a2a !important;
+  color: #ffffff !important;
+  box-shadow: 6px 6px 0px #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .btn-action.primary:active,
+[data-theme='dark'] .btn-primary:active,
+[data-theme='dark'] .primary-btn:active,
+[data-theme='dark'] .add-task-btn:active,
+[data-theme='dark'] .new-note-btn:active,
+[data-theme='dark'] .modal-save-btn:active {
+  box-shadow: 1px 1px 0px #ffffff !important;
+  transform: translate(3px, 3px);
+}
+
+[data-theme='dark'] .btn-action.primary.btn-running {
+  background: var(--bg-tertiary) !important;
+  color: #ffffff !important;
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+}
+
+/* 3. Secondary Action Buttons (Reset, Skip, Done, Cancel) */
+[data-theme='dark'] .btn-action,
+[data-theme='dark'] .btn-action.secondary,
+[data-theme='dark'] .btn-secondary,
+[data-theme='dark'] .secondary-btn {
+  background: var(--bg-secondary) !important;
+  border: 1.5px solid #ffffff !important;
+  color: #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+}
+
+[data-theme='dark'] .btn-action.secondary:hover,
+[data-theme='dark'] .btn-secondary:hover,
+[data-theme='dark'] .secondary-btn:hover {
+  background: var(--bg-tertiary) !important;
+  color: #ffffff !important;
+  box-shadow: 6px 6px 0px #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .btn-action.secondary:active,
+[data-theme='dark'] .btn-secondary:active,
+[data-theme='dark'] .secondary-btn:active {
+  box-shadow: 1px 1px 0px #ffffff !important;
+  transform: translate(3px, 3px);
+}
+
+/* 4. Timer Mode Selector & Mode Buttons */
+[data-theme='dark'] .mode-selector {
+  border: 2px solid #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+  background: var(--bg-secondary) !important;
+}
+
+[data-theme='dark'] .mode-btn {
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  color: var(--text-secondary) !important;
+}
+
+[data-theme='dark'] .mode-btn:hover {
+  color: #ffffff !important;
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .mode-btn.active {
+  background: var(--accent-primary) !important;
+  color: #ffffff !important;
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 3px 3px 0px #ffffff !important;
+}
+
+/* 5. Preset Duration Pills */
+[data-theme='dark'] .preset-pill {
+  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme='dark'] .preset-pill:hover {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  background: var(--bg-tertiary) !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .preset-pill.active {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  background: var(--accent-primary) !important;
+  box-shadow: 3px 3px 0px #ffffff !important;
+}
+
+/* 6. Focus Soundscape Bar & Buttons */
+[data-theme='dark'] .ambient-soundscape-bar {
+  border: 2px solid #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+  background: var(--bg-secondary) !important;
+}
+
+[data-theme='dark'] .ambient-btn {
+  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme='dark'] .ambient-btn:hover {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .ambient-btn.active {
+  border-color: #ffffff !important;
+  background: var(--bg-tertiary) !important;
+  color: #ffffff !important;
+  box-shadow: 3px 3px 0px #ffffff !important;
+}
+
+/* 7. Header Controls (Theme Toggle, Settings, Fullscreen, Pets, Radio) */
+[data-theme='dark'] .icon-btn {
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 3px 3px 0px #ffffff !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme='dark'] .icon-btn:hover {
+  color: #ffffff !important;
+  box-shadow: 5px 5px 0px #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .icon-btn:active {
+  box-shadow: 1px 1px 0px #ffffff !important;
+  transform: translate(2px, 2px);
+}
+
+[data-theme='dark'] .pet-wardrobe-trigger-btn,
+[data-theme='dark'] .header-radio-pill {
+  border: 2px solid #ffffff !important;
+  box-shadow: 3px 3px 0px #ffffff !important;
+  background: var(--bg-secondary) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .pet-wardrobe-trigger-btn:hover,
+[data-theme='dark'] .header-radio-pill:hover {
+  box-shadow: 5px 5px 0px #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .pet-wardrobe-trigger-btn:active,
+[data-theme='dark'] .header-radio-pill:active {
+  box-shadow: 1px 1px 0px #ffffff !important;
+  transform: translate(2px, 2px);
+}
+
+/* 8. Filter Tabs, Categories, Smart Tags, View Mode Switcher */
+[data-theme='dark'] .filter-tab,
+[data-theme='dark'] .cat-tab,
+[data-theme='dark'] .smart-tag-pill,
+[data-theme='dark'] .view-mode-btn {
+  border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+}
+
+[data-theme='dark'] .filter-tab:hover,
+[data-theme='dark'] .cat-tab:hover,
+[data-theme='dark'] .smart-tag-pill:hover,
+[data-theme='dark'] .view-mode-btn:hover {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .filter-tab.active,
+[data-theme='dark'] .cat-tab.active,
+[data-theme='dark'] .smart-tag-pill.active,
+[data-theme='dark'] .view-mode-btn.active {
+  border-color: #ffffff !important;
+  background: var(--bg-tertiary) !important;
+  color: #ffffff !important;
+  box-shadow: 3px 3px 0px #ffffff !important;
+}
+
+/* 9. Card Actions & Note Tools (Pin, Delete, Edit, Search Clear) */
+[data-theme='dark'] .task-action-btn,
+[data-theme='dark'] .note-icon-action,
+[data-theme='dark'] .pin-btn,
+[data-theme='dark'] .search-clear-btn,
+[data-theme='dark'] .search-indicator-clear,
+[data-theme='dark'] .folder-add-btn,
+[data-theme='dark'] .new-folder-submit {
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme='dark'] .task-action-btn:hover,
+[data-theme='dark'] .note-icon-action:hover,
+[data-theme='dark'] .pin-btn:hover,
+[data-theme='dark'] .search-clear-btn:hover,
+[data-theme='dark'] .search-indicator-clear:hover,
+[data-theme='dark'] .folder-add-btn:hover,
+[data-theme='dark'] .new-folder-submit:hover {
+  box-shadow: 4px 4px 0px #ffffff !important;
+  color: #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .task-action-btn:active,
+[data-theme='dark'] .note-icon-action:active,
+[data-theme='dark'] .pin-btn:active,
+[data-theme='dark'] .folder-add-btn:active,
+[data-theme='dark'] .new-folder-submit:active {
+  box-shadow: 1px 1px 0px #ffffff !important;
+  transform: translate(1px, 1px);
+}
+
+/* 10. Toolbar, Modal Actions & Canvas Drawing Tools */
+[data-theme='dark'] .toolbar-btn,
+[data-theme='dark'] .sketch-icon-btn,
+[data-theme='dark'] .sketch-text-btn,
+[data-theme='dark'] .btn-setting-action,
+[data-theme='dark'] .footer-btn,
+[data-theme='dark'] .close-modal-btn {
+  border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme='dark'] .toolbar-btn:hover,
+[data-theme='dark'] .sketch-icon-btn:hover,
+[data-theme='dark'] .sketch-text-btn:hover,
+[data-theme='dark'] .btn-setting-action:hover,
+[data-theme='dark'] .footer-btn:hover,
+[data-theme='dark'] .close-modal-btn:hover {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .toolbar-btn:active,
+[data-theme='dark'] .sketch-icon-btn:active,
+[data-theme='dark'] .sketch-text-btn:active,
+[data-theme='dark'] .btn-setting-action:active,
+[data-theme='dark'] .footer-btn:active,
+[data-theme='dark'] .close-modal-btn:active {
+  box-shadow: 1px 1px 0px #ffffff !important;
+  transform: translate(1px, 1px);
+}
+
+[data-theme='dark'] .color-dot-btn {
+  border: 2px solid #ffffff !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+}
+
+[data-theme='dark'] .color-dot-btn.active {
+  box-shadow: 3px 3px 0px #ffffff !important;
+  transform: scale(1.15);
+}
+
+/* 11. Navigation Dock, Mini Timer & Indicators */
+[data-theme='dark'] .dock-nav {
+  border: 2px solid #ffffff !important;
+  box-shadow: 5px 5px 0px #ffffff !important;
+  background: var(--bg-secondary) !important;
+}
+
+[data-theme='dark'] .dock-indicator {
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+}
+
+[data-theme='dark'] .mini-timer-pill {
+  border: 2px solid #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+}
+
+[data-theme='dark'] .mini-timer-toggle {
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+}
+
+[data-theme='dark'] .mini-timer-toggle:hover {
+  box-shadow: 3px 3px 0px #ffffff !important;
+}
+
+/* 12. Cards & Containers (Stats, Notes, Tasks, Tuner, Modals) */
+[data-theme='dark'] .stat-card,
+[data-theme='dark'] .editorial-stat-card {
+  border: 2px solid #ffffff !important;
+  box-shadow: 5px 5px 0px #ffffff !important;
+}
+
+[data-theme='dark'] .spotlight-card,
+[data-theme='dark'] .note-card,
+[data-theme='dark'] .task-item-card,
+[data-theme='dark'] .companion-select-card {
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+}
+
+[data-theme='dark'] .spotlight-card:hover,
+[data-theme='dark'] .note-card:hover,
+[data-theme='dark'] .task-item-card:hover,
+[data-theme='dark'] .companion-select-card:hover {
+  box-shadow: 6px 6px 0px #ffffff !important;
+  transform: translate(-2px, -2px);
+}
+
+/* 13. Vintage Jazz & Saxophone Radio Player */
+[data-theme='dark'] .vintage-radio-tuner-card {
+  border: 2px solid #ffffff !important;
+  box-shadow: 6px 6px 0px #ffffff !important;
+}
+
+[data-theme='dark'] .vintage-radio-tuner-card button {
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 3px 3px 0px #ffffff !important;
+}
+
+[data-theme='dark'] .vintage-radio-tuner-card button:hover {
+  box-shadow: 5px 5px 0px #ffffff !important;
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .vintage-radio-tuner-card button:active {
+  box-shadow: 1px 1px 0px #ffffff !important;
+  transform: translate(2px, 2px);
+}
+
+[data-theme='dark'] .vintage-radio-tuner-card .analog-display-screen {
+  border: 2px solid #ffffff !important;
 }
 
 /* ─────────────────────────────────────────────────────────────

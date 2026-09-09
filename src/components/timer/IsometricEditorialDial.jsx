@@ -30,7 +30,7 @@ export default function IsometricEditorialDial({
       {/* ══════════ 1. SWISS EDITORIAL TIMER DISPLAY ══════════ */}
       <div className="timer-display-panel flex flex-col items-center justify-center z-10 w-full mb-1">
         {/* Mode Badge */}
-        <div className="editorial-mode-stamp mb-2 px-3 py-1 rounded border-2 border-[#121212] bg-[#121212] text-white text-[11px] font-mono tracking-widest uppercase font-bold shadow-[2px_2px_0px_#ff3b30]">
+        <div className="editorial-mode-stamp mb-2 px-3 py-1 rounded border-2 border-[#121212] dark:border-[#ffffff] bg-[#121212] text-white text-[11px] font-mono tracking-widest uppercase font-bold shadow-[2px_2px_0px_#ff3b30] dark:shadow-[3px_3px_0px_#ffffff]">
           <DecryptedText text={getModeTitle()} speed={30} maxIterations={8} />
         </div>
 
@@ -45,7 +45,7 @@ export default function IsometricEditorialDial({
               onChange={(e) => setEditMinutes(e.target.value)}
               autoFocus
               onBlur={() => setIsEditing(false)}
-              className="timer-edit-input text-5xl sm:text-6xl font-black bg-[var(--bg-secondary)] border-3 border-[#121212] text-[var(--text-primary)] px-3 py-1 rounded shadow-[4px_4px_0px_#121212]"
+              className="timer-edit-input text-5xl sm:text-6xl font-black bg-[var(--bg-secondary)] border-3 border-[#121212] dark:border-[#ffffff] text-[var(--text-primary)] px-3 py-1 rounded shadow-[4px_4px_0px_#121212] dark:shadow-[4px_4px_0px_#ffffff]"
             />
             <span className="timer-edit-label ml-2 font-mono font-bold text-[var(--text-primary)]">MIN</span>
           </form>
@@ -66,7 +66,7 @@ export default function IsometricEditorialDial({
         )}
 
         {/* Progress Ribbon VU Meter */}
-        <div className="w-48 h-2.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border-2 border-[#121212] shadow-[2px_2px_0px_#121212] my-2.5">
+        <div className="w-48 h-2.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border-2 border-[#121212] dark:border-[#ffffff] shadow-[2px_2px_0px_#121212] dark:shadow-[3px_3px_0px_#ffffff] my-2.5">
           <div
             className="h-full bg-[#ff3b30] transition-all duration-300"
             style={{ width: `${progress}%` }}

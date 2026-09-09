@@ -165,8 +165,8 @@ export default function JazzRadioPlayer({ className = '', compact = false }) {
               onClick={() => handleStationSelect(st.id)}
               className={`flex flex-col text-left p-2 rounded border-2 transition-all active:translate-x-0.5 active:translate-y-0.5 ${
                 isSelected
-                  ? 'border-[#ff3b30] bg-[#ff3b30] bg-opacity-10 text-[var(--text-primary)] shadow-[2px_2px_0px_#ff3b30]'
-                  : 'border-[#121212] bg-[var(--bg-primary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] shadow-[2px_2px_0px_#121212]'
+                  ? 'border-[#ff3b30] bg-[#ff3b30] bg-opacity-10 text-[var(--text-primary)] shadow-[2px_2px_0px_#ff3b30] dark:shadow-[3px_3px_0px_#ffffff]'
+                  : 'border-[#121212] dark:border-[#ffffff] bg-[var(--bg-primary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] shadow-[2px_2px_0px_#121212] dark:shadow-[3px_3px_0px_#ffffff]'
               }`}
             >
               <div className="flex items-center justify-between w-full">
@@ -189,12 +189,12 @@ export default function JazzRadioPlayer({ className = '', compact = false }) {
       </div>
 
       {/* Bottom Controls Deck: Play/Pause, Next, Volume */}
-      <div className="flex items-center justify-between gap-3 pt-2 border-t-2 border-[#121212]">
+      <div className="flex items-center justify-between gap-3 pt-2 border-t-2 border-[#121212] dark:border-[#ffffff]">
         <div className="flex items-center gap-2">
           {/* Main Tactile Play/Pause Button */}
           <button
             onClick={handleToggle}
-            className={`flex items-center gap-2 px-4 py-2 rounded font-mono font-black text-xs uppercase tracking-wider text-white border-2 border-[#121212] shadow-[3px_3px_0px_#121212] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded font-mono font-black text-xs uppercase tracking-wider text-white border-2 border-[#121212] dark:border-[#ffffff] shadow-[3px_3px_0px_#121212] dark:shadow-[4px_4px_0px_#ffffff] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 transition-all ${
               isPlaying ? 'bg-[#121212] hover:bg-[#27272a]' : 'bg-[#ff3b30] hover:bg-[#e03126]'
             }`}
           >
@@ -216,7 +216,7 @@ export default function JazzRadioPlayer({ className = '', compact = false }) {
           {/* Skip / Next Station Button */}
           <button
             onClick={handleNextStation}
-            className="p-2 rounded border-2 border-[#121212] bg-[var(--bg-primary)] hover:bg-[var(--bg-tertiary)] shadow-[2px_2px_0px_#121212] active:translate-x-0.5 active:translate-y-0.5 text-[var(--text-primary)] transition-all"
+            className="p-2 rounded border-2 border-[#121212] dark:border-[#ffffff] bg-[var(--bg-primary)] hover:bg-[var(--bg-tertiary)] shadow-[2px_2px_0px_#121212] dark:shadow-[3px_3px_0px_#ffffff] active:translate-x-0.5 active:translate-y-0.5 text-[var(--text-primary)] transition-all"
             title="Next Station"
           >
             <SkipForward size={14} />
