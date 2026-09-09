@@ -33,11 +33,6 @@ export default function LottieAnimation({
                   0%, 100% { transform: rotate(0deg); }
                   50% { transform: rotate(-3deg); }
                 }
-                .lottie-vinyl-rot {
-                  transform-box: fill-box;
-                  transform-origin: 0px 0px;
-                  animation: spinLottieVinyl 3s linear infinite;
-                }
                 .lottie-tonearm { animation: tonearmFloatMini 2s ease-in-out infinite; transform-origin: 120px 60px; }
               `}
             </style>
@@ -49,7 +44,15 @@ export default function LottieAnimation({
               <circle cx="0" cy="0" r="50" fill="#27272a" stroke="#121212" strokeWidth="2" />
 
               {/* Rotating Vinyl Record */}
-              <g className="lottie-vinyl-rot" style={{ transformOrigin: '0px 0px' }}>
+              <g>
+                <animateTransform
+                  attributeName="transform"
+                  type="rotate"
+                  from="0 0 0"
+                  to="360 0 0"
+                  dur="3s"
+                  repeatCount="indefinite"
+                />
                 <circle cx="0" cy="0" r="46" fill="#09090b" stroke="#121212" strokeWidth="1.5" />
                 <circle cx="0" cy="0" r="38" stroke="#27272a" strokeWidth="1" fill="none" strokeDasharray="120 6" />
                 <circle cx="0" cy="0" r="30" stroke="#1c1c1f" strokeWidth="0.8" fill="none" />

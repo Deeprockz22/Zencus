@@ -26,22 +26,73 @@ export default function IsometricEditorialDial({
   const isDiscSpinning = isRunning || radioState.isPlaying;
 
   return (
-    <div className="isometric-editorial-hero relative flex flex-col items-center justify-center my-6 py-4 select-none">
-      {/* 3D Isometric Composition Container */}
-      <div className="relative w-[340px] sm:w-[440px] h-[320px] flex items-center justify-center">
-        {/* Isometric SVG Illustration of Animated Vinyl Player & Coffee Cup */}
+    <div className="isometric-editorial-hero relative flex flex-col items-center justify-center my-4 select-none w-full max-w-xl mx-auto">
+      {/* ══════════ 1. SWISS EDITORIAL TIMER DISPLAY ══════════ */}
+      <div className="timer-display-panel flex flex-col items-center justify-center z-10 w-full mb-1">
+        {/* Mode Badge */}
+        <div className="editorial-mode-stamp mb-2 px-3 py-1 rounded border-2 border-[#121212] bg-[#121212] text-white text-[11px] font-mono tracking-widest uppercase font-bold shadow-[2px_2px_0px_#ff3b30]">
+          <DecryptedText text={getModeTitle()} speed={30} maxIterations={8} />
+        </div>
+
+        {/* Big Bold Time Digits (Always readable in light and dark mode) */}
+        {isEditing ? (
+          <form onSubmit={handleEditSubmit} className="timer-edit-form my-1">
+            <input
+              type="number"
+              min="1"
+              max="180"
+              value={editMinutes}
+              onChange={(e) => setEditMinutes(e.target.value)}
+              autoFocus
+              onBlur={() => setIsEditing(false)}
+              className="timer-edit-input text-5xl sm:text-6xl font-black bg-[var(--bg-secondary)] border-3 border-[#121212] text-[var(--text-primary)] px-3 py-1 rounded shadow-[4px_4px_0px_#121212]"
+            />
+            <span className="timer-edit-label ml-2 font-mono font-bold text-[var(--text-primary)]">MIN</span>
+          </form>
+        ) : (
+          <div
+            className="timer-editorial-digits text-6xl sm:text-7xl font-black tracking-tighter text-[var(--text-primary)] cursor-pointer hover:scale-105 transition-transform drop-shadow-sm leading-none"
+            style={{ fontFamily: 'Plus Jakarta Sans, Inter, sans-serif' }}
+            onClick={() => {
+              if (!isRunning) {
+                setEditMinutes(Math.floor(timeLeft / 60));
+                setIsEditing(true);
+              }
+            }}
+            title={isRunning ? undefined : 'Click to adjust minutes'}
+          >
+            {formatTime(timeLeft)}
+          </div>
+        )}
+
+        {/* Progress Ribbon VU Meter */}
+        <div className="w-48 h-2.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border-2 border-[#121212] shadow-[2px_2px_0px_#121212] my-2.5">
+          <div
+            className="h-full bg-[#ff3b30] transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+
+        {/* Subtext Status */}
+        <div className="text-xs font-mono tracking-wider font-semibold text-[var(--text-secondary)] uppercase">
+          {radioState.isPlaying
+            ? `🎷 ${radioState.currentStation.name} • ${radioState.currentStation.freq}`
+            : isRunning
+            ? '⚡ 33⅓ RPM Direct Drive Spinning'
+            : 'Click Digits to Adjust Time'}
+        </div>
+      </div>
+
+      {/* ══════════ 2. 3D ISOMETRIC TURNTABLE & COFFEE HERO ILLUSTRATION ══════════ */}
+      <div className="relative w-[340px] sm:w-[450px] h-[300px] flex items-center justify-center mt-1">
         <svg
-          className="w-full h-full absolute inset-0 overflow-visible"
-          viewBox="0 0 480 380"
+          className="w-full h-full overflow-visible"
+          viewBox="0 0 480 360"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <style>
             {`
-              @keyframes spinVinylGroove {
-                from { transform: rotate(0deg); }
-                to { transform: rotate(360deg); }
-              }
               @keyframes tonearmFloat {
                 0%, 100% { transform: rotate(-14deg); }
                 50% { transform: rotate(-15.2deg); }
@@ -50,11 +101,6 @@ export default function IsometricEditorialDial({
                 0% { transform: translateY(0) scaleX(1); opacity: 0.8; }
                 50% { transform: translateY(-8px) scaleX(1.15); opacity: 0.4; }
                 100% { transform: translateY(-16px) scaleX(0.9); opacity: 0; }
-              }
-              .vinyl-disc-spin {
-                transform-box: fill-box;
-                transform-origin: 0px 0px;
-                ${isDiscSpinning ? 'animation: spinVinylGroove 2.4s linear infinite;' : ''}
               }
               .tonearm-animated {
                 transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -70,7 +116,7 @@ export default function IsometricEditorialDial({
 
           {/* Hard-Cast Drop Shadow under the Turntable Plinth */}
           <polygon
-            points="65,245 255,345 425,245 235,145"
+            points="65,235 255,335 425,235 235,135"
             fill="#121212"
             fillOpacity="0.85"
             transform="translate(14, 14)"
@@ -79,7 +125,7 @@ export default function IsometricEditorialDial({
           {/* Hard-Cast Shadow under Coffee Cup */}
           <ellipse
             cx="405"
-            cy="115"
+            cy="105"
             rx="46"
             ry="24"
             fill="#121212"
@@ -90,7 +136,7 @@ export default function IsometricEditorialDial({
           {/* ══════════ ISOMETRIC TURNTABLE BASE ══════════ */}
           {/* Plinth Left Thickness */}
           <polygon
-            points="60,225 250,325 250,345 60,245"
+            points="60,215 250,315 250,335 60,235"
             fill="var(--bg-tertiary, #d7d7ce)"
             stroke="#121212"
             strokeWidth="2.5"
@@ -99,7 +145,7 @@ export default function IsometricEditorialDial({
 
           {/* Plinth Right Thickness */}
           <polygon
-            points="250,325 420,225 420,245 250,345"
+            points="250,315 420,215 420,235 250,335"
             fill="#ffffff"
             stroke="#121212"
             strokeWidth="2.5"
@@ -108,7 +154,7 @@ export default function IsometricEditorialDial({
 
           {/* Plinth Top Surface (Rhombus) */}
           <polygon
-            points="60,225 230,135 420,225 250,325"
+            points="60,215 230,125 420,215 250,315"
             fill="var(--bg-secondary, #ffffff)"
             stroke="#121212"
             strokeWidth="2.5"
@@ -116,19 +162,30 @@ export default function IsometricEditorialDial({
           />
 
           {/* Metal Corner Feet */}
-          <ellipse cx="75" cy="245" rx="8" ry="4" fill="#3f3f46" stroke="#121212" strokeWidth="1.5" />
-          <ellipse cx="250" cy="345" rx="8" ry="4" fill="#3f3f46" stroke="#121212" strokeWidth="1.5" />
-          <ellipse cx="410" cy="245" rx="8" ry="4" fill="#3f3f46" stroke="#121212" strokeWidth="1.5" />
+          <ellipse cx="75" cy="235" rx="8" ry="4" fill="#3f3f46" stroke="#121212" strokeWidth="1.5" />
+          <ellipse cx="250" cy="335" rx="8" ry="4" fill="#3f3f46" stroke="#121212" strokeWidth="1.5" />
+          <ellipse cx="410" cy="235" rx="8" ry="4" fill="#3f3f46" stroke="#121212" strokeWidth="1.5" />
 
-          {/* ══════════ ROTATING VINYL RECORD DISC ══════════ */}
-          {/* Turntable Platter Metal Rim & Isometric Foreshortened Container */}
-          <g transform="translate(200, 225) scale(1, 0.54)">
-            {/* Stationary Heavy Cast Platter Rim */}
+          {/* ══════════ ROTATING VINYL RECORD DISC ON PLATTER ══════════ */}
+          {/* Turntable Platter Container: Center is locked at (200, 215), isometric scale is (1, 0.54) */}
+          <g transform="translate(200, 215) scale(1, 0.54)">
+            {/* Stationary Heavy Cast Platter Rim (Always on the plinth) */}
             <circle cx="0" cy="0" r="116" fill="#18181b" stroke="#121212" strokeWidth="3" />
             <circle cx="0" cy="0" r="112" fill="#27272a" stroke="#121212" strokeWidth="1.5" />
 
-            {/* True Rotating Vinyl Group (Center is strictly at 0,0 for perfect zero-wobble rotation) */}
-            <g className="vinyl-disc-spin" style={{ transformOrigin: '0px 0px' }}>
+            {/* Rotating Vinyl Record (Locked at 0,0 in local coordinates - ZERO DRIFT, ZERO WOBBLE) */}
+            <g>
+              {isDiscSpinning && (
+                <animateTransform
+                  attributeName="transform"
+                  type="rotate"
+                  from="0 0 0"
+                  to="360 0 0"
+                  dur="2.4s"
+                  repeatCount="indefinite"
+                />
+              )}
+
               {/* Outer Vinyl Black Disc */}
               <circle cx="0" cy="0" r="108" fill="#09090b" stroke="#121212" strokeWidth="2.5" />
 
@@ -173,7 +230,7 @@ export default function IsometricEditorialDial({
               <circle cx="0" cy="0" r="4" fill="#121212" stroke="#ffffff" strokeWidth="0.8" />
             </g>
 
-            {/* Stationary Specular Light Sheens (Realistic reflection of ambient studio light across spinning vinyl) */}
+            {/* Stationary Specular Light Sheens (Realistic reflection across spinning vinyl) */}
             <path
               d="M 0 0 L -80 -72 A 108 108 0 0 1 -20 -106 Z"
               fill="#ffffff"
@@ -190,33 +247,33 @@ export default function IsometricEditorialDial({
 
           {/* ══════════ TONEARM & CARTRIDGE ══════════ */}
           {/* Tonearm Base Pivot */}
-          <ellipse cx="325" cy="175" rx="14" ry="8" fill="#52525b" stroke="#121212" strokeWidth="2" />
-          <ellipse cx="325" cy="172" rx="10" ry="5.5" fill="#a1a1aa" stroke="#121212" strokeWidth="1.5" />
+          <ellipse cx="325" cy="165" rx="14" ry="8" fill="#52525b" stroke="#121212" strokeWidth="2" />
+          <ellipse cx="325" cy="162" rx="10" ry="5.5" fill="#a1a1aa" stroke="#121212" strokeWidth="1.5" />
           {/* Counterweight */}
-          <rect x="320" y="152" width="10" height="14" rx="2" fill="#27272a" stroke="#121212" strokeWidth="1.5" />
+          <rect x="320" y="142" width="10" height="14" rx="2" fill="#27272a" stroke="#121212" strokeWidth="1.5" />
 
           {/* Animated Arm & Needle Cartridge */}
           <g className="tonearm-animated tonearm-needle-vibe">
             {/* Chrome Straight Tonearm Tube */}
-            <line x1="325" y1="172" x2="245" y2="212" stroke="#121212" strokeWidth="3" strokeLinecap="round" />
-            <line x1="325" y1="172" x2="245" y2="212" stroke="#e4e4e7" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="325" y1="162" x2="245" y2="202" stroke="#121212" strokeWidth="3" strokeLinecap="round" />
+            <line x1="325" y1="162" x2="245" y2="202" stroke="#e4e4e7" strokeWidth="1.8" strokeLinecap="round" />
 
             {/* Cartridge Headshell Angle */}
-            <line x1="245" y1="212" x2="232" y2="225" stroke="#121212" strokeWidth="4.5" strokeLinecap="round" />
-            <line x1="245" y1="212" x2="232" y2="225" stroke="#ff3b30" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="245" y1="202" x2="231" y2="216" stroke="#121212" strokeWidth="4.5" strokeLinecap="round" />
+            <line x1="245" y1="202" x2="231" y2="216" stroke="#ff3b30" strokeWidth="2.5" strokeLinecap="round" />
 
             {/* Stylus Needle Tip */}
-            <circle cx="231" cy="226" r="2.5" fill="#121212" />
-            <circle cx="231" cy="226" r="1.2" fill="#ffffff" />
+            <circle cx="230" cy="217" r="2.5" fill="#121212" />
+            <circle cx="230" cy="217" r="1.2" fill="#ffffff" />
           </g>
 
           {/* Tonearm Rest Cradle */}
-          <rect x="342" y="188" width="6" height="12" rx="2" fill="#3f3f46" stroke="#121212" strokeWidth="1.2" />
+          <rect x="342" y="178" width="6" height="12" rx="2" fill="#3f3f46" stroke="#121212" strokeWidth="1.2" />
 
           {/* ══════════ TURNTABLE HARDWARE CONTROLS ══════════ */}
           {/* Speed Selector (33 / 45 RPM) */}
           <g
-            transform="translate(85, 238)"
+            transform="translate(85, 228)"
             className="cursor-pointer"
             onClick={() => jazzRadio.toggle()}
             title={radioState.isPlaying ? 'Click to Pause Jazz/Sax Radio' : 'Click to Play Jazz/Sax Radio'}
@@ -227,7 +284,7 @@ export default function IsometricEditorialDial({
           </g>
 
           {/* Pitch Slider Track */}
-          <g transform="translate(365, 245)">
+          <g transform="translate(365, 235)">
             <line x1="0" y1="0" x2="25" y2="-13" stroke="#121212" strokeWidth="3" strokeLinecap="round" />
             <line x1="0" y1="0" x2="25" y2="-13" stroke="#d4d4d8" strokeWidth="1.5" strokeLinecap="round" />
             {/* Slider Knob */}
@@ -235,10 +292,10 @@ export default function IsometricEditorialDial({
           </g>
 
           {/* Power Status LED */}
-          <circle cx="95" cy="215" r="3.5" fill={isDiscSpinning ? '#22c55e' : '#ff3b30'} stroke="#121212" strokeWidth="1" />
+          <circle cx="95" cy="205" r="3.5" fill={isDiscSpinning ? '#22c55e' : '#ff3b30'} stroke="#121212" strokeWidth="1" />
 
           {/* Technical Micro-Metadata Text in isometric angle */}
-          <g transform="translate(75, 225) rotate(26.5)" fill="#121212">
+          <g transform="translate(75, 215) rotate(26.5)" fill="#121212">
             <text x="32" y="-12" fontSize="7" fontFamily="JetBrains Mono, monospace" fontWeight="800" letterSpacing="1">
               {radioState.isPlaying
                 ? `ON AIR: ${radioState.currentStation.shortName.toUpperCase()} • ${radioState.currentStation.freq}`
@@ -248,98 +305,42 @@ export default function IsometricEditorialDial({
 
           {/* ══════════ ISOMETRIC COFFEE CUP ══════════ */}
           {/* Saucer Plate */}
-          <ellipse cx="395" cy="105" rx="42" ry="22" fill="#ffffff" stroke="#121212" strokeWidth="2.2" />
-          <ellipse cx="395" cy="105" rx="30" ry="16" fill="none" stroke="#121212" strokeWidth="1.2" strokeOpacity="0.4" />
+          <ellipse cx="395" cy="95" rx="42" ry="22" fill="#ffffff" stroke="#121212" strokeWidth="2.2" />
+          <ellipse cx="395" cy="95" rx="30" ry="16" fill="none" stroke="#121212" strokeWidth="1.2" strokeOpacity="0.4" />
 
           {/* Cup Body */}
-          <path d="M 368 87 C 368 114 422 114 422 87 Z" fill="#ffffff" stroke="#121212" strokeWidth="2.2" />
+          <path d="M 368 77 C 368 104 422 104 422 77 Z" fill="#ffffff" stroke="#121212" strokeWidth="2.2" />
 
           {/* Cup Rim & Dark Espresso Surface */}
-          <ellipse cx="395" cy="87" rx="27" ry="13.5" fill="#ffffff" stroke="#121212" strokeWidth="2.2" />
-          <ellipse cx="395" cy="87" rx="22" ry="10.5" fill="#261815" />
-          <ellipse cx="393" cy="86" rx="14" ry="6" fill="#45271f" />
-          <ellipse cx="391" cy="85" rx="7" ry="3" fill="#6d3d2e" />
+          <ellipse cx="395" cy="77" rx="27" ry="13.5" fill="#ffffff" stroke="#121212" strokeWidth="2.2" />
+          <ellipse cx="395" cy="77" rx="22" ry="10.5" fill="#261815" />
+          <ellipse cx="393" cy="76" rx="14" ry="6" fill="#45271f" />
+          <ellipse cx="391" cy="75" rx="7" ry="3" fill="#6d3d2e" />
 
           {/* Cup Handle */}
-          <path d="M 422 84 C 438 84 438 102 422 102" fill="none" stroke="#121212" strokeWidth="2.4" strokeLinecap="round" />
+          <path d="M 422 74 C 438 74 438 92 422 92" fill="none" stroke="#121212" strokeWidth="2.4" strokeLinecap="round" />
 
           {/* Coffee Steam Plumes */}
           {isDiscSpinning && (
             <g className="coffee-steam" stroke="#6e6e6a" strokeWidth="1.5" strokeLinecap="round" fill="none">
-              <path d="M 388 68 Q 384 56 390 46" />
-              <path d="M 398 69 Q 404 57 400 48" style={{ animationDelay: '0.4s' }} />
+              <path d="M 388 58 Q 384 46 390 36" />
+              <path d="M 398 59 Q 404 47 400 38" style={{ animationDelay: '0.4s' }} />
             </g>
           )}
 
           {/* Hand-Drawn Editorial Curve Arrow pointing to mode */}
-          <path d="M 105 130 C 120 100 150 100 170 110" stroke="#121212" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-          <polygon points="170,110 163,105 164,114" fill="#121212" />
+          <path d="M 105 120 C 120 90 150 90 170 100" stroke="#121212" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+          <polygon points="170,100 163,95 164,104" fill="#121212" />
 
           {/* Arrow Label */}
-          <text x="50" y="145" fill="#121212" fontSize="10" fontFamily="Inter, sans-serif" fontWeight="800" letterSpacing="-0.5">
+          <text x="50" y="135" fill="var(--text-primary)" fontSize="10" fontFamily="Inter, sans-serif" fontWeight="800" letterSpacing="-0.5">
             {radioState.isPlaying ? '(JAZZ RADIO ON AIR)' : '(ANALOG FLOW)'}
           </text>
         </svg>
-
-        {/* Central Swiss Typographic Display Overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-auto pt-14">
-          {/* Mode Badge */}
-          <div className="editorial-mode-stamp mb-1 px-3 py-0.5 rounded-sm bg-black text-white text-[11px] font-mono tracking-widest uppercase font-bold shadow-sm">
-            <DecryptedText text={getModeTitle()} speed={30} maxIterations={8} />
-          </div>
-
-          {/* Big Bold Time Digits */}
-          {isEditing ? (
-            <form onSubmit={handleEditSubmit} className="timer-edit-form my-1">
-              <input
-                type="number"
-                min="1"
-                max="180"
-                value={editMinutes}
-                onChange={(e) => setEditMinutes(e.target.value)}
-                autoFocus
-                onBlur={() => setIsEditing(false)}
-                className="timer-edit-input text-4xl sm:text-5xl font-black bg-white border-2 border-black text-black px-2 py-1 rounded shadow-[3px_3px_0px_#000000]"
-              />
-              <span className="timer-edit-label ml-1 font-mono font-bold text-black">MIN</span>
-            </form>
-          ) : (
-            <div
-              className="timer-editorial-digits text-5xl sm:text-6xl font-black tracking-tighter text-[#121212] drop-shadow-sm cursor-pointer hover:scale-105 transition-transform"
-              style={{ fontFamily: 'Plus Jakarta Sans, Inter, sans-serif' }}
-              onClick={() => {
-                if (!isRunning) {
-                  setEditMinutes(Math.floor(timeLeft / 60));
-                  setIsEditing(true);
-                }
-              }}
-              title={isRunning ? undefined : 'Click to adjust minutes'}
-            >
-              {formatTime(timeLeft)}
-            </div>
-          )}
-
-          {/* Progress Ribbon VU Meter */}
-          <div className="w-36 h-2 bg-[#121212] bg-opacity-15 rounded-full overflow-hidden border border-black my-2">
-            <div
-              className="h-full bg-[#ff3b30] transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          {/* Subtext */}
-          <div className="text-[11px] font-mono tracking-wider font-semibold text-[#121212] opacity-80 uppercase">
-            {radioState.isPlaying
-              ? `🎷 ${radioState.currentStation.name} • ${radioState.currentStation.freq}`
-              : isRunning
-              ? '⚡ 33⅓ RPM Spinning • Deep Focus'
-              : 'Click Digits to Adjust Time'}
-          </div>
-        </div>
       </div>
 
       {/* Editorial Decorative Stamp Bar */}
-      <div className="editorial-footer-bar flex items-center justify-between w-full max-w-sm px-4 mt-2 text-[10px] font-mono tracking-wider text-[var(--text-secondary)] uppercase">
+      <div className="editorial-footer-bar flex items-center justify-between w-full max-w-md px-4 mt-2 text-[10px] font-mono tracking-wider text-[var(--text-secondary)] uppercase">
         <span>{radioState.isPlaying ? radioState.currentStation.shortName : 'HI-FI STEREO'}</span>
         <span className="flex items-center gap-1 font-bold text-[#ff3b30]">
           <span className={`inline-block w-1.5 h-1.5 rounded-full ${isDiscSpinning ? 'bg-[#22c55e] animate-pulse' : 'bg-[#ff3b30]'}`} />
