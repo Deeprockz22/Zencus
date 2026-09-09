@@ -8755,100 +8755,113 @@ body {
   touch-action: none;
 }
 
-/* ══════════ 16. REACT BITS STARBURST & AUTOMATED CONTRAST ══════════ */
-.rb-star-burst-container {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.fullscreen-zen-overlay.starburst-mode {
-  transition: background-color 0.4s ease, color 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.fullscreen-zen-overlay.starburst-mode .zen-digits {
-  color: var(--zen-text-color, var(--text-primary)) !important;
-  text-shadow: var(--zen-text-shadow, none) !important;
-  transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
-.fullscreen-zen-overlay.starburst-mode .zen-mode-tag {
-  color: var(--zen-subtext-color, var(--text-tertiary)) !important;
-  text-shadow: var(--zen-text-shadow, none) !important;
-  transition: color 0.3s ease;
-}
-
-.fullscreen-zen-overlay.starburst-mode .zen-advice-quote {
-  color: var(--zen-subtext-color, var(--text-secondary)) !important;
-  text-shadow: var(--zen-text-shadow, none) !important;
-  transition: color 0.3s ease;
-}
-
-.fullscreen-zen-overlay.starburst-mode .zen-minimal-bar-track {
-  background: var(--zen-border-color, var(--border-subtle)) !important;
-  transition: background 0.3s ease;
-}
-
-.fullscreen-zen-overlay.starburst-mode .zen-minimal-bar-fill {
-  background: var(--zen-accent-color, #ff3b30) !important;
-  box-shadow: 0 0 16px var(--zen-accent-color, #ff3b30) !important;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-.fullscreen-zen-overlay.starburst-mode .zen-minimal-bar-meta {
-  color: var(--zen-subtext-color, var(--text-tertiary)) !important;
-  text-shadow: var(--zen-text-shadow, none) !important;
-}
-
-.fullscreen-zen-overlay.starburst-mode .zen-weather-pill {
-  color: var(--zen-text-color, var(--text-primary)) !important;
-  border-color: var(--zen-border-color, var(--border-subtle)) !important;
-  background: var(--zen-panel-bg, rgba(255, 255, 255, 0.08)) !important;
-  text-shadow: var(--zen-text-shadow, none) !important;
-  backdrop-filter: blur(8px);
-}
-
-.fullscreen-zen-overlay.starburst-mode .zen-close-btn {
-  color: var(--zen-text-color, var(--text-primary)) !important;
-  border-color: var(--zen-border-color, var(--border-subtle)) !important;
-  background: var(--zen-panel-bg, rgba(255, 255, 255, 0.08)) !important;
-  backdrop-filter: blur(8px);
-}
-
-.zen-starburst-palettes {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  background: var(--zen-panel-bg, rgba(255, 255, 255, 0.1));
-  border: 1.5px solid var(--zen-border-color, rgba(255, 255, 255, 0.2));
-  backdrop-filter: blur(10px);
+/* ══════════ 16. FULLSCREEN ZEN OVERLAY (TRUE FULLSCREEN FIXED) ══════════ */
+.fullscreen-zen-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  padding: clamp(24px, 4.5vw, 48px) !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
   user-select: none;
+  background-color: #09090b !important;
+  color: #ffffff !important;
 }
 
-.zen-palette-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1.5px solid transparent;
+[data-theme='dark'] .fullscreen-zen-overlay {
+  background: radial-gradient(circle at 50% 45%, #141418 0%, #070709 100%) !important;
+}
+
+[data-theme='light'] .fullscreen-zen-overlay {
+  background: radial-gradient(circle at 50% 45%, #ffffff 0%, #e2e2da 100%) !important;
+  color: #121212 !important;
+}
+
+.fullscreen-zen-overlay .zen-digits {
+  font-family: 'Plus Jakarta Sans', 'Inter', var(--font-mono), sans-serif !important;
+  font-size: clamp(5.5rem, 14vw, 9rem) !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.05em !important;
+  line-height: 0.95 !important;
+  color: var(--text-primary, #ffffff) !important;
   cursor: pointer;
-  padding: 0;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  outline: none;
+  user-select: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
-.zen-palette-dot:hover {
-  transform: scale(1.3);
+[data-theme='light'] .fullscreen-zen-overlay .zen-digits {
+  text-shadow: none !important;
+  color: #121212 !important;
 }
 
-.zen-palette-dot.active {
-  box-shadow: 0 0 8px currentColor, 0 0 2px #ffffff;
-  transform: scale(1.2);
+.fullscreen-zen-overlay .zen-digits:hover {
+  transform: scale(1.02);
+}
+
+.fullscreen-zen-overlay .zen-mode-tag {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace) !important;
+  font-size: 0.85rem !important;
+  letter-spacing: 0.2em !important;
+  font-weight: 800 !important;
+  color: #ff3b30 !important;
+  text-transform: uppercase;
+}
+
+.fullscreen-zen-overlay .zen-advice-quote {
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  max-width: 500px;
+  text-align: center;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+
+.fullscreen-zen-overlay .zen-minimal-bar-track {
+  width: 100%;
+  height: 7px;
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.12));
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.15));
+}
+
+.fullscreen-zen-overlay .zen-minimal-bar-fill {
+  height: 100%;
+  background: #ff3b30 !important;
+  box-shadow: 0 0 16px rgba(255, 59, 48, 0.85) !important;
+  transition: width 0.4s linear;
+}
+
+.fullscreen-zen-overlay .zen-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.fullscreen-zen-overlay .zen-weather-pill {
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle, rgba(255, 255, 255, 0.15)) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px);
+}
+
+.fullscreen-zen-overlay .zen-close-btn {
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle, rgba(255, 255, 255, 0.15)) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px);
 }
 
 

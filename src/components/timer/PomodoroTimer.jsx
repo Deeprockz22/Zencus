@@ -114,17 +114,6 @@ export default function PomodoroTimer({
         >
           <span>🌍 3D Globe</span>
         </ShinyButton>
-        {onOpenFullscreen && (
-          <ShinyButton
-            variant="pill"
-            size="sm"
-            onClick={onOpenFullscreen}
-            className="visualizer-toggle-btn"
-            title="Launch React Bits Star Burst Zen Mode (F)"
-          >
-            <span>🌟 Star Burst</span>
-          </ShinyButton>
-        )}
       </div>
 
       {visualizerType === 'globe' ? (
@@ -277,8 +266,8 @@ export default function PomodoroTimer({
           variant="icon"
           size="md"
           onClick={onOpenFullscreen}
-          ariaLabel="Launch Fullscreen StarBurst Zen Mode"
-          title="Fullscreen Star Burst Zen (F)"
+          ariaLabel="Launch Fullscreen Zen Focus Mode"
+          title="Fullscreen Zen Mode (F)"
           className="control-icon-btn"
         >
           <Maximize2 size={16} />
