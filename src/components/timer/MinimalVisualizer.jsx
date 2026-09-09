@@ -246,8 +246,8 @@ export default function MinimalVisualizer({
         </svg>
 
         {/* Minimal Mode Subtle Floating Badge */}
-        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[10px] font-mono text-[var(--text-secondary)] shadow-sm pointer-events-none whitespace-nowrap">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#ff3b30]" />
+        <div className="visualizer-floating-hint">
+          <span className="hint-indicator-dot red" />
           <span>MINIMAL FOCUS DIAL • PURE FLOW</span>
         </div>
       </div>

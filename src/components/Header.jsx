@@ -96,12 +96,10 @@ export default function Header({
         {/* Quick Relaxing Sax & Jazz Radio Mini Widget */}
         {!isSketch && (
         <button
-          className={`header-radio-pill flex items-center gap-1.5 px-2.5 py-1 rounded border-2 border-[#121212] font-mono text-xs font-bold transition-all shadow-[2px_2px_0px_#121212] active:translate-x-0.5 active:translate-y-0.5 ${
-            radioState.isPlaying
-              ? 'bg-[#ff3b30] text-white'
-              : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'
-          }`}
+          type="button"
+          className={`header-radio-pill ${radioState.isPlaying ? 'playing' : ''}`}
           onClick={() => jazzRadio.toggle()}
+          aria-label={radioState.isPlaying ? 'Pause Radio' : 'Play Radio'}
           title={
             radioState.isPlaying
               ? `Playing: ${radioState.currentStation.name} (Click to pause)`
@@ -109,14 +107,14 @@ export default function Header({
           }
         >
           <span>{radioState.isPlaying && radioState.currentStation.category === 'Saxophone' ? '🎷' : '📻'}</span>
-          <span className="hidden sm:inline text-[11px]">
+          <span className="radio-label">
             {radioState.isPlaying ? radioState.currentStation.shortName : 'Radio'}
           </span>
           {radioState.isPlaying && (
-            <div className="flex items-end gap-0.5 h-3 ml-0.5">
-              <span className="w-0.5 h-full bg-white animate-pulse" />
-              <span className="w-0.5 h-2/3 bg-white animate-pulse delay-75" />
-              <span className="w-0.5 h-4/5 bg-white animate-pulse delay-150" />
+            <div className="header-radio-bars">
+              <span className="header-eq-bar" />
+              <span className="header-eq-bar bar-2" />
+              <span className="header-eq-bar bar-3" />
             </div>
           )}
         </button>

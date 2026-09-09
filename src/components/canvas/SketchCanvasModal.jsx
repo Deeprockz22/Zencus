@@ -28,11 +28,20 @@ export default function SketchCanvasModal({
   onEmbedDrawing
 }) {
   const canvasRef = useRef(null);
+  const isLightInitial = typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light';
   const [tool, setTool] = useState('pen'); // 'pen' | 'highlighter' | 'eraser'
-  const [color, setColor] = useState('#ffffff');
+  const [color, setColor] = useState(isLightInitial ? '#09090b' : '#ffffff');
   const [brushSize, setBrushSize] = useState(3);
   const [isDrawing, setIsDrawing] = useState(false);
   const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      setColor(isLight ? '#09090b' : '#ffffff');
+      setTool('pen');
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && canvasRef.current) {

@@ -76,9 +76,9 @@ export default function NoteCard({
               <svg width="14" height="14" viewBox="0 0 24 24" className="note-editorial-ribbon-glyph mr-1.5 shrink-0">
                 <g transform="translate(12, 12) scale(0.6)">
                   <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#ff3b30" />
-                  <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#121212" />
+                  <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="var(--text-primary)" />
                   <path d="M0,0 L-8,-8 L0,-16 L8,-8 Z" fill="#ff3b30" />
-                  <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="#121212" />
+                  <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="var(--text-primary)" />
                 </g>
               </svg>
             )}

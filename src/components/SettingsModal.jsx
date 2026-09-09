@@ -126,17 +126,17 @@ export default function SettingsModal({
               <span>Focus Companion Pet</span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] gap-3">
-              <div>
-                <div className="font-bold text-sm text-[var(--text-primary)] flex items-center gap-2">
+            <div className="settings-companion-card">
+              <div className="settings-companion-info">
+                <div className="settings-companion-header">
                   <span>{companionType === 'none' ? '🚫 Companion Mascot Disabled' : `${COMPANIONS.find(c => c.id === companionType)?.icon || '🦖'} ${COMPANIONS.find(c => c.id === companionType)?.name || 'Neo'}`}</span>
                   {companionType !== 'none' && (
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] text-[var(--text-secondary)]">
+                    <span className="settings-companion-badge">
                       ACTIVE
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                <p className="settings-companion-desc">
                   {companionType === 'none'
                     ? 'Pets are hidden and the UI space is cleanly collapsed with zero distractions.'
                     : 'Interactive motivational pet companion on timer and notes.'}
@@ -146,7 +146,7 @@ export default function SettingsModal({
               {onSelectCompanion && (
                 <button
                   type="button"
-                  className={`btn-setting-action ${companionType === 'none' ? '' : 'danger'} whitespace-nowrap`}
+                  className={`btn-setting-action ${companionType === 'none' ? '' : 'danger'}`}
                   onClick={() => onSelectCompanion(companionType === 'none' ? 'dino' : 'none')}
                 >
                   {companionType === 'none' ? '🐾 Enable Pet' : '🚫 Remove Pet'}

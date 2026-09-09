@@ -3118,6 +3118,68 @@ body {
   transform: translate(2px, 2px);
 }
 
+.header-radio-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  height: 38px;
+  border-radius: var(--radius-full, 9999px);
+  border: 2px solid #121212;
+  background: var(--bg-secondary, #ffffff);
+  color: var(--text-primary, #121212);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 2.5px 2.5px 0px #121212;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+  line-height: 1;
+}
+
+.header-radio-pill:hover {
+  background: var(--bg-tertiary);
+  transform: translate(-1px, -1px);
+  box-shadow: 3.5px 3.5px 0px #121212;
+}
+
+.header-radio-pill:active {
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1px 1px 0px #121212;
+}
+
+.header-radio-pill .radio-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.header-radio-pill.playing {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border-color: #121212 !important;
+  box-shadow: 2.5px 2.5px 0px #121212 !important;
+}
+
+.header-radio-pill.playing:hover {
+  background: #e03227 !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 3.5px 3.5px 0px #121212 !important;
+}
+
+.header-radio-pill.playing:active {
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1px 1px 0px #121212 !important;
+}
+
+@media (max-width: 640px) {
+  .header-radio-pill .radio-label {
+    display: none;
+  }
+}
+
 [data-theme='dark'] .pet-wardrobe-trigger-btn,
 [data-theme='dark'] .header-radio-pill {
   border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
@@ -3129,14 +3191,59 @@ body {
 [data-theme='dark'] .pet-wardrobe-trigger-btn:hover,
 [data-theme='dark'] .header-radio-pill:hover {
   border-color: rgba(255, 255, 255, 0.65) !important;
-  box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 3.5px 3.5px 0px rgba(255, 255, 255, 0.35) !important;
   transform: translate(-1px, -1px);
+  background: var(--bg-tertiary) !important;
 }
 
 [data-theme='dark'] .pet-wardrobe-trigger-btn:active,
 [data-theme='dark'] .header-radio-pill:active {
   box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.18) !important;
   transform: translate(2px, 2px);
+}
+
+[data-theme='dark'] .header-radio-pill.playing {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.28) !important;
+}
+
+[data-theme='dark'] .header-radio-pill.playing:hover {
+  background: #ff4d42 !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  box-shadow: 3.5px 3.5px 0px rgba(255, 255, 255, 0.4) !important;
+}
+
+.header-radio-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+  margin-left: 2px;
+}
+
+.header-eq-bar {
+  width: 2px;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 1px;
+  animation: headerEqPulse 0.6s ease-in-out infinite alternate;
+}
+
+.header-eq-bar.bar-2 {
+  height: 65%;
+  animation-delay: 0.15s;
+}
+
+.header-eq-bar.bar-3 {
+  height: 80%;
+  animation-delay: 0.3s;
+}
+
+@keyframes headerEqPulse {
+  0% { transform: scaleY(0.35); }
+  100% { transform: scaleY(1); }
 }
 
 /* 8. Filter Tabs, Categories, Smart Tags, View Mode Switcher */
@@ -3295,6 +3402,18 @@ body {
   border-color: rgba(255, 255, 255, 0.55) !important;
   box-shadow: 4.5px 4.5px 0px rgba(255, 255, 255, 0.3) !important;
   transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .modal-card {
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 6px 6px 0px rgba(255, 255, 255, 0.22) !important;
+  background: var(--bg-secondary) !important;
+}
+
+[data-theme='dark'] .settings-companion-card {
+  border: 1.5px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.18) !important;
+  background: var(--bg-secondary) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -5253,6 +5372,80 @@ body {
   padding: 8px 18px;
 }
 
+.task-progress-container {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.task-progress-track {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.task-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+  border-radius: var(--radius-full);
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.task-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.task-search-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 260px;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+}
+
+.task-search-icon {
+  position: absolute;
+  left: 10px;
+  pointer-events: none;
+  color: var(--text-tertiary);
+  z-index: 2;
+}
+
+.task-search-input {
+  width: 100%;
+  padding: 7px 12px 7px 32px;
+  font-size: 0.82rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.task-search-input:focus {
+  border-color: var(--border-active);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.task-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+[data-theme='dark'] .task-search-input {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+}
+
 .task-filters-row,
 .notes-controls-row {
   display: flex;
@@ -6449,6 +6642,51 @@ body {
   color: var(--text-muted);
 }
 
+.settings-companion-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.settings-companion-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-companion-header {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-companion-badge {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.settings-companion-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
 .settings-footer {
   display: flex;
   justify-content: flex-end;
@@ -6465,6 +6703,30 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 10px;
+}
+
+.lottie-animation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.lottie-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 12px 0 4px 0;
+}
+
+.lottie-subtext {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  max-width: 300px;
+  margin: 0;
+  line-height: 1.45;
 }
 
 .empty-icon {
@@ -7958,7 +8220,10 @@ body {
   cursor: pointer;
 }
 
-.notes-sort-select option {
+select option,
+.task-select option,
+.notes-sort-select option,
+.note-folder-select option {
   background: var(--bg-elevated);
   color: var(--text-primary);
 }
@@ -8941,28 +9206,65 @@ body {
 }
 
 /*
-  These caption pills are written as Tailwind utilities, but this project has no
-  Tailwind build — so they render as loose inline text beside the dial and pull
-  the whole composition off-centre. Pin them for real inside the overlay.
+  Precision floating caption pills for Globe and Minimal visualizers.
+  Positions and skins the hint pills consistently on both the main dashboard
+  and the fullscreen zen overlay.
 */
+.visualizer-floating-hint,
+.minimal-canvas-stage > .visualizer-floating-hint,
+.globe-canvas-stage > .visualizer-floating-hint,
+.zen-center-visualizer .minimal-canvas-stage > .visualizer-floating-hint,
+.zen-center-visualizer .globe-canvas-stage > .visualizer-floating-hint,
 .zen-center-visualizer .minimal-canvas-stage > .absolute,
 .zen-center-visualizer .globe-canvas-stage > .absolute {
   position: absolute !important;
   left: 50% !important;
-  bottom: 4px !important;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  white-space: nowrap;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  pointer-events: none;
+  bottom: 8px !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 12px !important;
+  border-radius: 9999px !important;
+  white-space: nowrap !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.08em !important;
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-subtle) !important;
+  color: var(--text-secondary) !important;
+  pointer-events: none !important;
+  box-shadow: var(--shadow-sm) !important;
+  z-index: 10 !important;
+}
+
+[data-theme='dark'] .visualizer-floating-hint,
+[data-theme='dark'] .zen-center-visualizer .minimal-canvas-stage > .visualizer-floating-hint,
+[data-theme='dark'] .zen-center-visualizer .globe-canvas-stage > .visualizer-floating-hint {
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.15) !important;
+}
+
+.hint-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.hint-indicator-dot.red {
+  background: #ff3b30;
+}
+
+.hint-indicator-dot.green {
+  background: #22c55e;
+  animation: hintPulse 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes hintPulse {
+  0% { transform: scale(0.85); opacity: 0.7; }
+  100% { transform: scale(1.25); opacity: 1; }
 }
 
 /* Globe in fullscreen: enlarge the canvas */

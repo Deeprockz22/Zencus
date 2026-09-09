@@ -219,10 +219,10 @@ export default function LottieAnimation({
   };
 
   return (
-    <div className={`lottie-animation-container flex flex-col items-center justify-center p-6 text-center ${className}`}>
+    <div className={`lottie-animation-container ${className}`}>
       {renderGraphic()}
-      {text && <h4 className="lottie-text font-semibold text-lg mt-3 text-[var(--text-primary)]">{text}</h4>}
-      {subtext && <p className="lottie-subtext text-xs text-[var(--text-secondary)] mt-1 max-w-[280px]">{subtext}</p>}
+      {text && <h4 className="lottie-text">{text}</h4>}
+      {subtext && <p className="lottie-subtext">{subtext}</p>}
     </div>
   );
 }
