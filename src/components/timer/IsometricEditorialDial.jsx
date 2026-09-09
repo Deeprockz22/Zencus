@@ -96,18 +96,43 @@ export default function IsometricEditorialDial({
             strokeLinejoin="round"
           />
 
-          {/* Diffuse Radiant Scarlet Aura Glow on Book Cover */}
-          <g className="diffuse-aura">
-            <ellipse
-              cx="220"
-              cy="230"
-              rx="80"
-              ry="45"
-              fill="url(#paint_aura_vermilion)"
-            />
+          {/* ══════════ CRISP GEOMETRIC BOOK COVER ART ══════════ */}
+          {/* 1. Isometric Grid & Construction Axis Marks */}
+          <line x1="145" y1="185" x2="295" y2="275" stroke="#121212" strokeWidth="0.8" strokeDasharray="3 3" strokeOpacity="0.3" />
+          <line x1="295" y1="185" x2="145" y2="275" stroke="#121212" strokeWidth="0.8" strokeDasharray="3 3" strokeOpacity="0.3" />
+
+          {/* 2. Concentric Precision Orbital Rings */}
+          <ellipse cx="220" cy="230" rx="68" ry="38" stroke="#121212" strokeWidth="1.2" fill="none" strokeDasharray="180 8" />
+          <ellipse cx="220" cy="230" rx="54" ry="30" stroke="#121212" strokeWidth="0.8" strokeOpacity="0.4" fill="none" />
+          <ellipse cx="220" cy="230" rx="42" ry="23" stroke="#ff3b30" strokeWidth="1.8" fill="none" />
+
+          {/* 3. Radiant Scarlet Bauhaus Solar Crescent / Aperture */}
+          <path
+            d="M 180 230 C 180 216 260 216 260 230 C 260 244 180 244 180 230 Z"
+            fill="#ff3b30"
+            fillOpacity="0.15"
+          />
+          <path
+            d="M 195 230 C 195 220 245 220 245 230 C 245 240 195 240 195 230 Z"
+            fill="#ff3b30"
+          />
+          {/* Inner Golden Core */}
+          <ellipse cx="220" cy="230" rx="8" ry="4.5" fill="#ffffff" stroke="#121212" strokeWidth="1" />
+
+          {/* 4. Isometric Technical Crosshair Ticks */}
+          <line x1="220" y1="192" x2="220" y2="200" stroke="#ff3b30" strokeWidth="1.8" />
+          <line x1="220" y1="260" x2="220" y2="268" stroke="#ff3b30" strokeWidth="1.8" />
+          <line x1="152" y1="230" x2="160" y2="230" stroke="#ff3b30" strokeWidth="1.8" />
+          <line x1="280" y1="230" x2="288" y2="230" stroke="#ff3b30" strokeWidth="1.8" />
+
+          {/* 5. Corner Registration Crosses (+) */}
+          <g stroke="#121212" strokeWidth="1.2">
+            <line x1="110" y1="175" x2="116" y2="175" /><line x1="113" y1="172" x2="113" y2="178" />
+            <line x1="324" y1="175" x2="330" y2="175" /><line x1="327" y1="172" x2="327" y2="178" />
+            <line x1="110" y1="285" x2="116" y2="285" /><line x1="113" y1="282" x2="113" y2="288" />
           </g>
 
-          {/* Book Cover Graphic Marks: 4-Blade Ribbon Glyph Top-Left */}
+          {/* 6. Book Cover Graphic Marks: 4-Blade Ribbon Glyph Top-Left */}
           <g transform="translate(100, 215) scale(0.65)">
             <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#121212" />
             <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#ff3b30" />
@@ -123,10 +148,13 @@ export default function IsometricEditorialDial({
             <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="#121212" />
           </g>
 
-          {/* Technical Micro-Metadata Text in isometric angle */}
+          {/* 7. Swiss Editorial Titles in Isometric Plane */}
           <g transform="translate(70, 230) rotate(26.5)" fill="#121212">
-            <text x="18" y="-6" fontSize="7.5" fontFamily="JetBrains Mono, monospace" fontWeight="700" letterSpacing="1">
-              FOCUS SESSION / VOL. 01
+            <text x="18" y="-6" fontSize="7.5" fontFamily="JetBrains Mono, monospace" fontWeight="800" letterSpacing="1">
+              BEYOND PURE COLORS / VOL. 01
+            </text>
+            <text x="18" y="2" fontSize="5.5" fontFamily="Inter, sans-serif" fontWeight="600" fill="#5c5c56" letterSpacing="0.5">
+              A CURATED COLLECTION OF NUANCED SHADES
             </text>
           </g>
 
