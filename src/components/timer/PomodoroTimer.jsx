@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Play, Pause, RotateCcw, SkipForward, Flame, Target, Sparkles, Volume2, BookOpen } from 'lucide-react';
 import MagnetButton from '../react-bits/MagnetButton';
 import DecryptedText from '../react-bits/DecryptedText';
@@ -40,6 +40,21 @@ export default function PomodoroTimer({
 
   const hasCompanion = companionType && companionType !== 'none';
 
+  // Responsive check: Desktop Landscape (width >= 1024px and landscape orientation)
+  const [isDesktopLandscape, setIsDesktopLandscape] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth >= 1024 && window.innerWidth > window.innerHeight;
+  });
+
+  useEffect(() => {
+    const handleCheck = () => {
+      setIsDesktopLandscape(window.innerWidth >= 1024 && window.innerWidth > window.innerHeight);
+    };
+    handleCheck();
+    window.addEventListener('resize', handleCheck);
+    return () => window.removeEventListener('resize', handleCheck);
+  }, []);
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -70,152 +85,190 @@ export default function PomodoroTimer({
     }
   };
 
-  return (
-    <div className={`timer-view editorial-theme-view ${!hasCompanion ? 'no-companion' : ''}`}>
-      {/* Top XP & Level Bar */}
-      <div className="timer-top-xp-row">
-        <StreakBadge xp={xp} sessions={sessionsCompleted} />
-      </div>
+  // Shared Subcomponents
+  const visualizerElement = (
+    <IsometricEditorialDial
+      timeLeft={timeLeft}
+      totalDuration={totalDuration}
+      isRunning={isRunning}
+      mode={mode}
+      getModeTitle={getModeTitle}
+      formatTime={formatTime}
+      isEditing={isEditing}
+      editMinutes={editMinutes}
+      setEditMinutes={setEditMinutes}
+      handleEditSubmit={handleEditSubmit}
+      setIsEditing={setIsEditing}
+    />
+  );
 
-      {/* Interactive Companion Mascot & Dialogue */}
-      {hasCompanion && (
-        <FocusCompanion
-          state={isRunning ? 'working' : mode === 'work' ? 'idle' : 'breakTime'}
-          sessionsCompleted={sessionsCompleted}
-          streak={sessionsCompleted}
-          theme={theme}
-          companionType={companionType}
-          onOpenPicker={onOpenPicker}
-          onRemovePet={() => onSelectCompanion?.('none')}
-        />
-      )}
+  const radioElement = <JazzRadioPlayer />;
 
-      {/* Mode Selector */}
-      <div className="mode-selector editorial-mode-selector">
+  const companionElement = hasCompanion && (
+    <FocusCompanion
+      state={isRunning ? 'working' : mode === 'work' ? 'idle' : 'breakTime'}
+      sessionsCompleted={sessionsCompleted}
+      streak={sessionsCompleted}
+      theme={theme}
+      companionType={companionType}
+      onOpenPicker={onOpenPicker}
+      onRemovePet={() => onSelectCompanion?.('none')}
+    />
+  );
+
+  const xpElement = (
+    <div className="timer-top-xp-row">
+      <StreakBadge xp={xp} sessions={sessionsCompleted} />
+    </div>
+  );
+
+  const modeSelectorElement = (
+    <div className="mode-selector editorial-mode-selector">
+      <button
+        className={`mode-btn ${mode === 'work' ? 'active' : ''}`}
+        onClick={() => setMode('work')}
+      >
+        <Target size={15} />
+        <span>Work</span>
+      </button>
+      <button
+        className={`mode-btn ${mode === 'shortBreak' ? 'active' : ''}`}
+        onClick={() => setMode('shortBreak')}
+      >
+        <Sparkles size={15} />
+        <span>Short Break</span>
+      </button>
+      <button
+        className={`mode-btn ${mode === 'longBreak' ? 'active' : ''}`}
+        onClick={() => setMode('longBreak')}
+      >
+        <Flame size={15} />
+        <span>Long Break</span>
+      </button>
+      <button
+        className={`mode-btn ${mode === 'chill' ? 'active' : ''}`}
+        onClick={() => setMode('chill')}
+      >
+        <BookOpen size={15} />
+        <span>Lounge</span>
+      </button>
+    </div>
+  );
+
+  const presetsElement = (
+    <div className="preset-pills">
+      {PRESETS.map((preset) => (
         <button
-          className={`mode-btn ${mode === 'work' ? 'active' : ''}`}
-          onClick={() => setMode('work')}
+          key={preset.label}
+          className={`preset-pill ${totalDuration === preset.duration ? 'active' : ''}`}
+          onClick={() => setCustomDuration(preset.duration)}
         >
-          <Target size={15} />
-          <span>Work</span>
+          {preset.label}
         </button>
-        <button
-          className={`mode-btn ${mode === 'shortBreak' ? 'active' : ''}`}
-          onClick={() => setMode('shortBreak')}
-        >
-          <Sparkles size={15} />
-          <span>Short Break</span>
-        </button>
-        <button
-          className={`mode-btn ${mode === 'longBreak' ? 'active' : ''}`}
-          onClick={() => setMode('longBreak')}
-        >
-          <Flame size={15} />
-          <span>Long Break</span>
-        </button>
-        <button
-          className={`mode-btn ${mode === 'chill' ? 'active' : ''}`}
-          onClick={() => setMode('chill')}
-        >
-          <BookOpen size={15} />
-          <span>Lounge</span>
-        </button>
-      </div>
+      ))}
+    </div>
+  );
 
-      {/* Preset Pills */}
-      <div className="preset-pills">
-        {PRESETS.map((preset) => (
-          <button
-            key={preset.label}
-            className={`preset-pill ${totalDuration === preset.duration ? 'active' : ''}`}
-            onClick={() => setCustomDuration(preset.duration)}
-          >
-            {preset.label}
-          </button>
-        ))}
-      </div>
+  const controlsElement = (
+    <div className="timer-controls mt-2">
+      <MagnetButton
+        className={`btn-action primary ${isRunning ? 'btn-running' : ''}`}
+        onClick={isRunning ? pauseTimer : startTimer}
+        aria-label={isRunning ? 'Pause Timer' : 'Start Timer'}
+      >
+        {isRunning ? (
+          <>
+            <Pause size={18} />
+            <span>Pause</span>
+          </>
+        ) : (
+          <>
+            <Play size={18} fill="currentColor" />
+            <span>Start Focus</span>
+          </>
+        )}
+      </MagnetButton>
 
-      {/* Central 3D Isometric Book & Coffee Visualizer */}
-      <IsometricEditorialDial
-        timeLeft={timeLeft}
-        totalDuration={totalDuration}
-        isRunning={isRunning}
-        mode={mode}
-        getModeTitle={getModeTitle}
-        formatTime={formatTime}
-        isEditing={isEditing}
-        editMinutes={editMinutes}
-        setEditMinutes={setEditMinutes}
-        handleEditSubmit={handleEditSubmit}
-        setIsEditing={setIsEditing}
-      />
+      <MagnetButton
+        className="btn-action secondary"
+        onClick={resetTimer}
+        aria-label="Reset Timer"
+        title="Reset"
+      >
+        <RotateCcw size={18} />
+        <span>Reset</span>
+      </MagnetButton>
 
-      {/* Main Action Controls with Hard-Cast Shadows */}
-      <div className="timer-controls mt-2">
-        <MagnetButton
-          className={`btn-action primary ${isRunning ? 'btn-running' : ''}`}
-          onClick={isRunning ? pauseTimer : startTimer}
-          aria-label={isRunning ? 'Pause Timer' : 'Start Timer'}
-        >
-          {isRunning ? (
-            <>
-              <Pause size={18} />
-              <span>Pause</span>
-            </>
-          ) : (
-            <>
-              <Play size={18} fill="currentColor" />
-              <span>Start Focus</span>
-            </>
-          )}
-        </MagnetButton>
+      <MagnetButton
+        className="btn-action secondary"
+        onClick={skipTimer}
+        aria-label="Skip to next session"
+        title="Skip"
+      >
+        <SkipForward size={18} />
+        <span>Skip</span>
+      </MagnetButton>
+    </div>
+  );
 
-        <MagnetButton
-          className="btn-action secondary"
-          onClick={resetTimer}
-          aria-label="Reset Timer"
-          title="Reset"
-        >
-          <RotateCcw size={18} />
-          <span>Reset</span>
-        </MagnetButton>
+  const soundscapesElement = <AmbientSoundscapes />;
 
-        <MagnetButton
-          className="btn-action secondary"
-          onClick={skipTimer}
-          aria-label="Skip to next session"
-          title="Skip"
-        >
-          <SkipForward size={18} />
-          <span>Skip</span>
-        </MagnetButton>
-      </div>
-
-      {/* Procedural Ambient Soundscapes */}
-      <AmbientSoundscapes />
-
-      {/* Vintage Hi-Fi Saxophone & Jazz Radio Tuner */}
-      <JazzRadioPlayer />
-
-      {/* Stats Cards with Hard-Cast Block Shadows */}
-      <div className="stats-row">
-        <div className="stat-card editorial-stat-card">
-          <div className="stat-header">
-            <Target size={16} className="stat-icon text-[#ff3b30]" />
-            <span className="stat-label">Sessions Completed</span>
-          </div>
-          <div className="stat-value">{sessionsCompleted}</div>
+  const statsElement = (
+    <div className="stats-row">
+      <div className="stat-card editorial-stat-card">
+        <div className="stat-header">
+          <Target size={16} className="stat-icon text-[#ff3b30]" />
+          <span className="stat-label">Sessions Completed</span>
         </div>
+        <div className="stat-value">{sessionsCompleted}</div>
+      </div>
 
-        <div className="stat-card editorial-stat-card">
-          <div className="stat-header">
-            <Flame size={16} className="stat-icon text-[#ff3b30]" />
-            <span className="stat-label">Total Focus Time</span>
-          </div>
-          <div className="stat-value">{totalFocusMinutes} <span className="stat-unit">mins</span></div>
+      <div className="stat-card editorial-stat-card">
+        <div className="stat-header">
+          <Flame size={16} className="stat-icon text-[#ff3b30]" />
+          <span className="stat-label">Total Focus Time</span>
         </div>
+        <div className="stat-value">{totalFocusMinutes} <span className="stat-unit">mins</span></div>
       </div>
     </div>
   );
-}
 
+  return (
+    <div className={`timer-view editorial-theme-view ${isDesktopLandscape ? 'layout-landscape' : 'layout-portrait'} ${!hasCompanion ? 'no-companion' : ''}`}>
+      {isDesktopLandscape ? (
+        /* ══════════ DESKTOP LANDSCAPE STUDIO CONSOLE ══════════ */
+        <div className="timer-landscape-grid">
+          {/* Left Wing / Deck: 3D Turntable Hero Visualizer & Vintage Radio Player */}
+          <div className="timer-landscape-left-deck">
+            {visualizerElement}
+            {radioElement}
+          </div>
+
+          {/* Right Wing / Deck: Control Console, Soundscapes & Analytics */}
+          <div className="timer-landscape-right-deck">
+            {xpElement}
+            {companionElement}
+            {modeSelectorElement}
+            {presetsElement}
+            {controlsElement}
+            {soundscapesElement}
+            {statsElement}
+          </div>
+        </div>
+      ) : (
+        /* ══════════ PORTRAIT LAYOUT FOR OTHERS (Mobile, Tablets, Portrait Displays) ══════════ */
+        <div className="timer-portrait-stack">
+          {xpElement}
+          {companionElement}
+          {modeSelectorElement}
+          {presetsElement}
+          {visualizerElement}
+          {controlsElement}
+          {soundscapesElement}
+          {radioElement}
+          {statsElement}
+        </div>
+      )}
+    </div>
+  );
+}

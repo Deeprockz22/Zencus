@@ -7727,6 +7727,149 @@ body {
   min-height: 280px;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE MODES: LANDSCAPE FOR DESKTOPS & PORTRAIT FOR OTHERS
+   ═══════════════════════════════════════════════════════════════ */
 
+/* 1. PORTRAIT STACK: Default for Mobile, Tablets, Portrait Monitors & Narrow Displays */
+.timer-portrait-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
 
+.timer-view.layout-portrait {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
+/* 2. LANDSCAPE STUDIO CONSOLE: For Desktops in Landscape Orientation */
+.timer-landscape-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) and (orientation: landscape) {
+  /* Expand max container width on wide desktop displays */
+  .app-content-container {
+    max-width: 1320px;
+    padding: 24px 36px 110px 36px;
+  }
+
+  .timer-view.layout-landscape {
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    align-items: stretch;
+  }
+
+  /* Two-deck widescreen studio console */
+  .timer-landscape-grid {
+    display: grid;
+    grid-template-columns: minmax(460px, 1.15fr) minmax(420px, 1fr);
+    gap: 40px;
+    align-items: start;
+    width: 100%;
+  }
+
+  /* Left Deck: 3D Turntable Hero Visualizer & Vintage Jazz Radio */
+  .timer-landscape-left-deck {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    position: sticky;
+    top: 86px; /* Sits beneath sticky app header */
+    width: 100%;
+  }
+
+  .timer-landscape-left-deck .isometric-editorial-hero {
+    margin-top: 0;
+    margin-bottom: 8px;
+    width: 100%;
+  }
+
+  .timer-landscape-left-deck .vintage-radio-tuner-card {
+    margin-top: 0;
+    margin-bottom: 0;
+    width: 100%;
+  }
+
+  /* Right Deck: Control Console, Presets, Ambient Soundscapes & Stats */
+  .timer-landscape-right-deck {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .timer-landscape-right-deck .timer-top-xp-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2px;
+  }
+
+  .timer-landscape-right-deck .mode-selector {
+    width: 100%;
+    max-width: 480px;
+    justify-content: center;
+  }
+
+  .timer-landscape-right-deck .preset-pills {
+    width: 100%;
+    max-width: 480px;
+    justify-content: center;
+  }
+
+  .timer-landscape-right-deck .timer-controls {
+    width: 100%;
+    max-width: 480px;
+    justify-content: center;
+  }
+
+  .timer-landscape-right-deck .ambient-soundscape-bar {
+    width: 100%;
+    max-width: 480px;
+    justify-content: center;
+  }
+
+  .timer-landscape-right-deck .stats-row {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  /* Tasks multi-column bento board on desktop landscape */
+  .tasks-view {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .task-list-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+
+  /* Notes Hub 3-column bento grid on desktop landscape */
+  .notes-hub-layout {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .notes-grid.bento-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
