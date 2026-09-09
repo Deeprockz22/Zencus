@@ -124,106 +124,107 @@ class AmbientSoundscapes {
 
   /**
    * Triggers a single realistic raindrop striking window glass.
-   * Includes glass resonant ping + transient impact click + stereo panning.
+   * 100% acoustic noise-shaped water droplet (zero electronic synth tones).
+   * Generates pure water impact tap + subtle water dispersion.
    */
   triggerWindowDroplet(time) {
     if (!this.ctx || this.activeType !== 'window-rain') return;
 
-    // Categorize drop characteristics
-    const r = Math.random();
-    let baseFreq, decay, peakGain, dropType;
-
-    if (r < 0.52) {
-      // Light crisp droplet (high glass 'tink')
-      baseFreq = 2600 + Math.random() * 900;
-      decay = 0.022 + Math.random() * 0.015;
-      peakGain = 0.14 + Math.random() * 0.12;
-      dropType = 'light';
-    } else if (r < 0.84) {
-      // Medium raindrop (resonant glass 'plink')
-      baseFreq = 1800 + Math.random() * 700;
-      decay = 0.035 + Math.random() * 0.022;
-      peakGain = 0.20 + Math.random() * 0.15;
-      dropType = 'medium';
-    } else {
-      // Heavy drop (fat water splatter with lower glass thud)
-      baseFreq = 1200 + Math.random() * 550;
-      decay = 0.050 + Math.random() * 0.025;
-      peakGain = 0.24 + Math.random() * 0.16;
-      dropType = 'heavy';
-    }
-
-    // Window pane stereo positioning: left to right (-0.85 to +0.85)
-    const panPos = (Math.random() * 1.7) - 0.85;
+    // Stereo panning across window pane (-0.75 to +0.75)
+    const panPos = (Math.random() * 1.5) - 0.75;
     const panner = this.createPanner(panPos);
     panner.connect(this.gainNode);
 
-    // 1. Resonant glass tone with downwards frequency sweep as droplet flattens on glass
-    const osc = this.ctx.createOscillator();
-    osc.type = dropType === 'heavy' ? 'triangle' : (Math.random() > 0.4 ? 'sine' : 'triangle');
-    osc.frequency.setValueAtTime(baseFreq, time);
-    // Pitch glides down by 18-28% during impact
-    osc.frequency.exponentialRampToValueAtTime(Math.max(200, baseFreq * 0.76), time + decay);
+    // Droplet variety: 60% gentle/light, 30% medium, 10% soft heavy plop
+    const r = Math.random();
+    let bpFreq, decayTime, dropGain, lowFreq;
 
-    const oscGain = this.ctx.createGain();
-    oscGain.gain.setValueAtTime(0.0001, time);
-    oscGain.gain.linearRampToValueAtTime(peakGain, time + 0.001); // Instant attack
-    oscGain.gain.exponentialRampToValueAtTime(0.0001, time + decay);
-
-    osc.connect(oscGain);
-    oscGain.connect(panner);
-
-    osc.start(time);
-    osc.stop(time + decay + 0.02);
-
-    // 2. Micro-transient click (crisp initial contact of drop with rigid glass)
-    const clickBuf = this.getClickBuffer();
-    if (clickBuf) {
-      const clickSrc = this.ctx.createBufferSource();
-      clickSrc.buffer = clickBuf;
-
-      const clickFilter = this.ctx.createBiquadFilter();
-      clickFilter.type = 'highpass';
-      clickFilter.frequency.setValueAtTime(dropType === 'heavy' ? 2400 : 3800, time);
-
-      const clickGain = this.ctx.createGain();
-      const cGain = peakGain * (dropType === 'heavy' ? 0.8 : 0.6);
-      clickGain.gain.setValueAtTime(cGain, time);
-      clickGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.02);
-
-      clickSrc.connect(clickFilter);
-      clickFilter.connect(clickGain);
-      clickGain.connect(panner);
-
-      clickSrc.start(time);
-      clickSrc.stop(time + 0.025);
-
-      // Clean up nodes once drop completes
-      osc.onended = () => {
-        try {
-          osc.disconnect();
-          oscGain.disconnect();
-          clickSrc.disconnect();
-          clickFilter.disconnect();
-          clickGain.disconnect();
-          panner.disconnect();
-        } catch {}
-      };
+    if (r < 0.60) {
+      // Gentle soft droplet tap
+      bpFreq = 1600 + Math.random() * 700; // 1.6kHz - 2.3kHz
+      decayTime = 0.016 + Math.random() * 0.012; // 16ms - 28ms
+      dropGain = 0.11 + Math.random() * 0.07;
+      lowFreq = null;
+    } else if (r < 0.90) {
+      // Medium water drop pat
+      bpFreq = 1200 + Math.random() * 500; // 1.2kHz - 1.7kHz
+      decayTime = 0.024 + Math.random() * 0.016; // 24ms - 40ms
+      dropGain = 0.15 + Math.random() * 0.09;
+      lowFreq = 420;
     } else {
-      osc.onended = () => {
-        try {
-          osc.disconnect();
-          oscGain.disconnect();
-          panner.disconnect();
-        } catch {}
-      };
+      // Occasional heavier water droplet (soft thud on glass sill)
+      bpFreq = 950 + Math.random() * 400;
+      decayTime = 0.035 + Math.random() * 0.020; // 35ms - 55ms
+      dropGain = 0.18 + Math.random() * 0.10;
+      lowFreq = 280;
     }
+
+    // 1. Water impact transient using shaped noise (pure acoustic water splatter)
+    const sampleRate = this.ctx.sampleRate;
+    const bufLen = Math.floor(sampleRate * (decayTime + 0.02));
+    const noiseBuf = this.ctx.createBuffer(1, bufLen, sampleRate);
+    const noiseData = noiseBuf.getChannelData(0);
+
+    // Organic exponential decay envelope
+    const decayConst = sampleRate * (decayTime * 0.35);
+    for (let i = 0; i < bufLen; i++) {
+      const white = (Math.random() * 2 - 1);
+      noiseData[i] = white * Math.exp(-i / decayConst);
+    }
+
+    const dropSrc = this.ctx.createBufferSource();
+    dropSrc.buffer = noiseBuf;
+
+    // Resonant bandpass filter shaping the droplet's splash frequency
+    const bpFilter = this.ctx.createBiquadFilter();
+    bpFilter.type = 'bandpass';
+    bpFilter.frequency.setValueAtTime(bpFreq, time);
+    bpFilter.Q.setValueAtTime(2.2, time);
+
+    // Downward filter glide as the water droplet flattens on the glass pane
+    bpFilter.frequency.exponentialRampToValueAtTime(Math.max(300, bpFreq * 0.65), time + decayTime);
+
+    const ampGain = this.ctx.createGain();
+    ampGain.gain.setValueAtTime(dropGain, time);
+    ampGain.gain.exponentialRampToValueAtTime(0.0001, time + decayTime + 0.01);
+
+    dropSrc.connect(bpFilter);
+    bpFilter.connect(ampGain);
+    ampGain.connect(panner);
+
+    // 2. Subtle low-end water mass body for medium/heavy drops
+    if (lowFreq) {
+      const lowFilter = this.ctx.createBiquadFilter();
+      lowFilter.type = 'lowpass';
+      lowFilter.frequency.setValueAtTime(lowFreq, time);
+
+      const lowGain = this.ctx.createGain();
+      lowGain.gain.setValueAtTime(dropGain * 0.45, time);
+      lowGain.gain.exponentialRampToValueAtTime(0.0001, time + decayTime + 0.02);
+
+      dropSrc.connect(lowFilter);
+      lowFilter.connect(lowGain);
+      lowGain.connect(panner);
+    }
+
+    dropSrc.start(time);
+    dropSrc.stop(time + decayTime + 0.03);
+
+    dropSrc.onended = () => {
+      try {
+        dropSrc.disconnect();
+        bpFilter.disconnect();
+        ampGain.disconnect();
+        panner.disconnect();
+      } catch {}
+    };
   }
 
   /**
-   * WINDOW RAIN (Regular / Window Rain):
-   * Ultra-realistic rainfall right against a window pane.
-   * Soft continuous outdoor rain hiss + distinct, clear droplets tapping directly on the glass.
+   * WINDOW RAIN (Slow, Pure Acoustic Rain):
+   * Relaxed, gentle rainfall against a window pane.
+   * Pure acoustic water sound only — zero electronic synth tones.
+   * Warm outdoor rain bed + slow, distinct, contemplative droplets tapping on the glass.
    */
   playWindowRain() {
     this.stop();
@@ -233,61 +234,74 @@ class AmbientSoundscapes {
 
     this.activeType = 'window-rain';
 
-    // 1. Background outdoor rain wash through window
+    // 1. Lush, warm outdoor rain bed (soft rain outside the window)
     const pinkBuffer = this.getPinkNoiseBuffer(4);
     const rainBed = this.ctx.createBufferSource();
     rainBed.buffer = pinkBuffer;
     rainBed.loop = true;
 
-    // Highpass to eliminate low indoor rumble
+    // Highpass to eliminate low indoor hum
     const hpFilter = this.ctx.createBiquadFilter();
     hpFilter.type = 'highpass';
-    hpFilter.frequency.setValueAtTime(480, this.ctx.currentTime);
+    hpFilter.frequency.setValueAtTime(320, this.ctx.currentTime);
 
-    // Bandpass / peaking filter for exterior rain spray
-    const bpFilter = this.ctx.createBiquadFilter();
-    bpFilter.type = 'peaking';
-    bpFilter.frequency.setValueAtTime(2200, this.ctx.currentTime);
-    bpFilter.gain.setValueAtTime(3, this.ctx.currentTime);
-    bpFilter.Q.setValueAtTime(1.1, this.ctx.currentTime);
-
-    // Lowpass to roll off harsh frequencies above 8kHz
+    // Soft lowpass filter to produce a natural, velvety rain wash outside glass
     const lpFilter = this.ctx.createBiquadFilter();
     lpFilter.type = 'lowpass';
-    lpFilter.frequency.setValueAtTime(7500, this.ctx.currentTime);
+    lpFilter.frequency.setValueAtTime(4200, this.ctx.currentTime);
+
+    // Gentle slow organic swell (0.08 Hz)
+    const swell = this.ctx.createOscillator();
+    swell.type = 'sine';
+    swell.frequency.setValueAtTime(0.08, this.ctx.currentTime);
+
+    const swellGain = this.ctx.createGain();
+    swellGain.gain.setValueAtTime(450, this.ctx.currentTime);
+    swell.connect(swellGain);
+    swellGain.connect(lpFilter.frequency);
+    swell.start();
+    this.lfoNode = swell;
 
     const bedGain = this.ctx.createGain();
-    bedGain.gain.setValueAtTime(0.24, this.ctx.currentTime);
+    bedGain.gain.setValueAtTime(0.26, this.ctx.currentTime);
 
     rainBed.connect(hpFilter);
-    hpFilter.connect(bpFilter);
-    bpFilter.connect(lpFilter);
+    hpFilter.connect(lpFilter);
     lpFilter.connect(bedGain);
     bedGain.connect(this.gainNode);
 
     rainBed.start();
-    this.activeSources.push(rainBed, hpFilter, bpFilter, lpFilter, bedGain);
+    this.activeSources.push(rainBed, hpFilter, lpFilter, swellGain, bedGain);
 
-    // 2. Window pane droplet impact scheduler
-    // Runs an irregular Poisson-like schedule (14 to 22 droplet impacts per second)
+    // 2. Slow, relaxed window droplet scheduler
+    // Runs at a slow cadence (~1 to 3 drops per second)
     const scheduleDroplets = () => {
       if (this.activeType !== 'window-rain') return;
       const now = this.ctx.currentTime;
-      // Schedule 1 to 3 drops in the upcoming 60ms window
-      const count = Math.random() < 0.25 ? 0 : (Math.random() < 0.7 ? 1 : 2);
 
-      for (let i = 0; i < count; i++) {
-        const offset = Math.random() * 0.055;
+      // 40% chance of a gentle drop, 25% chance of 2 drops, 35% quiet soothing wash
+      const dice = Math.random();
+      if (dice < 0.40) {
+        // Single gentle droplet
+        const offset = Math.random() * 0.12;
         this.triggerWindowDroplet(now + offset);
-
-        // Occasional double-drop (drip trickle down the glass)
-        if (Math.random() < 0.08) {
-          this.triggerWindowDroplet(now + offset + 0.032);
-        }
+      } else if (dice < 0.65) {
+        // Two spaced droplets
+        const offset1 = Math.random() * 0.08;
+        const offset2 = offset1 + 0.08 + Math.random() * 0.10;
+        this.triggerWindowDroplet(now + offset1);
+        this.triggerWindowDroplet(now + offset2);
+      } else if (dice < 0.72) {
+        // Occasional slow water trickle down the pane
+        const offset = Math.random() * 0.06;
+        this.triggerWindowDroplet(now + offset);
+        this.triggerWindowDroplet(now + offset + 0.075);
       }
+      // Otherwise quiet moment where you only hear the soft continuous outdoor rain bed
     };
 
-    this.dropletInterval = setInterval(scheduleDroplets, 55);
+    // Scheduled every 220ms (slow, organic, unhurried cadence)
+    this.dropletInterval = setInterval(scheduleDroplets, 220);
   }
 
   /**
