@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
-import { CloudRain, Radio, Waves, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { CloudRain, Radio, Waves, Volume2, VolumeX, Sparkles, Music2, Disc } from 'lucide-react';
 import { ambientSoundscapes } from '../../utils/ambientAudio';
+import { jazzRadio, JAZZ_STATIONS } from '../../utils/jazzRadioAudio';
 
 export default function AmbientSoundscapes() {
   const [activeSound, setActiveSound] = useState(null); // null | 'rain' | 'whitenoise' | 'alphabeats'
   const [volume, setVolume] = useState(35);
+  const [radioState, setRadioState] = useState(() => jazzRadio.getState());
+  const [showRadioMenu, setShowRadioMenu] = useState(false);
+
+  useEffect(() => {
+    return jazzRadio.subscribe((st) => setRadioState(st));
+  }, []);
 
   const toggleSound = (type) => {
     if (activeSound === type) {
@@ -15,6 +22,18 @@ export default function AmbientSoundscapes() {
       if (type === 'whitenoise') ambientSoundscapes.playWhiteNoise();
       if (type === 'alphabeats') ambientSoundscapes.playAlphaBeats();
       setActiveSound(type);
+    }
+  };
+
+  const toggleRadio = (stationId = null) => {
+    if (stationId) {
+      if (radioState.isPlaying && radioState.currentStation.id === stationId) {
+        jazzRadio.pause();
+      } else {
+        jazzRadio.play(stationId);
+      }
+    } else {
+      jazzRadio.toggle();
     }
   };
 
@@ -31,7 +50,33 @@ export default function AmbientSoundscapes() {
         <span>Focus Soundscapes:</span>
       </div>
 
-      <div className="ambient-buttons-group">
+      <div className="ambient-buttons-group flex flex-wrap items-center gap-1.5">
+        {/* Relaxing Saxophone Radio Button */}
+        <button
+          className={`ambient-btn ${radioState.isPlaying && radioState.currentStation.category === 'Saxophone' ? 'active' : ''}`}
+          onClick={() => toggleRadio('sax-ella')}
+          title="Relaxing Saxophone Radio (98.5 FM • Live 24/7)"
+        >
+          <span className="text-xs">🎷</span>
+          <span>Sax Radio</span>
+          {radioState.isPlaying && radioState.currentStation.category === 'Saxophone' && (
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping ml-0.5" />
+          )}
+        </button>
+
+        {/* Relaxing Classic Jazz Radio Button */}
+        <button
+          className={`ambient-btn ${radioState.isPlaying && radioState.currentStation.id === 'jazz24' ? 'active' : ''}`}
+          onClick={() => toggleRadio('jazz24')}
+          title="Jazz24 Seattle (Miles Davis, Coltrane & Evans)"
+        >
+          <span className="text-xs">☕</span>
+          <span>Jazz24</span>
+          {radioState.isPlaying && radioState.currentStation.id === 'jazz24' && (
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping ml-0.5" />
+          )}
+        </button>
+
         <button
           className={`ambient-btn ${activeSound === 'rain' ? 'active' : ''}`}
           onClick={() => toggleSound('rain')}

@@ -6,6 +6,7 @@ import SpotlightCard from '../react-bits/SpotlightCard';
 import FocusCompanion from '../companion/FocusCompanion';
 import StreakBadge from '../companion/StreakBadge';
 import AmbientSoundscapes from '../ambient/AmbientSoundscapes';
+import JazzRadioPlayer from '../ambient/JazzRadioPlayer';
 import IsometricEditorialDial from './IsometricEditorialDial';
 
 const PRESETS = [
@@ -186,6 +187,9 @@ export default function PomodoroTimer({
 
       {/* Procedural Ambient Soundscapes */}
       <AmbientSoundscapes />
+
+      {/* Vintage Hi-Fi Saxophone & Jazz Radio Tuner */}
+      <JazzRadioPlayer />
 
       {/* Stats Cards with Hard-Cast Block Shadows */}
       <div className="stats-row">

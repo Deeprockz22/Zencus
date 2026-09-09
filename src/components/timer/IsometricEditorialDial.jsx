@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DecryptedText from '../react-bits/DecryptedText';
+import { jazzRadio } from '../../utils/jazzRadioAudio';
 
 export default function IsometricEditorialDial({
   timeLeft,
@@ -15,7 +16,14 @@ export default function IsometricEditorialDial({
   handleEditSubmit,
   setIsEditing
 }) {
+  const [radioState, setRadioState] = useState(() => jazzRadio.getState());
+
+  useEffect(() => {
+    return jazzRadio.subscribe((st) => setRadioState(st));
+  }, []);
+
   const progress = totalDuration > 0 ? ((totalDuration - timeLeft) / totalDuration) * 100 : 0;
+  const isDiscSpinning = isRunning || radioState.isPlaying;
 
   return (
     <div className="isometric-editorial-hero relative flex flex-col items-center justify-center my-6 py-4 select-none">
@@ -46,15 +54,15 @@ export default function IsometricEditorialDial({
               .vinyl-disc-spin {
                 transform-box: fill-box;
                 transform-origin: 0px 0px;
-                ${isRunning ? 'animation: spinVinylGroove 2.4s linear infinite;' : ''}
+                ${isDiscSpinning ? 'animation: spinVinylGroove 2.4s linear infinite;' : ''}
               }
               .tonearm-animated {
                 transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
                 transform-origin: 325px 175px;
-                transform: ${isRunning ? 'rotate(-14deg)' : 'rotate(8deg)'};
+                transform: ${isDiscSpinning ? 'rotate(-14deg)' : 'rotate(8deg)'};
               }
               .tonearm-needle-vibe {
-                ${isRunning ? 'animation: tonearmFloat 2s ease-in-out infinite;' : ''}
+                ${isDiscSpinning ? 'animation: tonearmFloat 2s ease-in-out infinite;' : ''}
               }
               .coffee-steam { animation: steamRise 3s infinite ease-out; }
             `}
@@ -207,9 +215,14 @@ export default function IsometricEditorialDial({
 
           {/* ══════════ TURNTABLE HARDWARE CONTROLS ══════════ */}
           {/* Speed Selector (33 / 45 RPM) */}
-          <g transform="translate(85, 238)">
+          <g
+            transform="translate(85, 238)"
+            className="cursor-pointer"
+            onClick={() => jazzRadio.toggle()}
+            title={radioState.isPlaying ? 'Click to Pause Jazz/Sax Radio' : 'Click to Play Jazz/Sax Radio'}
+          >
             <ellipse cx="0" cy="0" rx="8" ry="4.5" fill="#e4e4e7" stroke="#121212" strokeWidth="1.5" />
-            <ellipse cx="0" cy="-2" rx="5" ry="3" fill="#ff3b30" />
+            <ellipse cx="0" cy="-2" rx="5" ry="3" fill={radioState.isPlaying ? '#22c55e' : '#ff3b30'} />
             <text x="-6" y="10" fontSize="6.5" fontFamily="JetBrains Mono, monospace" fontWeight="800" fill="#121212">33⅓</text>
           </g>
 
@@ -222,12 +235,14 @@ export default function IsometricEditorialDial({
           </g>
 
           {/* Power Status LED */}
-          <circle cx="95" cy="215" r="3.5" fill={isRunning ? '#22c55e' : '#ff3b30'} stroke="#121212" strokeWidth="1" />
+          <circle cx="95" cy="215" r="3.5" fill={isDiscSpinning ? '#22c55e' : '#ff3b30'} stroke="#121212" strokeWidth="1" />
 
           {/* Technical Micro-Metadata Text in isometric angle */}
           <g transform="translate(75, 225) rotate(26.5)" fill="#121212">
             <text x="32" y="-12" fontSize="7" fontFamily="JetBrains Mono, monospace" fontWeight="800" letterSpacing="1">
-              ZENCUS STEREO • DIRECT DRIVE • HI-FI
+              {radioState.isPlaying
+                ? `ON AIR: ${radioState.currentStation.shortName.toUpperCase()} • ${radioState.currentStation.freq}`
+                : 'ZENCUS STEREO • DIRECT DRIVE • HI-FI'}
             </text>
           </g>
 
@@ -249,7 +264,7 @@ export default function IsometricEditorialDial({
           <path d="M 422 84 C 438 84 438 102 422 102" fill="none" stroke="#121212" strokeWidth="2.4" strokeLinecap="round" />
 
           {/* Coffee Steam Plumes */}
-          {isRunning && (
+          {isDiscSpinning && (
             <g className="coffee-steam" stroke="#6e6e6a" strokeWidth="1.5" strokeLinecap="round" fill="none">
               <path d="M 388 68 Q 384 56 390 46" />
               <path d="M 398 69 Q 404 57 400 48" style={{ animationDelay: '0.4s' }} />
@@ -262,7 +277,7 @@ export default function IsometricEditorialDial({
 
           {/* Arrow Label */}
           <text x="50" y="145" fill="#121212" fontSize="10" fontFamily="Inter, sans-serif" fontWeight="800" letterSpacing="-0.5">
-            (ANALOG FLOW)
+            {radioState.isPlaying ? '(JAZZ RADIO ON AIR)' : '(ANALOG FLOW)'}
           </text>
         </svg>
 
@@ -314,19 +329,23 @@ export default function IsometricEditorialDial({
 
           {/* Subtext */}
           <div className="text-[11px] font-mono tracking-wider font-semibold text-[#121212] opacity-80 uppercase">
-            {isRunning ? '⚡ 33⅓ RPM Spinning • Deep Focus' : 'Click Digits to Adjust Time'}
+            {radioState.isPlaying
+              ? `🎷 ${radioState.currentStation.name} • ${radioState.currentStation.freq}`
+              : isRunning
+              ? '⚡ 33⅓ RPM Spinning • Deep Focus'
+              : 'Click Digits to Adjust Time'}
           </div>
         </div>
       </div>
 
       {/* Editorial Decorative Stamp Bar */}
       <div className="editorial-footer-bar flex items-center justify-between w-full max-w-sm px-4 mt-2 text-[10px] font-mono tracking-wider text-[var(--text-secondary)] uppercase">
-        <span>HI-FI STEREO</span>
+        <span>{radioState.isPlaying ? radioState.currentStation.shortName : 'HI-FI STEREO'}</span>
         <span className="flex items-center gap-1 font-bold text-[#ff3b30]">
-          <span className={`inline-block w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-[#22c55e] animate-pulse' : 'bg-[#ff3b30]'}`} />
-          {isRunning ? 'NEEDLE ON GROOVE' : 'TURNTABLE READY'}
+          <span className={`inline-block w-1.5 h-1.5 rounded-full ${isDiscSpinning ? 'bg-[#22c55e] animate-pulse' : 'bg-[#ff3b30]'}`} />
+          {radioState.isPlaying ? 'RADIO ON GROOVE' : isRunning ? 'NEEDLE ON GROOVE' : 'TURNTABLE READY'}
         </span>
-        <span>33⅓ RPM</span>
+        <span>{radioState.isPlaying ? radioState.currentStation.bitrate : '33⅓ RPM'}</span>
       </div>
     </div>
   );

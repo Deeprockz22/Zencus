@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Volume2,
   VolumeX,
   Maximize2,
   Settings,
   Sun,
-  Moon
+  Moon,
+  Radio
 } from 'lucide-react';
 import MagnetButton from './react-bits/MagnetButton';
 import FocusLogo from './brand/FocusLogo';
 import { COMPANIONS } from '../utils/companionPresets';
+import { jazzRadio } from '../utils/jazzRadioAudio';
 
 export default function Header({
   theme = 'light',
@@ -21,6 +23,12 @@ export default function Header({
   companionType = 'dino',
   openCompanionPicker
 }) {
+  const [radioState, setRadioState] = useState(() => jazzRadio.getState());
+
+  useEffect(() => {
+    return jazzRadio.subscribe((st) => setRadioState(st));
+  }, []);
+
   const toggleTheme = () => {
     if (setTheme) {
       setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -70,6 +78,33 @@ export default function Header({
       </div>
 
       <div className="header-right">
+        {/* Quick Relaxing Sax & Jazz Radio Mini Widget */}
+        <button
+          className={`header-radio-pill flex items-center gap-1.5 px-2.5 py-1 rounded border-2 border-[#121212] font-mono text-xs font-bold transition-all shadow-[2px_2px_0px_#121212] active:translate-x-0.5 active:translate-y-0.5 ${
+            radioState.isPlaying
+              ? 'bg-[#ff3b30] text-white'
+              : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'
+          }`}
+          onClick={() => jazzRadio.toggle()}
+          title={
+            radioState.isPlaying
+              ? `Playing: ${radioState.currentStation.name} (Click to pause)`
+              : 'Turn on Relaxing Saxophone & Jazz Radio'
+          }
+        >
+          <span>{radioState.isPlaying && radioState.currentStation.category === 'Saxophone' ? '🎷' : '📻'}</span>
+          <span className="hidden sm:inline text-[11px]">
+            {radioState.isPlaying ? radioState.currentStation.shortName : 'Radio'}
+          </span>
+          {radioState.isPlaying && (
+            <div className="flex items-end gap-0.5 h-3 ml-0.5">
+              <span className="w-0.5 h-full bg-white animate-pulse" />
+              <span className="w-0.5 h-2/3 bg-white animate-pulse delay-75" />
+              <span className="w-0.5 h-4/5 bg-white animate-pulse delay-150" />
+            </div>
+          )}
+        </button>
+
         <MagnetButton
           className="icon-btn"
           onClick={openFullscreen}
