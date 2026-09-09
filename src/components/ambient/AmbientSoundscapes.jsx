@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { CloudRain, Radio, Waves, Volume2, VolumeX, Sparkles, Music2, Disc } from 'lucide-react';
+import { CloudRain, Droplets, Radio, Waves, Volume2, VolumeX, Sparkles, Music2, Disc } from 'lucide-react';
 import { ambientSoundscapes } from '../../utils/ambientAudio';
 import { jazzRadio, JAZZ_STATIONS } from '../../utils/jazzRadioAudio';
 
 export default function AmbientSoundscapes() {
-  const [activeSound, setActiveSound] = useState(null); // null | 'rain' | 'whitenoise' | 'alphabeats'
+  const [activeSound, setActiveSound] = useState(null); // null | 'window-rain' | 'zen-rain' | 'whitenoise' | 'alphabeats'
   const [volume, setVolume] = useState(35);
   const [radioState, setRadioState] = useState(() => jazzRadio.getState());
   const [showRadioMenu, setShowRadioMenu] = useState(false);
@@ -18,7 +18,8 @@ export default function AmbientSoundscapes() {
       ambientSoundscapes.stop();
       setActiveSound(null);
     } else {
-      if (type === 'rain') ambientSoundscapes.playRain();
+      if (type === 'window-rain') ambientSoundscapes.playWindowRain();
+      if (type === 'zen-rain') ambientSoundscapes.playZenRain();
       if (type === 'whitenoise') ambientSoundscapes.playWhiteNoise();
       if (type === 'alphabeats') ambientSoundscapes.playAlphaBeats();
       setActiveSound(type);
@@ -77,10 +78,21 @@ export default function AmbientSoundscapes() {
           )}
         </button>
 
+        {/* Window Rain: Realistic rain droplets tapping on window pane */}
         <button
-          className={`ambient-btn ${activeSound === 'rain' ? 'active' : ''}`}
-          onClick={() => toggleSound('rain')}
-          title="Zen Rain Soundscape"
+          className={`ambient-btn ${activeSound === 'window-rain' ? 'active' : ''}`}
+          onClick={() => toggleSound('window-rain')}
+          title="Window Rain: Crisp rain with distinct droplets tapping on your window"
+        >
+          <span className="text-xs">🪟</span>
+          <span>Window Rain</span>
+        </button>
+
+        {/* Zen Rain: Soothing, deep meditative rainfall in a tranquil courtyard */}
+        <button
+          className={`ambient-btn ${activeSound === 'zen-rain' ? 'active' : ''}`}
+          onClick={() => toggleSound('zen-rain')}
+          title="Zen Rain: Deep, soothing meditative rainfall in a peaceful garden"
         >
           <CloudRain size={14} />
           <span>Zen Rain</span>
