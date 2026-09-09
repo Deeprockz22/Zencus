@@ -73,9 +73,16 @@ export default function NoteCard({
             {isLocked ? (
               <Lock size={14} className="note-lock-badge" />
             ) : (
-              <span className={`note-color-indicator ${note.color || 'default'}`} />
+              <svg width="14" height="14" viewBox="0 0 24 24" className="note-editorial-ribbon-glyph mr-1.5 shrink-0">
+                <g transform="translate(12, 12) scale(0.6)">
+                  <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#ff3b30" />
+                  <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#121212" />
+                  <path d="M0,0 L-8,-8 L0,-16 L8,-8 Z" fill="#ff3b30" />
+                  <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="#121212" />
+                </g>
+              </svg>
             )}
-            <h3 className="note-card-title">{note.title || 'Untitled Note'}</h3>
+            <h3 className="note-card-title font-bold tracking-tight">{note.title || 'Untitled Note'}</h3>
           </div>
 
           {!isTrashView && (
@@ -88,7 +95,7 @@ export default function NoteCard({
               title={note.pinned ? 'Unpin Note' : 'Pin Note'}
               aria-label={note.pinned ? 'Unpin Note' : 'Pin Note'}
             >
-              <Pin size={14} className={note.pinned ? 'fill-current' : ''} />
+              <Pin size={14} className={note.pinned ? 'fill-current text-[#ff3b30]' : ''} />
             </button>
           )}
         </div>

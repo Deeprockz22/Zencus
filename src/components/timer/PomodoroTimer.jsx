@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Play, Pause, RotateCcw, SkipForward, Flame, Target, Sparkles, Volume2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipForward, Flame, Target, Sparkles, Volume2, BookOpen } from 'lucide-react';
 import MagnetButton from '../react-bits/MagnetButton';
 import DecryptedText from '../react-bits/DecryptedText';
 import SpotlightCard from '../react-bits/SpotlightCard';
 import FocusCompanion from '../companion/FocusCompanion';
 import StreakBadge from '../companion/StreakBadge';
 import AmbientSoundscapes from '../ambient/AmbientSoundscapes';
+import IsometricEditorialDial from './IsometricEditorialDial';
 
 const PRESETS = [
   { label: '15m', duration: 15 * 60 },
@@ -30,7 +31,7 @@ export default function PomodoroTimer({
   xp = 0,
   companionType = 'dino',
   onOpenPicker,
-  theme = 'dark'
+  theme = 'light'
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editMinutes, setEditMinutes] = useState(Math.floor(totalDuration / 60));
@@ -40,9 +41,6 @@ export default function PomodoroTimer({
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
-
-  const progress = totalDuration > 0 ? ((totalDuration - timeLeft) / totalDuration) * 100 : 0;
-  const waterHeight = Math.max(5, 100 - progress);
 
   const handleEditSubmit = (e) => {
     e.preventDefault();
@@ -69,7 +67,7 @@ export default function PomodoroTimer({
   };
 
   return (
-    <div className="timer-view">
+    <div className="timer-view editorial-theme-view">
       {/* Top XP & Level Bar */}
       <div className="timer-top-xp-row">
         <StreakBadge xp={xp} sessions={sessionsCompleted} />
@@ -86,7 +84,7 @@ export default function PomodoroTimer({
       />
 
       {/* Mode Selector */}
-      <div className="mode-selector">
+      <div className="mode-selector editorial-mode-selector">
         <button
           className={`mode-btn ${mode === 'work' ? 'active' : ''}`}
           onClick={() => setMode('work')}
@@ -112,8 +110,8 @@ export default function PomodoroTimer({
           className={`mode-btn ${mode === 'chill' ? 'active' : ''}`}
           onClick={() => setMode('chill')}
         >
-          <Sparkles size={15} />
-          <span>Relax & Chill</span>
+          <BookOpen size={15} />
+          <span>Lounge</span>
         </button>
       </div>
 
@@ -130,96 +128,23 @@ export default function PomodoroTimer({
         ))}
       </div>
 
-      {/* Central Dial & Visualizer */}
-      <div className="timer-visualizer-container">
-        <div className={`timer-dial-wrapper ${isRunning ? 'running' : ''}`}>
-          {/* Water Tank Animation */}
-          <div className="water-tank-circle">
-            <div
-              className="water-fill"
-              style={{
-                height: `${waterHeight}%`,
-                transition: isRunning ? 'height 1s linear' : 'height 0.4s ease'
-              }}
-            >
-              <div className="water-wave wave-1" />
-              <div className="water-wave wave-2" />
-            </div>
-          </div>
+      {/* Central 3D Isometric Book & Coffee Visualizer */}
+      <IsometricEditorialDial
+        timeLeft={timeLeft}
+        totalDuration={totalDuration}
+        isRunning={isRunning}
+        mode={mode}
+        getModeTitle={getModeTitle}
+        formatTime={formatTime}
+        isEditing={isEditing}
+        editMinutes={editMinutes}
+        setEditMinutes={setEditMinutes}
+        handleEditSubmit={handleEditSubmit}
+        setIsEditing={setIsEditing}
+      />
 
-          {/* SVG Circular Ring */}
-          <svg className="timer-svg-ring" viewBox="0 0 280 280">
-            <circle
-              className="ring-bg"
-              cx="140"
-              cy="140"
-              r="125"
-              strokeWidth="6"
-            />
-            <circle
-              className="ring-progress"
-              cx="140"
-              cy="140"
-              r="125"
-              strokeWidth="6"
-              strokeDasharray={2 * Math.PI * 125}
-              strokeDashoffset={2 * Math.PI * 125 * (1 - progress / 100)}
-            />
-          </svg>
-
-          {/* Center Content */}
-          <div className="timer-inner-content">
-            <div className="mode-badge">
-              <DecryptedText
-                text={getModeTitle()}
-                speed={30}
-                maxIterations={8}
-                className="mode-badge-text"
-              />
-            </div>
-
-            {isEditing ? (
-              <form onSubmit={handleEditSubmit} className="timer-edit-form">
-                <input
-                  type="number"
-                  min="1"
-                  max="180"
-                  value={editMinutes}
-                  onChange={(e) => setEditMinutes(e.target.value)}
-                  autoFocus
-                  onBlur={() => setIsEditing(false)}
-                  className="timer-edit-input"
-                />
-                <span className="timer-edit-label">min</span>
-              </form>
-            ) : (
-              <div
-                className="timer-digits"
-                onClick={() => {
-                  if (!isRunning) {
-                    setEditMinutes(Math.floor(timeLeft / 60));
-                    setIsEditing(true);
-                  }
-                }}
-                title={isRunning ? undefined : 'Click to adjust minutes'}
-              >
-                {formatTime(timeLeft)}
-              </div>
-            )}
-
-            <div className="timer-subtext">
-              {isRunning ? (
-                <span className="pulsing-text">⚡ Stay in flow</span>
-              ) : (
-                <span>Click digits to edit</span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Action Controls */}
-      <div className="timer-controls">
+      {/* Main Action Controls with Hard-Cast Shadows */}
+      <div className="timer-controls mt-2">
         <MagnetButton
           className={`btn-action primary ${isRunning ? 'btn-running' : ''}`}
           onClick={isRunning ? pauseTimer : startTimer}
@@ -259,27 +184,28 @@ export default function PomodoroTimer({
         </MagnetButton>
       </div>
 
-      {/* Procedural Ambient Soundscapes (Rain, White Noise, Alpha Beats) */}
+      {/* Procedural Ambient Soundscapes */}
       <AmbientSoundscapes />
 
-      {/* Stats Cards with Spotlight */}
+      {/* Stats Cards with Hard-Cast Block Shadows */}
       <div className="stats-row">
-        <SpotlightCard className="stat-card">
+        <div className="stat-card editorial-stat-card">
           <div className="stat-header">
-            <Target size={16} className="stat-icon" />
+            <Target size={16} className="stat-icon text-[#ff3b30]" />
             <span className="stat-label">Sessions Completed</span>
           </div>
           <div className="stat-value">{sessionsCompleted}</div>
-        </SpotlightCard>
+        </div>
 
-        <SpotlightCard className="stat-card">
+        <div className="stat-card editorial-stat-card">
           <div className="stat-header">
-            <Flame size={16} className="stat-icon" />
+            <Flame size={16} className="stat-icon text-[#ff3b30]" />
             <span className="stat-label">Total Focus Time</span>
           </div>
           <div className="stat-value">{totalFocusMinutes} <span className="stat-unit">mins</span></div>
-        </SpotlightCard>
+        </div>
       </div>
     </div>
   );
 }
+

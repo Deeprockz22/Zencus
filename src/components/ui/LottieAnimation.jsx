@@ -25,121 +25,91 @@ export default function LottieAnimation({
           >
             <style>
               {`
-                @keyframes floatBook {
-                  0%, 100% { transform: translateY(0px) rotate(0deg); }
-                  50% { transform: translateY(-6px) rotate(-1deg); }
+                @keyframes floatIsoBook {
+                  0%, 100% { transform: translateY(0px); }
+                  50% { transform: translateY(-6px); }
                 }
-                @keyframes floatPen {
-                  0%, 100% { transform: translateY(0px) rotate(0deg); }
-                  50% { transform: translateY(-10px) rotate(4deg); }
+                @keyframes pulseAuraRed {
+                  0%, 100% { opacity: 0.75; transform: scale(0.95); }
+                  50% { opacity: 1; transform: scale(1.08); }
                 }
-                @keyframes pulseGlow {
-                  0%, 100% { opacity: 0.25; transform: scale(0.95); }
-                  50% { opacity: 0.6; transform: scale(1.05); }
-                }
-                @keyframes particleFloat1 {
-                  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
-                  50% { transform: translate(4px, -8px) scale(1.3); opacity: 0.3; }
-                }
-                @keyframes particleFloat2 {
-                  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
-                  50% { transform: translate(-6px, -10px) scale(1.2); opacity: 0.2; }
-                }
-                .lottie-book { animation: floatBook 4s ease-in-out infinite; transform-origin: center; }
-                .lottie-pen { animation: floatPen 3s ease-in-out infinite; transform-origin: center; }
-                .lottie-glow { animation: pulseGlow 4s ease-in-out infinite; transform-origin: center; }
-                .lottie-p1 { animation: particleFloat1 2.5s ease-in-out infinite; }
-                .lottie-p2 { animation: particleFloat2 3.2s ease-in-out infinite; }
+                .lottie-iso-book { animation: floatIsoBook 4s ease-in-out infinite; transform-origin: center; }
+                .lottie-aura-red { animation: pulseAuraRed 3.5s ease-in-out infinite; transform-origin: 80px 85px; }
               `}
             </style>
 
-            {/* Ambient Glow */}
-            <circle
-              cx="80"
-              cy="85"
-              r="48"
-              fill="url(#paint0_radial_notes)"
-              className="lottie-glow"
+            {/* Hard-Cast Block Shadow */}
+            <polygon
+              points="30,110 80,135 130,110 80,85"
+              fill="#121212"
+              fillOpacity="0.8"
+              transform="translate(6, 6)"
             />
 
-            {/* Notepad Base */}
-            <g className="lottie-book">
-              {/* Card Base */}
-              <rect
-                x="44"
-                y="38"
-                width="72"
-                height="88"
-                rx="10"
-                fill="var(--bg-card, #121216)"
-                stroke="var(--border-subtle, rgba(255,255,255,0.12))"
-                strokeWidth="1.5"
-              />
-
-              {/* Spine Accent */}
-              <rect
-                x="44"
-                y="38"
-                width="14"
-                height="88"
-                rx="10"
-                fill="var(--accent-color, #70a1ff)"
-                fillOpacity="0.25"
-              />
-              <line
-                x1="58"
-                y1="38"
-                x2="58"
-                y2="126"
-                stroke="var(--border-subtle, rgba(255,255,255,0.1))"
-                strokeWidth="1.5"
-              />
-
-              {/* Note Content Lines */}
-              <rect x="66" y="52" width="38" height="3" rx="1.5" fill="var(--text-primary, #ffffff)" fillOpacity="0.7" />
-              <rect x="66" y="62" width="42" height="2.5" rx="1.25" fill="var(--text-secondary, #94a3b8)" fillOpacity="0.4" />
-              <rect x="66" y="71" width="32" height="2.5" rx="1.25" fill="var(--text-secondary, #94a3b8)" fillOpacity="0.4" />
-              <rect x="66" y="80" width="39" height="2.5" rx="1.25" fill="var(--text-secondary, #94a3b8)" fillOpacity="0.4" />
-
-              {/* Checkmark Tag */}
-              <circle cx="70" cy="98" r="4" fill="var(--accent-color, #70a1ff)" fillOpacity="0.3" />
-              <path d="M68.5 98L69.5 99L71.5 97" stroke="var(--accent-color, #70a1ff)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-              <rect x="78" y="96.5" width="26" height="3" rx="1.5" fill="var(--text-secondary, #94a3b8)" fillOpacity="0.5" />
-            </g>
-
-            {/* Floating Quill / Pen */}
-            <g className="lottie-pen">
-              <rect
-                x="108"
-                y="32"
-                width="6"
-                height="34"
-                rx="3"
-                transform="rotate(28 108 32)"
-                fill="var(--accent-color, #70a1ff)"
-              />
+            {/* Isometric Book Base */}
+            <g className="lottie-iso-book">
+              {/* Book Spine Edge */}
               <polygon
-                points="119.5,63.5 123.5,61.5 125,67.5"
-                fill="var(--accent-color, #ffaa00)"
+                points="30,95 80,120 80,130 30,105"
+                fill="var(--bg-tertiary, #d7d7ce)"
+                stroke="#121212"
+                strokeWidth="2"
               />
+              {/* Book Pages Edge */}
+              <polygon
+                points="80,120 130,95 130,105 80,130"
+                fill="#ffffff"
+                stroke="#121212"
+                strokeWidth="2"
+              />
+              {/* Book Cover Surface */}
+              <polygon
+                points="30,95 80,70 130,95 80,120"
+                fill="var(--bg-secondary, #ffffff)"
+                stroke="#121212"
+                strokeWidth="2"
+              />
+
+              {/* Radiant Red Diffuse Aura on Cover */}
+              <ellipse
+                cx="80"
+                cy="95"
+                rx="28"
+                ry="16"
+                fill="url(#paint_lottie_aura_red)"
+                className="lottie-aura-red"
+              />
+
+              {/* 4-Blade Ribbon Mark on Cover */}
+              <g transform="translate(48, 92) scale(0.35)">
+                <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#121212" />
+                <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#ff3b30" />
+                <path d="M0,0 L-8,-8 L0,-16 L8,-8 Z" fill="#121212" />
+                <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="#ff3b30" />
+              </g>
+
+              {/* Technical Label Line */}
+              <line x1="68" y1="105" x2="112" y2="83" stroke="#121212" strokeWidth="1.5" />
             </g>
 
-            {/* Floating Zen Particles */}
-            <circle cx="36" cy="50" r="2.5" fill="var(--accent-color, #70a1ff)" className="lottie-p1" />
-            <circle cx="128" cy="94" r="2" fill="var(--accent-color, #ff4757)" className="lottie-p2" />
-            <circle cx="48" cy="116" r="1.5" fill="var(--accent-color, #2ed573)" className="lottie-p1" />
+            {/* Floating Editorial Drafting Pen */}
+            <g transform="translate(105, 35) rotate(24)">
+              <rect x="0" y="0" width="5" height="28" rx="2" fill="#121212" />
+              <polygon points="0,28 5,28 2.5,34" fill="#ff3b30" />
+            </g>
 
             <defs>
               <radialGradient
-                id="paint0_radial_notes"
+                id="paint_lottie_aura_red"
                 cx="0"
                 cy="0"
                 r="1"
                 gradientUnits="userSpaceOnUse"
-                gradientTransform="translate(80 85) rotate(90) scale(48)"
+                gradientTransform="translate(80 95) scale(28 16)"
               >
-                <stop stopColor="var(--accent-color, #70a1ff)" stopOpacity="0.35" />
-                <stop offset="1" stopColor="var(--accent-color, #70a1ff)" stopOpacity="0" />
+                <stop stopColor="#ff2e2e" stopOpacity="0.9" />
+                <stop offset="0.6" stopColor="#ff3b30" stopOpacity="0.4" />
+                <stop offset="1" stopColor="#ff3b30" stopOpacity="0" />
               </radialGradient>
             </defs>
           </svg>

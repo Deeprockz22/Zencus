@@ -2,12 +2,9 @@ import React from 'react';
 
 /**
  * ⚡ ZENCUS VECTOR BRAND LOGO
- * Iconic fusion of:
- * 1. Zen Ensō Ring (Harmonious circular flow)
- * 2. Precision Modernist "Z" (The Zencus mark)
- * 3. Central Focus Core (Pinpoint attention & clarity)
+ * 4-Blade Geometric Origami Ribbon Emblem in Radiant Scarlet (#FF3B30) and Ink Black.
  */
-export default function FocusLogo({ size = 36, className = '', strokeWidth = 2.8 }) {
+export default function FocusLogo({ size = 36, className = '' }) {
   return (
     <svg
       width={size}
@@ -18,47 +15,18 @@ export default function FocusLogo({ size = 36, className = '', strokeWidth = 2.8
       className={`focus-brand-logo zencus-brand-logo ${className}`}
       aria-label="Zencus Logo"
     >
-      <defs>
-        <linearGradient id="zencusLogoGrad" x1="12" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="var(--accent-primary, #38bdf8)" />
-          <stop offset="100%" stopColor="var(--accent-hover, #6366f1)" />
-        </linearGradient>
-      </defs>
-
-      {/* 1. Outer Zen Ensō Flow Ring with subtle cosmic opening */}
-      <circle
-        cx="24"
-        cy="24"
-        r="19"
-        stroke="currentColor"
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeDasharray="105 14"
-        opacity="0.85"
-      />
-
-      {/* 2. Precision Modernist "Z" Path */}
-      <path
-        d="M 16 16.5 H 32 L 16 31.5 H 32"
-        stroke="currentColor"
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* 3. Central Focus Core Nexus (Aperture Dot) */}
-      <circle
-        cx="24"
-        cy="24"
-        r="4.2"
-        fill="currentColor"
-      />
-      <circle
-        cx="24"
-        cy="24"
-        r="2"
-        fill="#09090b"
-      />
+      {/* 4-Blade Folded Ribbon Mark */}
+      <g transform="translate(24, 24)">
+        {/* Top Blade */}
+        <path d="M0,0 L10,-10 L20,0 L10,10 Z" fill="#ff3b30" />
+        {/* Right Blade */}
+        <path d="M0,0 L10,10 L0,20 L-10,10 Z" fill="#121212" />
+        {/* Bottom Blade */}
+        <path d="M0,0 L-10,10 L-20,0 L-10,-10 Z" fill="#ff3b30" />
+        {/* Left Blade */}
+        <path d="M0,0 L-10,-10 L0,-20 L10,-10 Z" fill="#121212" />
+      </g>
     </svg>
   );
 }
+
