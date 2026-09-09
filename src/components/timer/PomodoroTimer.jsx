@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw, SkipForward, Flame, Target, Sparkles, Volume2, BookOpen } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipForward, Flame, Target, Sparkles, Volume2, BookOpen, Maximize2 } from 'lucide-react';
 import MagnetButton from '../react-bits/MagnetButton';
 import ShinyButton from '../react-bits/ShinyButton';
 import DecryptedText from '../react-bits/DecryptedText';
@@ -35,6 +35,7 @@ export default function PomodoroTimer({
   companionType = 'dino',
   onOpenPicker,
   onSelectCompanion,
+  onOpenFullscreen,
   theme = 'light'
 }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -113,6 +114,17 @@ export default function PomodoroTimer({
         >
           <span>🌍 3D Globe</span>
         </ShinyButton>
+        {onOpenFullscreen && (
+          <ShinyButton
+            variant="pill"
+            size="sm"
+            onClick={onOpenFullscreen}
+            className="visualizer-toggle-btn"
+            title="Launch React Bits Star Burst Zen Mode (F)"
+          >
+            <span>🌟 Star Burst</span>
+          </ShinyButton>
+        )}
       </div>
 
       {visualizerType === 'globe' ? (
@@ -259,6 +271,19 @@ export default function PomodoroTimer({
       >
         <SkipForward size={16} />
       </ShinyButton>
+
+      {onOpenFullscreen && (
+        <ShinyButton
+          variant="icon"
+          size="md"
+          onClick={onOpenFullscreen}
+          ariaLabel="Launch Fullscreen StarBurst Zen Mode"
+          title="Fullscreen Star Burst Zen (F)"
+          className="control-icon-btn"
+        >
+          <Maximize2 size={16} />
+        </ShinyButton>
+      )}
     </div>
   );
 

@@ -417,6 +417,7 @@ export default function App() {
               setCompanionType(newPet);
               Storage.set('active_companion', newPet);
             }}
+            onOpenFullscreen={() => setIsFullscreen(true)}
           />
         )}
 
