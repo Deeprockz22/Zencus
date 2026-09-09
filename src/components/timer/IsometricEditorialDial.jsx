@@ -66,20 +66,11 @@ export default function IsometricEditorialDial({
         )}
 
         {/* Progress Ribbon VU Meter */}
-        <div className="w-48 h-2.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border-2 border-[#121212] dark:border-[rgba(255,255,255,0.4)] shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.22)] my-2.5">
+        <div className="w-48 h-2.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border-2 border-[#121212] dark:border-[rgba(255,255,255,0.4)] shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.22)] my-2">
           <div
             className="h-full bg-[#ff3b30] transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
-        </div>
-
-        {/* Subtext Status */}
-        <div className="text-xs font-mono tracking-wider font-semibold text-[var(--text-secondary)] uppercase">
-          {radioState.isPlaying
-            ? `🎷 ${radioState.currentStation.name} • ${radioState.currentStation.freq}`
-            : isRunning
-            ? '⚡ 33⅓ RPM Direct Drive Spinning'
-            : 'Click Digits to Adjust Time'}
         </div>
       </div>
 
@@ -207,19 +198,8 @@ export default function IsometricEditorialDial({
               <circle cx="0" cy="0" r="36" fill="#ff3b30" stroke="#121212" strokeWidth="2" />
               <circle cx="0" cy="0" r="28" fill="none" stroke="#ffffff" strokeWidth="1" strokeOpacity="0.7" strokeDasharray="8 4" />
 
-              {/* Center Label Typography */}
-              <text x="0" y="-12" textAnchor="middle" fontSize="6.5" fontFamily="JetBrains Mono, monospace" fontWeight="900" fill="#ffffff" letterSpacing="1">
-                ZENCUS
-              </text>
-              <text x="0" y="-4" textAnchor="middle" fontSize="4.5" fontFamily="JetBrains Mono, monospace" fontWeight="700" fill="#ffffff" fillOpacity="0.85" letterSpacing="1.2">
-                SIDE A • 33 RPM
-              </text>
-              <text x="0" y="20" textAnchor="middle" fontSize="4.2" fontFamily="JetBrains Mono, monospace" fontWeight="800" fill="#121212" letterSpacing="0.8">
-                DIRECT DRIVE
-              </text>
-
               {/* Center 4-Blade Origami Ribbon Mark */}
-              <g transform="scale(0.5)">
+              <g transform="scale(0.75)">
                 <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#121212" />
                 <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#ffffff" />
                 <path d="M0,0 L-8,-8 L0,-16 L8,-8 Z" fill="#121212" />
@@ -280,7 +260,6 @@ export default function IsometricEditorialDial({
           >
             <ellipse cx="0" cy="0" rx="8" ry="4.5" fill="#e4e4e7" stroke="#121212" strokeWidth="1.5" />
             <ellipse cx="0" cy="-2" rx="5" ry="3" fill={radioState.isPlaying ? '#22c55e' : '#ff3b30'} />
-            <text x="-6" y="10" fontSize="6.5" fontFamily="JetBrains Mono, monospace" fontWeight="800" fill="#121212">33⅓</text>
           </g>
 
           {/* Pitch Slider Track */}
@@ -293,15 +272,6 @@ export default function IsometricEditorialDial({
 
           {/* Power Status LED */}
           <circle cx="95" cy="205" r="3.5" fill={isDiscSpinning ? '#22c55e' : '#ff3b30'} stroke="#121212" strokeWidth="1" />
-
-          {/* Technical Micro-Metadata Text in isometric angle */}
-          <g transform="translate(75, 215) rotate(26.5)" fill="#121212">
-            <text x="32" y="-12" fontSize="7" fontFamily="JetBrains Mono, monospace" fontWeight="800" letterSpacing="1">
-              {radioState.isPlaying
-                ? `ON AIR: ${radioState.currentStation.shortName.toUpperCase()} • ${radioState.currentStation.freq}`
-                : 'ZENCUS STEREO • DIRECT DRIVE • HI-FI'}
-            </text>
-          </g>
 
           {/* ══════════ ISOMETRIC COFFEE CUP ══════════ */}
           {/* Saucer Plate */}
@@ -327,28 +297,7 @@ export default function IsometricEditorialDial({
               <path d="M 398 59 Q 404 47 400 38" style={{ animationDelay: '0.4s' }} />
             </g>
           )}
-
-          {/* Hand-Drawn Editorial Curve Arrow pointing to mode */}
-          <path d="M 105 120 C 120 90 150 90 170 100" stroke="#121212" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-          <polygon points="170,100 163,95 164,104" fill="#121212" />
-
-          {/* Arrow Label */}
-          <text x="50" y="135" fill="var(--text-primary)" fontSize="10" fontFamily="Inter, sans-serif" fontWeight="800" letterSpacing="-0.5">
-            {radioState.isPlaying ? '(JAZZ RADIO ON AIR)' : '(ANALOG FLOW)'}
-          </text>
         </svg>
-      </div>
-
-      {/* Editorial Decorative Stamp Bar */}
-      <div className="editorial-footer-bar flex items-center justify-center gap-3 w-full max-w-md px-4 mt-2 text-[10px] font-mono tracking-wider text-[var(--text-secondary)] uppercase flex-wrap">
-        <span>{radioState.isPlaying ? radioState.currentStation.shortName : 'HI-FI STEREO'}</span>
-        <span className="text-[var(--text-tertiary)] opacity-60">•</span>
-        <span className="flex items-center gap-1.5 font-bold text-[#ff3b30]">
-          <span className={`inline-block w-1.5 h-1.5 rounded-full ${isDiscSpinning ? 'bg-[#22c55e] animate-pulse' : 'bg-[#ff3b30]'}`} />
-          {radioState.isPlaying ? 'RADIO ON GROOVE' : isRunning ? 'NEEDLE ON GROOVE' : 'TURNTABLE READY'}
-        </span>
-        <span className="text-[var(--text-tertiary)] opacity-60">•</span>
-        <span>{radioState.isPlaying ? radioState.currentStation.bitrate : '33⅓ RPM'}</span>
       </div>
     </div>
   );
