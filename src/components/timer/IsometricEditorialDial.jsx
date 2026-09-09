@@ -36,20 +36,17 @@ export default function IsometricEditorialDial({
               }
               @keyframes tonearmFloat {
                 0%, 100% { transform: rotate(-14deg); }
-                50% { transform: rotate(-15deg); }
+                50% { transform: rotate(-15.2deg); }
               }
               @keyframes steamRise {
                 0% { transform: translateY(0) scaleX(1); opacity: 0.8; }
                 50% { transform: translateY(-8px) scaleX(1.15); opacity: 0.4; }
                 100% { transform: translateY(-16px) scaleX(0.9); opacity: 0; }
               }
-              @keyframes soundWavePop {
-                0% { transform: scale(0.8); opacity: 0.8; }
-                100% { transform: scale(1.3); opacity: 0; }
-              }
               .vinyl-disc-spin {
-                ${isRunning ? 'animation: spinVinylGroove 2.5s linear infinite;' : ''}
-                transform-origin: 200px 225px;
+                transform-box: fill-box;
+                transform-origin: 0px 0px;
+                ${isRunning ? 'animation: spinVinylGroove 2.4s linear infinite;' : ''}
               }
               .tonearm-animated {
                 transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -116,75 +113,71 @@ export default function IsometricEditorialDial({
           <ellipse cx="410" cy="245" rx="8" ry="4" fill="#3f3f46" stroke="#121212" strokeWidth="1.5" />
 
           {/* ══════════ ROTATING VINYL RECORD DISC ══════════ */}
-          {/* Turntable Platter Metal Rim */}
-          <ellipse
-            cx="200"
-            cy="225"
-            rx="115"
-            ry="62"
-            fill="#27272a"
-            stroke="#121212"
-            strokeWidth="2"
-          />
+          {/* Turntable Platter Metal Rim & Isometric Foreshortened Container */}
+          <g transform="translate(200, 225) scale(1, 0.54)">
+            {/* Stationary Heavy Cast Platter Rim */}
+            <circle cx="0" cy="0" r="116" fill="#18181b" stroke="#121212" strokeWidth="3" />
+            <circle cx="0" cy="0" r="112" fill="#27272a" stroke="#121212" strokeWidth="1.5" />
 
-          {/* Vinyl Record Body (Group with spin animation) */}
-          <g className="vinyl-disc-spin">
-            {/* Outer Vinyl Black Disc */}
-            <ellipse
-              cx="200"
-              cy="225"
-              rx="110"
-              ry="59"
-              fill="#09090b"
-              stroke="#121212"
-              strokeWidth="2"
-            />
+            {/* True Rotating Vinyl Group (Center is strictly at 0,0 for perfect zero-wobble rotation) */}
+            <g className="vinyl-disc-spin" style={{ transformOrigin: '0px 0px' }}>
+              {/* Outer Vinyl Black Disc */}
+              <circle cx="0" cy="0" r="108" fill="#09090b" stroke="#121212" strokeWidth="2.5" />
 
-            {/* Concentric Sound Grooves */}
-            <ellipse cx="200" cy="225" rx="100" ry="53.5" stroke="#27272a" strokeWidth="1.2" fill="none" strokeDasharray="300 12" />
-            <ellipse cx="200" cy="225" rx="90" ry="48" stroke="#1c1c1f" strokeWidth="1" fill="none" />
-            <ellipse cx="200" cy="225" rx="80" ry="42.5" stroke="#27272a" strokeWidth="1" fill="none" strokeDasharray="240 8" />
-            <ellipse cx="200" cy="225" rx="70" ry="37" stroke="#1c1c1f" strokeWidth="1" fill="none" />
-            <ellipse cx="200" cy="225" rx="60" ry="32" stroke="#27272a" strokeWidth="0.8" fill="none" strokeDasharray="180 6" />
-            <ellipse cx="200" cy="225" rx="50" ry="26.5" stroke="#1c1c1f" strokeWidth="0.8" fill="none" />
+              {/* Concentric Micro Sound Grooves */}
+              <circle cx="0" cy="0" r="100" stroke="#27272a" strokeWidth="1.5" fill="none" strokeDasharray="60 12 110 18" />
+              <circle cx="0" cy="0" r="92" stroke="#1c1c1f" strokeWidth="1.2" fill="none" />
+              <circle cx="0" cy="0" r="84" stroke="#27272a" strokeWidth="1.4" fill="none" strokeDasharray="50 14 90 20" />
+              <circle cx="0" cy="0" r="76" stroke="#1c1c1f" strokeWidth="1" fill="none" />
+              <circle cx="0" cy="0" r="68" stroke="#27272a" strokeWidth="1.2" fill="none" strokeDasharray="40 10 70 15" />
+              <circle cx="0" cy="0" r="60" stroke="#1c1c1f" strokeWidth="1" fill="none" />
+              <circle cx="0" cy="0" r="50" stroke="#27272a" strokeWidth="1.2" fill="none" strokeDasharray="30 8 50 12" />
+              <circle cx="0" cy="0" r="42" stroke="#1c1c1f" strokeWidth="1" fill="none" />
 
-            {/* Vinyl Light Sheen Glints */}
+              {/* Lead-in and Run-out Spiral Tracks */}
+              <circle cx="0" cy="0" r="105" stroke="#3f3f46" strokeWidth="0.8" fill="none" strokeDasharray="16 6" />
+              <circle cx="0" cy="0" r="39" stroke="#3f3f46" strokeWidth="1.4" fill="none" strokeDasharray="10 8" />
+
+              {/* Center Record Label - Radiant Scarlet (#FF3B30) */}
+              <circle cx="0" cy="0" r="36" fill="#ff3b30" stroke="#121212" strokeWidth="2" />
+              <circle cx="0" cy="0" r="28" fill="none" stroke="#ffffff" strokeWidth="1" strokeOpacity="0.7" strokeDasharray="8 4" />
+
+              {/* Center Label Typography */}
+              <text x="0" y="-12" textAnchor="middle" fontSize="6.5" fontFamily="JetBrains Mono, monospace" fontWeight="900" fill="#ffffff" letterSpacing="1">
+                ZENCUS
+              </text>
+              <text x="0" y="-4" textAnchor="middle" fontSize="4.5" fontFamily="JetBrains Mono, monospace" fontWeight="700" fill="#ffffff" fillOpacity="0.85" letterSpacing="1.2">
+                SIDE A • 33 RPM
+              </text>
+              <text x="0" y="20" textAnchor="middle" fontSize="4.2" fontFamily="JetBrains Mono, monospace" fontWeight="800" fill="#121212" letterSpacing="0.8">
+                DIRECT DRIVE
+              </text>
+
+              {/* Center 4-Blade Origami Ribbon Mark */}
+              <g transform="scale(0.5)">
+                <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#121212" />
+                <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#ffffff" />
+                <path d="M0,0 L-8,-8 L0,-16 L8,-8 Z" fill="#121212" />
+                <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="#ffffff" />
+              </g>
+
+              {/* Spindle Pin Hole */}
+              <circle cx="0" cy="0" r="4" fill="#121212" stroke="#ffffff" strokeWidth="0.8" />
+            </g>
+
+            {/* Stationary Specular Light Sheens (Realistic reflection of ambient studio light across spinning vinyl) */}
             <path
-              d="M 130 200 Q 200 225 270 200 Q 200 225 130 250"
+              d="M 0 0 L -80 -72 A 108 108 0 0 1 -20 -106 Z"
               fill="#ffffff"
               fillOpacity="0.08"
+              pointerEvents="none"
             />
-
-            {/* Center Label in Radiant Scarlet (#FF3B30) */}
-            <ellipse
-              cx="200"
-              cy="225"
-              rx="38"
-              ry="20"
-              fill="#ff3b30"
-              stroke="#121212"
-              strokeWidth="1.5"
+            <path
+              d="M 0 0 L 80 72 A 108 108 0 0 1 20 106 Z"
+              fill="#ffffff"
+              fillOpacity="0.08"
+              pointerEvents="none"
             />
-            {/* Inner Label Accent Ring */}
-            <ellipse
-              cx="200"
-              cy="225"
-              rx="30"
-              ry="16"
-              fill="none"
-              stroke="#ffffff"
-              strokeWidth="0.8"
-              strokeOpacity="0.6"
-            />
-
-            {/* Center Spindle Hole & 4-Blade Ribbon Mark */}
-            <g transform="translate(200, 225) scale(0.4)">
-              <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#121212" />
-              <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#ffffff" />
-              <path d="M0,0 L-8,-8 L0,-16 L8,-8 Z" fill="#121212" />
-              <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="#ffffff" />
-            </g>
-            <circle cx="200" cy="225" r="3.5" fill="#121212" />
           </g>
 
           {/* ══════════ TONEARM & CARTRIDGE ══════════ */}

@@ -33,34 +33,39 @@ export default function LottieAnimation({
                   0%, 100% { transform: rotate(0deg); }
                   50% { transform: rotate(-3deg); }
                 }
-                .lottie-vinyl-rot { animation: spinLottieVinyl 3s linear infinite; transform-origin: 75px 85px; }
+                .lottie-vinyl-rot {
+                  transform-box: fill-box;
+                  transform-origin: 0px 0px;
+                  animation: spinLottieVinyl 3s linear infinite;
+                }
                 .lottie-tonearm { animation: tonearmFloatMini 2s ease-in-out infinite; transform-origin: 120px 60px; }
               `}
             </style>
 
             {/* Hard-Cast Block Shadow */}
-            <ellipse cx="75" cy="85" rx="52" ry="28" fill="#121212" fillOpacity="0.8" transform="translate(6, 6)" />
+            <g transform="translate(75, 85) scale(1, 0.54)">
+              <circle cx="0" cy="0" r="52" fill="#121212" fillOpacity="0.8" transform="translate(6, 11)" />
+              {/* Isometric Turntable Platter */}
+              <circle cx="0" cy="0" r="50" fill="#27272a" stroke="#121212" strokeWidth="2" />
 
-            {/* Isometric Turntable Platter */}
-            <ellipse cx="75" cy="85" rx="50" ry="27" fill="#27272a" stroke="#121212" strokeWidth="2" />
+              {/* Rotating Vinyl Record */}
+              <g className="lottie-vinyl-rot" style={{ transformOrigin: '0px 0px' }}>
+                <circle cx="0" cy="0" r="46" fill="#09090b" stroke="#121212" strokeWidth="1.5" />
+                <circle cx="0" cy="0" r="38" stroke="#27272a" strokeWidth="1" fill="none" strokeDasharray="120 6" />
+                <circle cx="0" cy="0" r="30" stroke="#1c1c1f" strokeWidth="0.8" fill="none" />
+                <circle cx="0" cy="0" r="22" stroke="#27272a" strokeWidth="0.8" fill="none" strokeDasharray="80 4" />
 
-            {/* Rotating Vinyl Record */}
-            <g className="lottie-vinyl-rot">
-              <ellipse cx="75" cy="85" rx="46" ry="25" fill="#09090b" stroke="#121212" strokeWidth="1.5" />
-              <ellipse cx="75" cy="85" rx="38" ry="20.5" stroke="#27272a" strokeWidth="1" fill="none" strokeDasharray="120 6" />
-              <ellipse cx="75" cy="85" rx="30" ry="16" stroke="#1c1c1f" strokeWidth="0.8" fill="none" />
-              <ellipse cx="75" cy="85" rx="22" ry="12" stroke="#27272a" strokeWidth="0.8" fill="none" strokeDasharray="80 4" />
-
-              {/* Scarlet Red Center Label */}
-              <ellipse cx="75" cy="85" rx="14" ry="7.5" fill="#ff3b30" stroke="#121212" strokeWidth="1" />
-              {/* Spindle & 4-Blade Ribbon */}
-              <g transform="translate(75, 85) scale(0.25)">
-                <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#121212" />
-                <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#ffffff" />
-                <path d="M0,0 L-8,-8 L0,-16 L8,-8 Z" fill="#121212" />
-                <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="#ffffff" />
+                {/* Scarlet Red Center Label */}
+                <circle cx="0" cy="0" r="14" fill="#ff3b30" stroke="#121212" strokeWidth="1" />
+                {/* Spindle & 4-Blade Ribbon */}
+                <g transform="scale(0.25)">
+                  <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#121212" />
+                  <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="#ffffff" />
+                  <path d="M0,0 L-8,-8 L0,-16 L8,-8 Z" fill="#121212" />
+                  <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="#ffffff" />
+                </g>
+                <circle cx="0" cy="0" r="1.5" fill="#121212" />
               </g>
-              <circle cx="75" cy="85" r="1.5" fill="#121212" />
             </g>
 
             {/* Tonearm */}
