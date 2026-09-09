@@ -170,10 +170,10 @@ export default function PomodoroTimer({
   );
 
   const controlsElement = (
-    <div className="minimal-timer-controls flex items-center justify-center gap-3 w-full">
+    <div className="minimal-timer-controls flex items-center justify-center gap-4 w-full">
       {/* Primary Hero Start/Pause Button */}
       <button
-        className={`hero-start-btn flex items-center justify-center gap-2 px-7 py-2.5 rounded-full font-mono font-bold text-sm tracking-wide text-white transition-all active:scale-95 shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.2)] ${
+        className={`hero-start-btn flex items-center justify-center gap-2 px-8 py-2.5 rounded-full font-mono font-bold text-sm tracking-wide text-white transition-all active:scale-95 shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.2)] ${
           isRunning
             ? 'bg-[#18181b] border-2 border-[#18181b] dark:border-[rgba(255,255,255,0.3)] hover:bg-[#27272a]'
             : 'bg-[#ff3b30] border-2 border-[#ff3b30] hover:bg-[#e03126]'
@@ -196,7 +196,7 @@ export default function PomodoroTimer({
 
       {/* Secondary Quick-Action Icon Buttons */}
       <button
-        className="control-icon-btn flex items-center justify-center w-10 h-10 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all active:scale-95 shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.15)]"
+        className="control-icon-btn flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all active:scale-95 shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.15)]"
         onClick={resetTimer}
         aria-label="Reset Timer"
         title="Reset"
@@ -205,7 +205,7 @@ export default function PomodoroTimer({
       </button>
 
       <button
-        className="control-icon-btn flex items-center justify-center w-10 h-10 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all active:scale-95 shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.15)]"
+        className="control-icon-btn flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all active:scale-95 shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.15)]"
         onClick={skipTimer}
         aria-label="Skip to next session"
         title="Skip"
@@ -218,31 +218,37 @@ export default function PomodoroTimer({
   const soundscapesElement = <AmbientSoundscapes />;
 
   const masterControlConsole = (
-    <div className="minimal-timer-console flex flex-col items-center gap-3.5 w-full max-w-lg mx-auto p-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] shadow-[3px_3px_0px_#121212] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.14)] select-none">
+    <div className="timer-controls-flow flex flex-col items-center w-full max-w-xl mx-auto select-none">
       {/* 1. Focus Mode Capsule */}
-      {modeSelectorElement}
+      <div className="w-full flex justify-center mb-6">
+        {modeSelectorElement}
+      </div>
 
       {/* 2. Duration Presets */}
-      {presetsElement}
+      <div className="w-full flex justify-center mb-7">
+        {presetsElement}
+      </div>
 
       {/* 3. Transport Controls */}
-      {controlsElement}
+      <div className="w-full flex justify-center mb-7">
+        {controlsElement}
+      </div>
 
       {/* 4. Focus Atmosphere Generator */}
-      <div className="w-full pt-2.5 border-t border-[var(--border-subtle)] flex flex-col items-center">
+      <div className="w-full flex justify-center mb-5">
         {soundscapesElement}
       </div>
     </div>
   );
 
   const statsElement = (
-    <div className="minimal-stats-strip flex items-center justify-center gap-4 py-2 px-5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-xs font-mono text-[var(--text-secondary)] shadow-sm">
+    <div className="minimal-stats-strip flex flex-row items-center justify-center gap-4 text-xs font-mono text-[var(--text-secondary)] whitespace-nowrap select-none py-1">
       <div className="flex items-center gap-1.5">
         <Target size={14} className="text-[#ff3b30]" />
         <span className="font-bold text-[var(--text-primary)]">{sessionsCompleted}</span>
         <span>Sessions</span>
       </div>
-      <span className="text-[var(--border-subtle)]">•</span>
+      <span className="text-[var(--text-tertiary)] opacity-60">•</span>
       <div className="flex items-center gap-1.5">
         <Flame size={14} className="text-[#ff3b30]" />
         <span className="font-bold text-[var(--text-primary)]">{totalFocusMinutes}</span>

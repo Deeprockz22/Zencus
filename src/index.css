@@ -1833,11 +1833,11 @@ body {
 .ambient-soundscape-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  padding: 8px 16px;
-  border-radius: var(--radius-full);
+  gap: 8px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
   margin-top: 4px;
   flex-wrap: wrap;
   justify-content: center;
@@ -3072,9 +3072,9 @@ body {
 
 /* 6. Focus Soundscape Bar & Buttons */
 [data-theme='dark'] .ambient-soundscape-bar {
-  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.2) !important;
-  background: var(--bg-secondary) !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
 }
 
 [data-theme='dark'] .ambient-btn {
@@ -7846,13 +7846,14 @@ body {
     margin-bottom: 2px;
   }
 
+  .timer-landscape-right-deck .timer-controls-flow,
   .timer-landscape-right-deck .minimal-timer-console {
     width: 100%;
-    max-width: 480px;
+    max-width: 520px;
   }
 
   .timer-landscape-right-deck .minimal-stats-strip {
-    margin-top: 2px;
+    margin-top: 6px;
   }
 
   /* Tasks multi-column bento board on desktop landscape */
@@ -7879,94 +7880,90 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   🎛️ MINIMAL TIMER CONSOLE & CONTROLS
-   Serene, uncluttered, breathing focus environment
+   🎛️ AIRY MINIMAL TIMER CONTROLS
+   Pure unboxed elements with generous breathing room
    ═══════════════════════════════════════════════════════════════ */
-.minimal-timer-console {
+.timer-controls-flow {
   width: 100%;
-  max-width: 480px;
+  max-width: 540px;
   margin: 0 auto;
-  padding: 18px 22px;
-  background: var(--bg-secondary);
-  border: 1.5px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  box-shadow: 3px 3px 0px #121212;
-  transition: all 0.2s ease;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   user-select: none;
 }
 
-[data-theme='dark'] .minimal-timer-console {
-  background: #151518 !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.12) !important;
-}
-
-/* Minimal Mode Selector */
+/* Minimal Mode Selector Capsule */
 .minimal-mode-selector {
-  display: flex;
+  display: inline-flex;
   gap: 4px;
-  background: var(--bg-tertiary);
-  padding: 4px;
+  background: var(--bg-secondary);
+  padding: 5px 6px;
   border-radius: var(--radius-full);
-  border: 1px solid var(--border-subtle);
-  width: 100%;
-  justify-content: space-between;
+  border: 1.5px solid var(--border-subtle);
+  box-shadow: 2px 2px 0px #121212;
+  width: auto;
+  max-width: 100%;
+  justify-content: center;
 }
 
 [data-theme='dark'] .minimal-mode-selector {
-  background: #1b1b22 !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: #16161a !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.12) !important;
 }
 
 .minimal-mode-selector .mode-btn {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 7px 10px;
+  gap: 7px;
+  padding: 8px 16px;
   border-radius: var(--radius-full);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-secondary);
   border: 1px solid transparent;
   background: transparent;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .minimal-mode-selector .mode-btn:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .minimal-mode-selector .mode-btn.active {
   background: #ff3b30 !important;
   color: #ffffff !important;
   border-color: #ff3b30 !important;
-  box-shadow: 1px 1px 0px #121212;
+  box-shadow: 1.5px 1.5px 0px #121212;
 }
 
 [data-theme='dark'] .minimal-mode-selector .mode-btn.active {
-  box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.25) !important;
 }
 
-/* Minimal Presets */
+/* Minimal Presets with Generous Spacing */
 .minimal-presets {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   justify-content: center;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .minimal-presets .preset-pill {
-  padding: 5px 16px;
+  padding: 6px 18px;
   border-radius: var(--radius-full);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-family: var(--font-mono);
-  font-weight: 600;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-subtle);
+  font-weight: 700;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-subtle);
   color: var(--text-secondary);
+  box-shadow: 2px 2px 0px #121212;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -7974,44 +7971,49 @@ body {
 .minimal-presets .preset-pill:hover {
   border-color: var(--border-strong);
   color: var(--text-primary);
+  transform: translate(-1px, -1px);
 }
 
 .minimal-presets .preset-pill.active {
   background: #ff3b30 !important;
   color: #ffffff !important;
   border-color: #ff3b30 !important;
-  box-shadow: 1.5px 1.5px 0px #121212 !important;
+  box-shadow: 2px 2px 0px #121212 !important;
 }
 
 [data-theme='dark'] .minimal-presets .preset-pill {
-  background: #1e1e24 !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
+  background: #16161a !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
   color: #a1a1aa !important;
-  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.12) !important;
 }
 
 [data-theme='dark'] .minimal-presets .preset-pill:hover {
   color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
 [data-theme='dark'] .minimal-presets .preset-pill.active {
   background: #ff3b30 !important;
   color: #ffffff !important;
   border-color: #ff3b30 !important;
-  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.22) !important;
 }
 
-/* Minimal Transport Controls */
+/* Minimal Transport Controls with Distance */
 .minimal-timer-controls {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 16px;
   width: 100%;
 }
 
 .hero-start-btn {
+  height: 44px;
+  padding: 0 28px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
   cursor: pointer;
 }
 
@@ -8020,6 +8022,9 @@ body {
 }
 
 .control-icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
   cursor: pointer;
 }
 
@@ -8027,55 +8032,86 @@ body {
   transform: translate(-1px, -1px);
 }
 
-/* Ambient Soundscapes inside Minimal Console */
-.minimal-timer-console .ambient-soundscape-bar {
+/* Ambient Soundscapes Standalone Pill Grid */
+.timer-controls-flow .ambient-label,
+.minimal-timer-console .ambient-label {
+  display: none !important;
+}
+
+.timer-controls-flow .ambient-buttons-group {
+  display: flex !important;
+  gap: 10px !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+}
+
+.ambient-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 15px;
+  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 1.5px 1.5px 0px #121212;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+[data-theme='dark'] .ambient-btn {
+  background: #16161a !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: #a1a1aa !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.12) !important;
+}
+
+.ambient-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  transform: translate(-1px, -1px);
+}
+
+[data-theme='dark'] .ambient-btn:hover {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+}
+
+.ambient-btn.active {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border-color: #ff3b30 !important;
+}
+
+[data-theme='dark'] .ambient-btn.active {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border-color: #ff3b30 !important;
+}
+
+/* Minimal Stats Strip (Clean Horizontal Row, No Boxes) */
+.minimal-stats-strip {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  white-space: nowrap !important;
+  width: auto !important;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   padding: 0 !important;
-  margin: 0 !important;
-  width: 100%;
-  justify-content: center;
-  gap: 8px;
-}
-
-.minimal-timer-console .ambient-label {
-  display: none;
-}
-
-.minimal-timer-console .ambient-btn {
-  font-size: 0.74rem;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-}
-
-[data-theme='dark'] .minimal-timer-console .ambient-btn {
-  background: #1b1b22 !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: #a1a1aa !important;
-}
-
-[data-theme='dark'] .minimal-timer-console .ambient-btn:hover {
-  color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.35) !important;
-}
-
-[data-theme='dark'] .minimal-timer-console .ambient-btn.active {
-  background: #ff3b30 !important;
-  color: #ffffff !important;
-  border-color: #ff3b30 !important;
-  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.2) !important;
-}
-
-/* Minimal Stats Strip */
-.minimal-stats-strip {
-  width: auto;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
   user-select: none;
-  transition: all 0.2s ease;
 }
 
 [data-theme='dark'] .minimal-stats-strip {
-  background: #151518 !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.1) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
