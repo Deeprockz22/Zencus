@@ -340,12 +340,14 @@ export default function IsometricEditorialDial({
       </div>
 
       {/* Editorial Decorative Stamp Bar */}
-      <div className="editorial-footer-bar flex items-center justify-between w-full max-w-md px-4 mt-2 text-[10px] font-mono tracking-wider text-[var(--text-secondary)] uppercase">
+      <div className="editorial-footer-bar flex items-center justify-center gap-3 w-full max-w-md px-4 mt-2 text-[10px] font-mono tracking-wider text-[var(--text-secondary)] uppercase flex-wrap">
         <span>{radioState.isPlaying ? radioState.currentStation.shortName : 'HI-FI STEREO'}</span>
-        <span className="flex items-center gap-1 font-bold text-[#ff3b30]">
+        <span className="text-[var(--text-tertiary)] opacity-60">•</span>
+        <span className="flex items-center gap-1.5 font-bold text-[#ff3b30]">
           <span className={`inline-block w-1.5 h-1.5 rounded-full ${isDiscSpinning ? 'bg-[#22c55e] animate-pulse' : 'bg-[#ff3b30]'}`} />
           {radioState.isPlaying ? 'RADIO ON GROOVE' : isRunning ? 'NEEDLE ON GROOVE' : 'TURNTABLE READY'}
         </span>
+        <span className="text-[var(--text-tertiary)] opacity-60">•</span>
         <span>{radioState.isPlaying ? radioState.currentStation.bitrate : '33⅓ RPM'}</span>
       </div>
     </div>

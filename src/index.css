@@ -3297,30 +3297,33 @@ body {
   transform: translate(-1px, -1px);
 }
 
-/* 13. Vintage Jazz & Saxophone Radio Player */
-[data-theme='dark'] .vintage-radio-tuner-card {
-  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
-  box-shadow: 4.5px 4.5px 0px rgba(255, 255, 255, 0.22) !important;
+/* 13. Minimal Hi-Fi Jazz & Saxophone Radio Player */
+.minimal-radio-deck {
+  margin-top: 8px;
+  width: 100%;
 }
 
-[data-theme='dark'] .vintage-radio-tuner-card button {
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.18) !important;
+[data-theme='dark'] .minimal-radio-bar {
+  background: #141417 !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.15) !important;
 }
 
-[data-theme='dark'] .vintage-radio-tuner-card button:hover {
-  border-color: rgba(255, 255, 255, 0.6) !important;
-  box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.3) !important;
-  transform: translate(-1px, -1px);
+[data-theme='dark'] .minimal-station-chips button:not(.bg-\[\#ff3b30\]) {
+  background: #1a1a1f !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #a1a1aa !important;
 }
 
-[data-theme='dark'] .vintage-radio-tuner-card button:active {
-  box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.15) !important;
-  transform: translate(2px, 2px);
+[data-theme='dark'] .minimal-station-chips button:not(.bg-\[\#ff3b30\]):hover {
+  background: #27272a !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
-[data-theme='dark'] .vintage-radio-tuner-card .analog-display-screen {
-  border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+.minimal-vol-slider {
+  height: 4px;
+  border-radius: 2px;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -7820,8 +7823,8 @@ body {
     width: 100%;
   }
 
-  .timer-landscape-left-deck .vintage-radio-tuner-card {
-    margin-top: 0;
+  .timer-landscape-left-deck .minimal-radio-deck {
+    margin-top: 4px;
     margin-bottom: 0;
     width: 100%;
   }
