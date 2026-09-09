@@ -8306,7 +8306,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 28px !important;
     width: 100%;
     min-width: 0;
   }
@@ -8315,17 +8315,18 @@ body {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-bottom: 2px;
+    margin-bottom: 6px;
   }
 
   .timer-landscape-right-deck .timer-controls-flow,
   .timer-landscape-right-deck .minimal-timer-console {
     width: 100%;
-    max-width: 520px;
+    max-width: 560px;
   }
 
   .timer-landscape-right-deck .minimal-stats-strip {
-    margin-top: 6px;
+    margin-top: 24px !important;
+    margin-bottom: 8px !important;
   }
 
   /* Tasks multi-column bento board on desktop landscape */
@@ -8353,16 +8354,43 @@ body {
 
 /* ═══════════════════════════════════════════════════════════════
    🎛️ AIRY MINIMAL TIMER CONTROLS
-   Pure unboxed elements with generous breathing room
+   Pure unboxed elements with generous breathing room & distance
    ═══════════════════════════════════════════════════════════════ */
 .timer-controls-flow {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 26px !important; /* Distinct vertical separation between every section */
   width: 100%;
-  max-width: 540px;
+  max-width: 560px;
   margin: 0 auto;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   user-select: none;
+}
+
+.timer-control-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.timer-row-mode {
+  margin-bottom: 2px;
+}
+
+.timer-row-presets {
+  margin-bottom: 6px;
+}
+
+.timer-row-controls {
+  margin-bottom: 6px;
+}
+
+.timer-row-soundscapes {
+  margin-top: 4px;
 }
 
 /* Minimal Mode Selector Capsule */
@@ -8419,9 +8447,10 @@ body {
 
 /* Minimal Presets with Generous Spacing */
 .minimal-presets {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
+  display: flex !important;
+  gap: 14px !important;
+  justify-content: center !important;
+  align-items: center !important;
   width: 100%;
   flex-wrap: wrap;
 }
@@ -8474,10 +8503,10 @@ body {
 
 /* Minimal Transport Controls with Distance */
 .minimal-timer-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 20px !important;
   width: 100%;
 }
 
@@ -8505,16 +8534,28 @@ body {
 }
 
 /* Ambient Soundscapes Standalone Pill Grid */
+.ambient-soundscape-bar {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .timer-controls-flow .ambient-label,
 .minimal-timer-console .ambient-label {
   display: none !important;
 }
 
+.ambient-buttons-group,
 .timer-controls-flow .ambient-buttons-group {
   display: flex !important;
-  gap: 10px !important;
+  row-gap: 14px !important;
+  column-gap: 12px !important;
   justify-content: center !important;
+  align-items: center !important;
   flex-wrap: wrap !important;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 .ambient-btn {
@@ -8569,17 +8610,43 @@ body {
   flex-direction: row !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 16px !important;
+  gap: 24px !important;
   white-space: nowrap !important;
   width: auto !important;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  padding: 0 !important;
+  padding: 6px 0 !important;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: var(--text-secondary);
   user-select: none;
+}
+
+.minimal-stats-strip .stats-metric-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.minimal-stats-strip .stats-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.minimal-stats-strip .stats-lbl {
+  color: var(--text-secondary);
+}
+
+.minimal-stats-strip .stats-dot {
+  color: var(--text-tertiary);
+  opacity: 0.6;
+}
+
+[data-theme='dark'] .minimal-stats-strip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 [data-theme='dark'] .minimal-stats-strip {

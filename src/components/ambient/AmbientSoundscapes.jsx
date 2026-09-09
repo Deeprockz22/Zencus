@@ -51,7 +51,7 @@ export default function AmbientSoundscapes() {
         <span>Focus Soundscapes:</span>
       </div>
 
-      <div className="ambient-buttons-group flex flex-wrap items-center gap-1.5">
+      <div className="ambient-buttons-group">
         {/* Relaxing Saxophone Radio Button */}
         <button
           className={`ambient-btn ${radioState.isPlaying && radioState.currentStation.category === 'Saxophone' ? 'active' : ''}`}

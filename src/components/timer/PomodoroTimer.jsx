@@ -218,7 +218,7 @@ export default function PomodoroTimer({
   );
 
   const controlsElement = (
-    <div className="minimal-timer-controls flex items-center justify-center gap-4 w-full">
+    <div className="minimal-timer-controls">
       {/* Primary Hero Start/Pause Button with React Bits Shiny Shimmer & Magnet */}
       <ShinyButton
         variant="primary"
@@ -265,41 +265,41 @@ export default function PomodoroTimer({
   const soundscapesElement = <AmbientSoundscapes />;
 
   const masterControlConsole = (
-    <div className="timer-controls-flow flex flex-col items-center w-full max-w-xl mx-auto select-none">
+    <div className="timer-controls-flow">
       {/* 1. Focus Mode Capsule */}
-      <div className="w-full flex justify-center mb-6">
+      <div className="timer-control-row timer-row-mode">
         {modeSelectorElement}
       </div>
 
       {/* 2. Duration Presets */}
-      <div className="w-full flex justify-center mb-7">
+      <div className="timer-control-row timer-row-presets">
         {presetsElement}
       </div>
 
       {/* 3. Transport Controls */}
-      <div className="w-full flex justify-center mb-7">
+      <div className="timer-control-row timer-row-controls">
         {controlsElement}
       </div>
 
       {/* 4. Focus Atmosphere Generator */}
-      <div className="w-full flex justify-center mb-5">
+      <div className="timer-control-row timer-row-soundscapes">
         {soundscapesElement}
       </div>
     </div>
   );
 
   const statsElement = (
-    <div className="minimal-stats-strip flex flex-row items-center justify-center gap-4 text-xs font-mono text-[var(--text-secondary)] whitespace-nowrap select-none py-1">
-      <div className="flex items-center gap-1.5">
-        <Target size={14} className="text-[#ff3b30]" />
-        <span className="font-bold text-[var(--text-primary)]">{sessionsCompleted}</span>
-        <span>Sessions</span>
+    <div className="minimal-stats-strip">
+      <div className="stats-metric-item">
+        <Target size={14} className="stats-icon text-[#ff3b30]" />
+        <span className="stats-val">{sessionsCompleted}</span>
+        <span className="stats-lbl">Sessions</span>
       </div>
-      <span className="text-[var(--text-tertiary)] opacity-60">•</span>
-      <div className="flex items-center gap-1.5">
-        <Flame size={14} className="text-[#ff3b30]" />
-        <span className="font-bold text-[var(--text-primary)]">{totalFocusMinutes}</span>
-        <span>mins focused</span>
+      <span className="stats-dot">•</span>
+      <div className="stats-metric-item">
+        <Flame size={14} className="stats-icon text-[#ff3b30]" />
+        <span className="stats-val">{totalFocusMinutes}</span>
+        <span className="stats-lbl">mins focused</span>
       </div>
     </div>
   );
