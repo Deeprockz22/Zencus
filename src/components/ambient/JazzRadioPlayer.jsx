@@ -5,9 +5,12 @@ import {
   Volume2,
   VolumeX,
   SkipForward,
-  SkipBack
+  SkipBack,
+  Radio
 } from 'lucide-react';
 import { jazzRadio, JAZZ_STATIONS } from '../../utils/jazzRadioAudio';
+import ShinyButton from '../ui/ShinyButton';
+import EqualizerWave from '../ui/EqualizerWave';
 
 export default function JazzRadioPlayer({ className = '', compact = false }) {
   const [radioState, setRadioState] = useState(() => jazzRadio.getState());
@@ -47,116 +50,122 @@ export default function JazzRadioPlayer({ className = '', compact = false }) {
 
   if (compact) {
     return (
-      <div className={`jazz-radio-compact-bar flex items-center gap-2 px-3 py-1.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-subtle)] ${className}`}>
-        <button
+      <div className={`jazz-radio-compact-bar ${className}`}>
+        <ShinyButton
+          variant="primary"
+          size="sm"
           onClick={handleToggle}
-          className={`flex items-center justify-center w-7 h-7 rounded-full bg-[#ff3b30] text-white transition-transform active:scale-95 ${isPlaying ? 'animate-pulse' : ''}`}
           title={isPlaying ? 'Pause Radio' : 'Play Radio'}
+          className="radio-compact-play-btn"
         >
           {isLoading ? (
-            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="radio-spinner" />
           ) : isPlaying ? (
             <Pause size={12} fill="currentColor" />
           ) : (
-            <Play size={12} fill="currentColor" className="ml-0.5" />
+            <Play size={12} fill="currentColor" style={{ marginLeft: 1 }} />
           )}
-        </button>
+        </ShinyButton>
 
-        <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-mono font-bold text-[var(--text-primary)] truncate">
-              {currentStation.shortName}
-            </span>
-            <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-[var(--bg-tertiary)] text-[var(--text-secondary)]">
-              {currentStation.freq}
-            </span>
+        <div className="radio-compact-meta">
+          <div className="radio-compact-title-row">
+            <span className="radio-compact-name">{currentStation.shortName}</span>
+            <span className="radio-freq-pill">{currentStation.freq}</span>
+            {isPlaying && <EqualizerWave isPlaying={true} barCount={3} />}
           </div>
-          <span className="text-[9px] font-mono text-[var(--text-tertiary)] truncate">
-            {isPlaying ? '● LIVE ON AIR' : 'CLICK TO TUNE IN'}
+          <span className="radio-compact-status">
+            {isPlaying ? 'LIVE ON AIR' : 'CLICK TO TUNE IN'}
           </span>
         </div>
 
-        <button
+        <ShinyButton
+          variant="icon"
+          size="sm"
           onClick={handleNextStation}
-          className="p-1 text-[var(--text-secondary)] hover:text-[#ff3b30] transition-colors ml-auto"
           title="Next Station"
+          className="radio-compact-next-btn"
         >
           <SkipForward size={13} />
-        </button>
+        </ShinyButton>
       </div>
     );
   }
 
   return (
-    <div className={`minimal-radio-deck w-full max-w-md mx-auto select-none ${className}`}>
-      {/* Sleek Minimalist Main Bar */}
-      <div className="minimal-radio-bar flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-subtle)] shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.14)]">
+    <div className={`minimal-radio-deck ${className}`}>
+      {/* Sleek Minimalist Hi-Fi Console */}
+      <div className="minimal-radio-bar">
         
-        {/* Left: Play/Pause Icon Button + Live Station Meta */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <button
+        {/* Left Wing: Shiny Play/Pause Hero Button + Live Station Meta */}
+        <div className="radio-left-wing">
+          <ShinyButton
+            variant={isPlaying ? 'primary' : 'default'}
+            size="md"
             onClick={handleToggle}
-            className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border transition-all active:scale-90 ${
-              isPlaying
-                ? 'bg-[#ff3b30] text-white border-[#ff3b30] shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.3)]'
-                : 'bg-[var(--bg-primary)] text-[var(--text-primary)] border-[var(--border-strong)] hover:border-[#ff3b30] hover:text-[#ff3b30]'
-            }`}
-            title={isPlaying ? 'Pause Radio' : 'Tune In'}
+            active={isPlaying}
+            title={isPlaying ? 'Pause Broadcast' : 'Tune In (Live 24/7)'}
+            className="radio-main-play-btn"
           >
             {isLoading ? (
-              <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              <div className="radio-spinner" />
             ) : isPlaying ? (
-              <Pause size={13} fill="currentColor" />
+              <Pause size={15} fill="currentColor" />
             ) : (
-              <Play size={13} fill="currentColor" className="ml-0.5" />
+              <Play size={15} fill="currentColor" style={{ marginLeft: 2 }} />
             )}
-          </button>
+          </ShinyButton>
 
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-mono font-bold text-[var(--text-primary)] truncate">
-                {currentStation.shortName}
-              </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded font-bold bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border border-[var(--border-subtle)]">
-                {currentStation.freq}
-              </span>
-              {isPlaying && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping shrink-0" />
-              )}
+          <div className="radio-meta-info">
+            <div className="radio-station-title">
+              <span className="radio-station-name">{currentStation.shortName}</span>
+              <span className="radio-freq-badge">{currentStation.freq}</span>
+              {isPlaying && <EqualizerWave isPlaying={true} barCount={3} />}
             </div>
-            <div className="text-[10px] font-mono text-[var(--text-tertiary)] truncate">
-              {isPlaying ? `● LIVE • ${currentStation.bitrate}` : currentStation.genre}
+            <div className="radio-genre-sub">
+              {isPlaying ? (
+                <span className="radio-live-indicator">
+                  <span className="radio-live-dot" /> LIVE • {currentStation.bitrate}
+                </span>
+              ) : (
+                currentStation.genre
+              )}
             </div>
           </div>
         </div>
 
-        {/* Right: Previous / Next & Volume */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
+        {/* Right Wing: Skip Controls & Volume */}
+        <div className="radio-right-wing">
+          <ShinyButton
+            variant="icon"
+            size="sm"
             onClick={handlePrevStation}
-            className="p-1.5 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
             title="Previous Station"
+            className="radio-nav-btn"
           >
-            <SkipBack size={13} />
-          </button>
+            <SkipBack size={14} />
+          </ShinyButton>
 
-          <button
+          <ShinyButton
+            variant="icon"
+            size="sm"
             onClick={handleNextStation}
-            className="p-1.5 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
             title="Next Station"
+            className="radio-nav-btn"
           >
-            <SkipForward size={13} />
-          </button>
+            <SkipForward size={14} />
+          </ShinyButton>
 
-          {/* Volume Control */}
-          <div className="flex items-center gap-1 pl-1.5 border-l border-[var(--border-subtle)]">
-            <button
+          {/* Volume Control Slider */}
+          <div className="radio-volume-section">
+            <ShinyButton
+              variant="icon"
+              size="sm"
               onClick={() => jazzRadio.setVolume(volume > 0 ? 0 : 0.65)}
-              className="text-[var(--text-tertiary)] hover:text-[#ff3b30] transition-colors p-0.5"
               title={volume === 0 ? 'Unmute' : 'Mute'}
+              className="radio-mute-btn"
             >
-              {volume === 0 ? <VolumeX size={13} /> : <Volume2 size={13} />}
-            </button>
+              {volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
+            </ShinyButton>
             <input
               type="range"
               min="0"
@@ -164,30 +173,33 @@ export default function JazzRadioPlayer({ className = '', compact = false }) {
               step="0.01"
               value={volume}
               onChange={handleVolumeChange}
-              className="minimal-vol-slider w-12 h-1 accent-[#ff3b30] cursor-pointer"
+              className="minimal-vol-slider"
               title={`Radio Volume: ${Math.round(volume * 100)}%`}
             />
           </div>
         </div>
       </div>
 
-      {/* Horizontal Station Quick-Pills (Single Clean Row) */}
-      <div className="minimal-station-chips flex items-center gap-1.5 mt-2 overflow-x-auto no-scrollbar py-0.5">
+      {/* Horizontal Station Quick-Pills (Single Clean Row with React Bits Shiny Pills) */}
+      <div className="minimal-station-chips">
         {JAZZ_STATIONS.map((st) => {
           const isSelected = currentStation.id === st.id;
           return (
-            <button
+            <ShinyButton
               key={st.id}
+              variant="pill"
+              size="sm"
+              active={isSelected}
               onClick={() => handleStationSelect(st.id)}
-              className={`px-2.5 py-1 rounded-full text-[10px] font-mono whitespace-nowrap transition-all flex items-center gap-1 shrink-0 ${
-                isSelected
-                  ? 'bg-[#ff3b30] text-white font-bold shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.2)]'
-                  : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] border border-[var(--border-subtle)]'
-              }`}
+              className="radio-station-chip"
+              title={`Tune to ${st.name} (${st.freq})`}
             >
-              <span>{st.shortName}</span>
-              <span className="opacity-70 text-[9px]">{st.freq}</span>
-            </button>
+              <span className="radio-chip-name">{st.shortName}</span>
+              <span className="radio-chip-freq">{st.freq}</span>
+              {isSelected && isPlaying && (
+                <EqualizerWave isPlaying={true} barCount={2} className="ml-0.5" />
+              )}
+            </ShinyButton>
           );
         })}
       </div>

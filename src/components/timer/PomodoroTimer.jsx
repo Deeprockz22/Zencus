@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, RotateCcw, SkipForward, Flame, Target, Sparkles, Volume2, BookOpen } from 'lucide-react';
 import MagnetButton from '../react-bits/MagnetButton';
+import ShinyButton from '../react-bits/ShinyButton';
 import DecryptedText from '../react-bits/DecryptedText';
 import SpotlightCard from '../react-bits/SpotlightCard';
 import FocusCompanion from '../companion/FocusCompanion';
@@ -158,60 +159,62 @@ export default function PomodoroTimer({
   const presetsElement = (
     <div className="preset-pills minimal-presets">
       {PRESETS.map((preset) => (
-        <button
+        <ShinyButton
           key={preset.label}
-          className={`preset-pill ${totalDuration === preset.duration ? 'active' : ''}`}
+          variant="pill"
+          size="sm"
+          active={totalDuration === preset.duration}
           onClick={() => setCustomDuration(preset.duration)}
+          className="preset-pill"
         >
           {preset.label}
-        </button>
+        </ShinyButton>
       ))}
     </div>
   );
 
   const controlsElement = (
     <div className="minimal-timer-controls flex items-center justify-center gap-4 w-full">
-      {/* Primary Hero Start/Pause Button */}
-      <button
-        className={`hero-start-btn flex items-center justify-center gap-2 px-8 py-2.5 rounded-full font-mono font-bold text-sm tracking-wide text-white transition-all active:scale-95 shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.2)] ${
-          isRunning
-            ? 'bg-[#18181b] border-2 border-[#18181b] dark:border-[rgba(255,255,255,0.3)] hover:bg-[#27272a]'
-            : 'bg-[#ff3b30] border-2 border-[#ff3b30] hover:bg-[#e03126]'
-        }`}
+      {/* Primary Hero Start/Pause Button with React Bits Shiny Shimmer & Magnet */}
+      <ShinyButton
+        variant="primary"
+        size="lg"
         onClick={isRunning ? pauseTimer : startTimer}
-        aria-label={isRunning ? 'Pause Timer' : 'Start Focus'}
+        ariaLabel={isRunning ? 'Pause Timer' : 'Start Focus'}
+        className={`hero-start-btn ${isRunning ? 'btn-running' : ''}`}
+        icon={
+          isRunning ? (
+            <Pause size={16} fill="currentColor" />
+          ) : (
+            <Play size={16} fill="currentColor" style={{ marginLeft: 2 }} />
+          )
+        }
       >
-        {isRunning ? (
-          <>
-            <Pause size={15} fill="currentColor" />
-            <span>Pause</span>
-          </>
-        ) : (
-          <>
-            <Play size={15} fill="currentColor" className="ml-0.5" />
-            <span>Start Focus</span>
-          </>
-        )}
-      </button>
+        {isRunning ? 'Pause' : 'Start Focus'}
+      </ShinyButton>
 
       {/* Secondary Quick-Action Icon Buttons */}
-      <button
-        className="control-icon-btn flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all active:scale-95 shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.15)]"
+      <ShinyButton
+        variant="icon"
+        size="md"
         onClick={resetTimer}
-        aria-label="Reset Timer"
+        ariaLabel="Reset Timer"
         title="Reset"
+        className="control-icon-btn"
       >
-        <RotateCcw size={15} />
-      </button>
+        <RotateCcw size={16} />
+      </ShinyButton>
 
-      <button
-        className="control-icon-btn flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all active:scale-95 shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.15)]"
+      <ShinyButton
+        variant="icon"
+        size="md"
         onClick={skipTimer}
-        aria-label="Skip to next session"
+        ariaLabel="Skip to next session"
         title="Skip"
+        className="control-icon-btn"
       >
-        <SkipForward size={15} />
-      </button>
+        <SkipForward size={16} />
+      </ShinyButton>
     </div>
   );
 
