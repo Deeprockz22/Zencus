@@ -123,40 +123,40 @@ export default function PomodoroTimer({
   );
 
   const modeSelectorElement = (
-    <div className="mode-selector editorial-mode-selector">
+    <div className="mode-selector minimal-mode-selector">
       <button
         className={`mode-btn ${mode === 'work' ? 'active' : ''}`}
         onClick={() => setMode('work')}
       >
-        <Target size={15} />
-        <span>Work</span>
+        <Target size={13} />
+        <span>Focus</span>
       </button>
       <button
         className={`mode-btn ${mode === 'shortBreak' ? 'active' : ''}`}
         onClick={() => setMode('shortBreak')}
       >
-        <Sparkles size={15} />
+        <Sparkles size={13} />
         <span>Short Break</span>
       </button>
       <button
         className={`mode-btn ${mode === 'longBreak' ? 'active' : ''}`}
         onClick={() => setMode('longBreak')}
       >
-        <Flame size={15} />
+        <Flame size={13} />
         <span>Long Break</span>
       </button>
       <button
         className={`mode-btn ${mode === 'chill' ? 'active' : ''}`}
         onClick={() => setMode('chill')}
       >
-        <BookOpen size={15} />
+        <BookOpen size={13} />
         <span>Lounge</span>
       </button>
     </div>
   );
 
   const presetsElement = (
-    <div className="preset-pills">
+    <div className="preset-pills minimal-presets">
       {PRESETS.map((preset) => (
         <button
           key={preset.label}
@@ -170,133 +170,83 @@ export default function PomodoroTimer({
   );
 
   const controlsElement = (
-    <div className="timer-controls mt-2">
-      <MagnetButton
-        className={`btn-action primary ${isRunning ? 'btn-running' : ''}`}
+    <div className="minimal-timer-controls flex items-center justify-center gap-3 w-full">
+      {/* Primary Hero Start/Pause Button */}
+      <button
+        className={`hero-start-btn flex items-center justify-center gap-2 px-7 py-2.5 rounded-full font-mono font-bold text-sm tracking-wide text-white transition-all active:scale-95 shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.2)] ${
+          isRunning
+            ? 'bg-[#18181b] border-2 border-[#18181b] dark:border-[rgba(255,255,255,0.3)] hover:bg-[#27272a]'
+            : 'bg-[#ff3b30] border-2 border-[#ff3b30] hover:bg-[#e03126]'
+        }`}
         onClick={isRunning ? pauseTimer : startTimer}
-        aria-label={isRunning ? 'Pause Timer' : 'Start Timer'}
+        aria-label={isRunning ? 'Pause Timer' : 'Start Focus'}
       >
         {isRunning ? (
           <>
-            <Pause size={18} />
+            <Pause size={15} fill="currentColor" />
             <span>Pause</span>
           </>
         ) : (
           <>
-            <Play size={18} fill="currentColor" />
+            <Play size={15} fill="currentColor" className="ml-0.5" />
             <span>Start Focus</span>
           </>
         )}
-      </MagnetButton>
+      </button>
 
-      <MagnetButton
-        className="btn-action secondary"
+      {/* Secondary Quick-Action Icon Buttons */}
+      <button
+        className="control-icon-btn flex items-center justify-center w-10 h-10 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all active:scale-95 shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.15)]"
         onClick={resetTimer}
         aria-label="Reset Timer"
         title="Reset"
       >
-        <RotateCcw size={18} />
-        <span>Reset</span>
-      </MagnetButton>
+        <RotateCcw size={15} />
+      </button>
 
-      <MagnetButton
-        className="btn-action secondary"
+      <button
+        className="control-icon-btn flex items-center justify-center w-10 h-10 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all active:scale-95 shadow-[1.5px_1.5px_0px_#121212] dark:shadow-[1.5px_1.5px_0px_rgba(255,255,255,0.15)]"
         onClick={skipTimer}
         aria-label="Skip to next session"
         title="Skip"
       >
-        <SkipForward size={18} />
-        <span>Skip</span>
-      </MagnetButton>
+        <SkipForward size={15} />
+      </button>
     </div>
   );
 
   const soundscapesElement = <AmbientSoundscapes />;
 
   const masterControlConsole = (
-    <div className="studio-master-console">
-      {/* Console Top Header Banner */}
-      <div className="console-header flex items-center justify-between pb-3 mb-3 border-b-2 border-[#121212] dark:border-[#ffffff]">
-        <div className="flex items-center gap-2">
-          <div className={`w-2.5 h-2.5 rounded-full ${isRunning ? 'bg-[#22c55e] animate-ping' : 'bg-[#ff3b30]'} border border-[#121212] dark:border-[#ffffff] shadow-sm`} />
-          <span className="text-xs font-mono font-black tracking-widest uppercase text-[var(--text-primary)]">
-            STUDIO CONTROL CONSOLE • {mode === 'work' ? 'FOCUS' : mode.toUpperCase()}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold">
-          <span className={`px-2 py-0.5 rounded border border-[#121212] dark:border-[#ffffff] ${isRunning ? 'bg-[#22c55e] text-white' : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'}`}>
-            {isRunning ? '● ACTIVE REC' : 'STANDBY'}
-          </span>
-        </div>
-      </div>
+    <div className="minimal-timer-console flex flex-col items-center gap-3.5 w-full max-w-lg mx-auto p-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] shadow-[3px_3px_0px_#121212] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.14)] select-none">
+      {/* 1. Focus Mode Capsule */}
+      {modeSelectorElement}
 
-      {/* 01. Focus Mode Selector */}
-      <div className="console-module mb-3.5">
-        <div className="console-module-label mb-2 flex items-center justify-between">
-          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[var(--text-secondary)]">
-            01 / SESSION RHYTHM
-          </span>
-          <span className="text-[10px] font-mono text-[#ff3b30] font-bold">
-            {getModeTitle().toUpperCase()}
-          </span>
-        </div>
-        {modeSelectorElement}
-      </div>
+      {/* 2. Duration Presets */}
+      {presetsElement}
 
-      {/* 02. Duration Presets */}
-      <div className="console-module mb-3.5">
-        <div className="console-module-label mb-2 flex items-center justify-between">
-          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[var(--text-secondary)]">
-            02 / INTERVAL PRESET
-          </span>
-          <span className="text-[10px] font-mono text-[var(--text-secondary)]">
-            TARGET: {Math.floor(totalDuration / 60)} MIN
-          </span>
-        </div>
-        {presetsElement}
-      </div>
+      {/* 3. Transport Controls */}
+      {controlsElement}
 
-      {/* 03. Master Transport Action Controls */}
-      <div className="console-module mb-4">
-        <div className="console-module-label mb-2 flex items-center justify-between">
-          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[var(--text-secondary)]">
-            03 / TRANSPORT CONTROLS
-          </span>
-          <span className="text-[10px] font-mono text-[var(--text-secondary)]">
-            {isRunning ? 'CLICK PAUSE' : 'CLICK TO START'}
-          </span>
-        </div>
-        {controlsElement}
-      </div>
-
-      {/* 04. Focus Atmosphere Generator */}
-      <div className="console-module">
-        <div className="console-module-label mb-2 flex items-center justify-between">
-          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[var(--text-secondary)]">
-            04 / ATMOSPHERE GENERATOR
-          </span>
-        </div>
+      {/* 4. Focus Atmosphere Generator */}
+      <div className="w-full pt-2.5 border-t border-[var(--border-subtle)] flex flex-col items-center">
         {soundscapesElement}
       </div>
     </div>
   );
 
   const statsElement = (
-    <div className="stats-row">
-      <div className="stat-card editorial-stat-card">
-        <div className="stat-header">
-          <Target size={16} className="stat-icon text-[#ff3b30]" />
-          <span className="stat-label">Sessions Completed</span>
-        </div>
-        <div className="stat-value">{sessionsCompleted}</div>
+    <div className="minimal-stats-strip flex items-center justify-center gap-4 py-2 px-5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-xs font-mono text-[var(--text-secondary)] shadow-sm">
+      <div className="flex items-center gap-1.5">
+        <Target size={14} className="text-[#ff3b30]" />
+        <span className="font-bold text-[var(--text-primary)]">{sessionsCompleted}</span>
+        <span>Sessions</span>
       </div>
-
-      <div className="stat-card editorial-stat-card">
-        <div className="stat-header">
-          <Flame size={16} className="stat-icon text-[#ff3b30]" />
-          <span className="stat-label">Total Focus Time</span>
-        </div>
-        <div className="stat-value">{totalFocusMinutes} <span className="stat-unit">mins</span></div>
+      <span className="text-[var(--border-subtle)]">•</span>
+      <div className="flex items-center gap-1.5">
+        <Flame size={14} className="text-[#ff3b30]" />
+        <span className="font-bold text-[var(--text-primary)]">{totalFocusMinutes}</span>
+        <span>mins focused</span>
       </div>
     </div>
   );

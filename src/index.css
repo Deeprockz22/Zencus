@@ -7846,14 +7846,13 @@ body {
     margin-bottom: 2px;
   }
 
-  .timer-landscape-right-deck .studio-master-console {
+  .timer-landscape-right-deck .minimal-timer-console {
     width: 100%;
-    max-width: 520px;
+    max-width: 480px;
   }
 
-  .timer-landscape-right-deck .stats-row {
-    width: 100%;
-    max-width: 520px;
+  .timer-landscape-right-deck .minimal-stats-strip {
+    margin-top: 2px;
   }
 
   /* Tasks multi-column bento board on desktop landscape */
@@ -7880,122 +7879,203 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   🎛️ STUDIO MASTER CONTROL CONSOLE
-   Unified, high-precision engineering console matching the turntable & tuner
+   🎛️ MINIMAL TIMER CONSOLE & CONTROLS
+   Serene, uncluttered, breathing focus environment
    ═══════════════════════════════════════════════════════════════ */
-.studio-master-console {
+.minimal-timer-console {
   width: 100%;
-  max-width: 540px;
+  max-width: 480px;
   margin: 0 auto;
-  padding: 20px;
-  background: #f0f0e8;
-  border: 2px solid #121212;
-  border-radius: var(--radius-lg);
-  box-shadow: 6px 6px 0px #121212;
-  position: relative;
+  padding: 18px 22px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: 3px 3px 0px #121212;
   transition: all 0.2s ease;
   user-select: none;
 }
 
-[data-theme='dark'] .studio-master-console {
-  background: #18181c !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
-  box-shadow: 4.5px 4.5px 0px rgba(255, 255, 255, 0.22) !important;
+[data-theme='dark'] .minimal-timer-console {
+  background: #151518 !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.12) !important;
 }
 
-.console-header {
-  border-bottom: 2px solid #121212;
-  padding-bottom: 10px;
-  margin-bottom: 14px;
-}
-
-[data-theme='dark'] .console-header {
-  border-bottom-color: rgba(255, 255, 255, 0.35) !important;
-}
-
-.console-module {
-  width: 100%;
-}
-
-.console-module-label {
+/* Minimal Mode Selector */
+.minimal-mode-selector {
   display: flex;
-  align-items: center;
+  gap: 4px;
+  background: var(--bg-tertiary);
+  padding: 4px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  width: 100%;
   justify-content: space-between;
 }
 
-/* Control buttons inside console */
-.timer-controls {
+[data-theme='dark'] .minimal-mode-selector {
+  background: #1b1b22 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.minimal-mode-selector .mode-btn {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.minimal-mode-selector .mode-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.minimal-mode-selector .mode-btn.active {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border-color: #ff3b30 !important;
+  box-shadow: 1px 1px 0px #121212;
+}
+
+[data-theme='dark'] .minimal-mode-selector .mode-btn.active {
+  box-shadow: 1px 1px 0px rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Minimal Presets */
+.minimal-presets {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
   width: 100%;
 }
 
-.timer-controls .btn-action.primary {
-  flex: 1.4;
-}
-
-.timer-controls .btn-action.secondary {
-  flex: 1;
-}
-
-/* Atmospheric Soundscapes inside Console */
-.studio-master-console .ambient-soundscape-bar {
-  background: #e2e2da;
-  border: 1.5px solid #121212;
-  box-shadow: 2px 2px 0px #121212;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  margin-top: 0;
-  width: 100%;
-}
-
-[data-theme='dark'] .studio-master-console .ambient-soundscape-bar {
-  background: #121215 !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
-  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.18) !important;
-}
-
-.studio-master-console .ambient-btn {
-  background: #deded6;
-  border: 1.5px solid #121212;
-  color: #121212;
-  box-shadow: 2px 2px 0px #121212;
-  font-size: 0.78rem;
-  font-weight: 700;
+.minimal-presets .preset-pill {
+  padding: 5px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
   font-family: var(--font-mono);
-  padding: 6px 12px;
+  font-weight: 600;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-[data-theme='dark'] .studio-master-console .ambient-btn {
+.minimal-presets .preset-pill:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.minimal-presets .preset-pill.active {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border-color: #ff3b30 !important;
+  box-shadow: 1.5px 1.5px 0px #121212 !important;
+}
+
+[data-theme='dark'] .minimal-presets .preset-pill {
   background: #1e1e24 !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  color: #d4d4d8 !important;
-  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #a1a1aa !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.08) !important;
 }
 
-.studio-master-console .ambient-btn:hover {
-  background: #ffffff;
+[data-theme='dark'] .minimal-presets .preset-pill:hover {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-theme='dark'] .minimal-presets .preset-pill.active {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+  border-color: #ff3b30 !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Minimal Transport Controls */
+.minimal-timer-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.hero-start-btn {
+  cursor: pointer;
+}
+
+.hero-start-btn:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px #121212;
 }
 
-[data-theme='dark'] .studio-master-console .ambient-btn:hover {
-  border-color: rgba(255, 255, 255, 0.55) !important;
+.control-icon-btn {
+  cursor: pointer;
+}
+
+.control-icon-btn:hover {
+  transform: translate(-1px, -1px);
+}
+
+/* Ambient Soundscapes inside Minimal Console */
+.minimal-timer-console .ambient-soundscape-bar {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100%;
+  justify-content: center;
+  gap: 8px;
+}
+
+.minimal-timer-console .ambient-label {
+  display: none;
+}
+
+.minimal-timer-console .ambient-btn {
+  font-size: 0.74rem;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+[data-theme='dark'] .minimal-timer-console .ambient-btn {
+  background: #1b1b22 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #a1a1aa !important;
+}
+
+[data-theme='dark'] .minimal-timer-console .ambient-btn:hover {
   color: #ffffff !important;
-  box-shadow: 2.5px 2.5px 0px rgba(255, 255, 255, 0.28) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
 }
 
-.studio-master-console .ambient-btn.active {
+[data-theme='dark'] .minimal-timer-console .ambient-btn.active {
   background: #ff3b30 !important;
   color: #ffffff !important;
-  border-color: #121212 !important;
-  box-shadow: 2px 2px 0px #121212 !important;
+  border-color: #ff3b30 !important;
+  box-shadow: 1.5px 1.5px 0px rgba(255, 255, 255, 0.2) !important;
 }
 
-[data-theme='dark'] .studio-master-console .ambient-btn.active {
-  background: #ff3b30 !important;
-  color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.25) !important;
+/* Minimal Stats Strip */
+.minimal-stats-strip {
+  width: auto;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+[data-theme='dark'] .minimal-stats-strip {
+  background: #151518 !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 2px 2px 0px rgba(255, 255, 255, 0.1) !important;
 }
