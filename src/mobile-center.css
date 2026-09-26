@@ -1,0 +1,250 @@
+/* =====================================================================
+   PHONES: EVERYTHING ON THE CENTRE LINE
+   ---------------------------------------------------------------------
+   On narrow screens every block, label and control row sits on the
+   screen's centre line (user request). Applies to every theme. Rules were
+   found by measuring each screen at 375px: any full-width row whose
+   content centre drifted more than 10px from the viewport centre.
+   Running text inside list items (task titles, note snippets) is centred
+   too, so the whole screen reads as one column.
+   ===================================================================== */
+
+@media (max-width: 640px) {
+  /* ---------- Timer console (all themes) ---------- */
+  .glyph-timer-left-console {
+    margin-inline: auto !important;
+    max-width: 100% !important;
+  }
+  .glyph-console-header,
+  .glyph-mode-strip,
+  .glyph-transport-section,
+  .preset-pills,
+  .glyph-hero-controls {
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .glyph-digits-hero {
+    align-items: center !important;
+    text-align: center;
+  }
+  .glyph-footer-stats {
+    width: 100%;
+    text-align: center;
+    justify-content: center !important;
+  }
+
+  /* Vinyl Studio: the platter is drawn left of centre to leave room for the
+     tonearm; on a phone the record itself should sit on the centre line. */
+  .glyph-timer-right-stage .glyph-turntable-svg {
+    transform: translateX(20px);
+  }
+
+  /* ---------- Matrix Wall / Golconda console ---------- */
+  .green-dot-matrix-wall .wall-left-panel {
+    align-items: center !important;
+    text-align: center;
+  }
+  .green-dot-matrix-wall .wall-left-panel > *,
+  .green-dot-matrix-wall .wall-left-panel .flex {
+    justify-content: center !important;
+  }
+  .green-dot-matrix-wall .wall-left-panel > .flex:has(> .wall-preset),
+  .green-dot-matrix-wall .wall-left-panel > .flex:has(> .wall-cta) {
+    align-self: stretch;
+  }
+
+  /* ---------- Tasks ---------- */
+  .tasks-view .view-header,
+  .task-controls-bar {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    text-align: center;
+  }
+  .status-tabs,
+  .category-tabs {
+    justify-content: center !important;
+    flex-wrap: wrap;
+  }
+  .task-search-wrapper {
+    margin-inline: auto;
+  }
+
+  /* ---------- Notes ---------- */
+  .notes-main-area .view-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center;
+    gap: 12px !important;
+  }
+  .notes-main-area .view-header > div,
+  .view-header-right-actions {
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center;
+  }
+  .notes-controls-row,
+  .smart-tags-row {
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .note-card-inner {
+    text-align: center;
+    align-items: center;
+  }
+  .note-card-tags {
+    justify-content: center !important;
+  }
+  .notes-group-section > :first-child {
+    justify-content: center !important;
+    text-align: center;
+  }
+
+  /* ---------- Modal headers: the title sits on the centre line, the close
+     button stays in its corner ---------- */
+  .modal-header {
+    position: relative;
+    justify-content: center !important;
+    text-align: center;
+    /* equal room on both sides so the centred title never runs under the close button */
+    padding-left: 56px !important;
+    padding-right: 56px !important;
+  }
+  .atl-header .modal-title {
+    font-size: 1.7rem !important;
+  }
+  .modal-header .close-modal-btn {
+    position: absolute !important;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* ---------- Settings: the original (Crisp) page ---------- */
+  .settings-modal:not(.atl-card) .settings-body {
+    text-align: center;
+  }
+  .settings-modal:not(.atl-card) .settings-section-title,
+  .settings-modal:not(.atl-card) .settings-body .flex {
+    justify-content: center !important;
+  }
+  .settings-modal:not(.atl-card) .settings-body .flex-col,
+  .settings-modal:not(.atl-card) .settings-body .items-start {
+    align-items: center !important;
+  }
+  .settings-modal:not(.atl-card) .setting-field {
+    align-items: center;
+    text-align: center;
+  }
+  .settings-modal:not(.atl-card) .setting-input {
+    text-align: center;
+    width: 100%;
+    align-self: stretch;
+  }
+  .settings-modal:not(.atl-card) .settings-actions-group,
+  .settings-modal:not(.atl-card) .settings-companion-card,
+  .settings-modal:not(.atl-card) .about-ascii-profile-card {
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center;
+  }
+
+  .settings-modal:not(.atl-card) .settings-body .text-left,
+  .settings-modal:not(.atl-card) .settings-body p,
+  .settings-modal:not(.atl-card) .settings-body span {
+    text-align: center !important;
+  }
+  .settings-modal:not(.atl-card) .settings-footer {
+    justify-content: center !important;
+  }
+
+  .task-progress-container,
+  .task-progress-track {
+    margin-inline: auto;
+  }
+
+  /* ---------- Settings: The Atelier (Surreal) ---------- */
+  .atl-card .atl-section-title,
+  .atl-card .atl-subhead {
+    justify-content: center !important;
+    text-align: center;
+  }
+  .atl-card .atl-subhead { flex-direction: column; gap: 10px; }
+  .atl-card .atl-lede,
+  .atl-card .atl-cycle-total,
+  .atl-card .atl-row-desc,
+  .atl-card .atl-world-name,
+  .atl-card .atl-world-desc {
+    text-align: center;
+  }
+  .atl-card .atl-cycle-legend { justify-content: center; }
+  .atl-card .atl-world { align-items: center; }
+  .atl-card .atl-record { justify-content: center; }
+  .atl-card .atl-record-text { align-items: center; text-align: center; }
+  .atl-card .atl-row {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+  }
+  .atl-card .atl-row-text { align-items: center; }
+  .atl-card .atl-volume { width: 100%; justify-content: center; }
+  .atl-card .atl-packs-head { flex-direction: column; align-items: center; gap: 2px; }
+  .atl-card .atl-pack { align-items: center; text-align: center; }
+  .atl-card .atl-companion { flex-direction: column; text-align: center; }
+  .atl-card .atl-keep-tile { align-items: center; text-align: center; }
+  .atl-card .atl-about { flex-direction: column; align-items: center !important; text-align: center; }
+  .atl-card .atl-about .about-meta-row { justify-content: center; }
+  .atl-card .atl-link { align-items: center; text-align: center; }
+  .atl-card .atl-footer { justify-content: center !important; }
+  .atl-card .atl-stepper-label { width: 100%; }
+
+  /* new-task bar: the input gets its own line, the two selects share the next
+     (they were crushed to 43px chevrons before — an existing phone bug) */
+  .task-input-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 8px;
+  }
+  .input-group-main {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 8px;
+  }
+  .task-main-input {
+    flex: 1 1 100% !important;
+    text-align: center;
+  }
+  .task-meta-selectors {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+  .task-meta-selectors .task-select {
+    flex: 1 1 0;
+  }
+  /* each task: title and badges stacked on the row's centre line */
+  .task-main {
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center;
+    text-align: center;
+    gap: 4px !important;
+  }
+  .task-badges { justify-content: center; }
+
+  /* the console ">" would sit alone on its own line once the input wraps */
+  .task-input-prompt { display: none; }
+
+  /* scene names stay on one line (every theme) */
+  .scene-toggle-pill {
+    white-space: nowrap;
+  }
+}
+@media (max-width: 420px) {
+  .scene-switcher-pills .scene-toggle-pill {
+    font-size: 0.72rem !important;
+    padding: 4px 8px !important;
+  }
+}

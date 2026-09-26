@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CloudRain, Droplets, Radio, Waves, Volume2, VolumeX, Sparkles, Music2, Disc } from 'lucide-react';
+import { CloudRain, Droplets, Radio, Waves, Volume2, VolumeX, Sparkles, Music2, Coffee } from 'lucide-react';
 import { ambientSoundscapes } from '../../utils/ambientAudio';
 import { jazzRadio, JAZZ_STATIONS } from '../../utils/jazzRadioAudio';
 
@@ -58,7 +58,7 @@ export default function AmbientSoundscapes() {
           onClick={() => toggleRadio('sax-ella')}
           title="Relaxing Saxophone Radio (98.5 FM • Live 24/7)"
         >
-          <span className="text-xs">🎷</span>
+          <Music2 size={14} />
           <span>Sax Radio</span>
           {radioState.isPlaying && radioState.currentStation.category === 'Saxophone' && (
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping ml-0.5" />
@@ -71,7 +71,7 @@ export default function AmbientSoundscapes() {
           onClick={() => toggleRadio('jazz24')}
           title="Jazz24 Seattle (Miles Davis, Coltrane & Evans)"
         >
-          <span className="text-xs">☕</span>
+          <Coffee size={14} />
           <span>Jazz24</span>
           {radioState.isPlaying && radioState.currentStation.id === 'jazz24' && (
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-ping ml-0.5" />
@@ -84,7 +84,7 @@ export default function AmbientSoundscapes() {
           onClick={() => toggleSound('window-rain')}
           title="Window Rain: Crisp rain with distinct droplets tapping on your window"
         >
-          <span className="text-xs">🪟</span>
+          <Droplets size={14} />
           <span>Window Rain</span>
         </button>
 

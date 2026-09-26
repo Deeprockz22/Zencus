@@ -8,7 +8,8 @@ export default function AnimatedPathCheckbox({
   checked = false,
   onChange,
   size = '22px',
-  className = ''
+  className = '',
+  'aria-label': ariaLabel
 }) {
   return (
     <label className={`animated-checkbox-container ${className}`} onClick={(e) => e.stopPropagation()}>
@@ -16,6 +17,7 @@ export default function AnimatedPathCheckbox({
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange?.(e.target.checked)}
+        aria-label={ariaLabel || (checked ? 'Mark incomplete' : 'Mark complete')}
       />
       <svg
         viewBox="0 0 64 64"

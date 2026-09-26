@@ -1,0 +1,244 @@
+/* =====================================================================
+   KOMOREBI (木漏れ日) — The Eye-Calming Biophilic Sanctuary
+   ---------------------------------------------------------------------
+   Two variants, each scoped to html.komorebi:
+     komorebi       (Dawn, day)      on the light base: washi parchment & sumi ink
+     komorebi-night (Obsidian, night) on the dark base: wet river slate & lichen moss
+   Authored in perceptual OKLCH for 555nm photopic eye calm
+   and low-Kelvin solar honey / persimmon warmth.
+   ===================================================================== */
+
+/* ---------- Core Theme Tokens ---------- */
+html.komorebi {
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-komorebi: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 26px;
+  --km-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Light Mode: Komorebi Dawn (Warm Washi Parchment) */
+html.komorebi[data-theme='light'] {
+  /* Ground: warm unbleached washi paper, zero glare */
+  --bg-primary: oklch(0.965 0.012 105);
+  --bg-secondary: oklch(0.938 0.014 105);
+  --bg-tertiary: oklch(0.905 0.018 105);
+  --bg-elevated: oklch(0.955 0.012 105);
+  --bg-glass: oklch(0.95 0.014 105 / 0.82);
+
+  /* Text: Sumi ink & weathered cedar */
+  --text-primary: oklch(0.22 0.012 155);
+  --text-secondary: oklch(0.36 0.016 155); /* darker for legibility (user request) */
+  --text-tertiary: oklch(0.46 0.014 155);
+  --text-muted: oklch(0.72 0.012 155);
+
+  /* Quiet organic edges */
+  --border-subtle: oklch(0.85 0.012 105 / 0.55);
+  --border-active: oklch(0.70 0.02 105 / 0.7);
+
+  /* Hero: Solar Honey Amber (~2400K hearth glow) */
+  --accent-primary: oklch(0.74 0.14 62);
+  --accent-glow: oklch(0.74 0.14 62 / 0.22);
+  --accent-text: #ffffff;
+
+  /* Flow / Photopic Peak: 555nm Mountain Sage / Wild Lichen */
+  --km-sage: oklch(0.78 0.08 158);
+  --km-amber: oklch(0.74 0.14 62);
+  --km-slate: oklch(0.35 0.02 155);
+  --km-surface: oklch(0.945 0.014 105 / 0.85);
+
+  /* Diffuse ambient ground-tinted shadows */
+  --shadow-sm: 0 1px 3px oklch(0.18 0.02 155 / 0.06), inset 0 1px 0 oklch(1 0 0 / 0.6);
+  --shadow-md: 0 8px 24px -4px oklch(0.18 0.02 155 / 0.10), inset 0 1px 0 oklch(1 0 0 / 0.8);
+  --shadow-lg: 0 20px 48px -12px oklch(0.18 0.02 155 / 0.14), 0 0 40px -10px oklch(0.74 0.14 62 / 0.15);
+}
+
+/* Dark Mode: Komorebi Obsidian (Wet River Slate & Living Lichen) */
+html.komorebi[data-theme='dark'] {
+  /* Ground: deep river slate peat, no harsh #000000 */
+  --bg-primary: oklch(0.185 0.018 155);
+  --bg-secondary: oklch(0.235 0.02 155);
+  --bg-tertiary: oklch(0.285 0.022 155);
+  --bg-elevated: oklch(0.25 0.02 155);
+  --bg-glass: oklch(0.22 0.02 155 / 0.82);
+
+  /* Text: Misted Pearl & Cedar Smoke */
+  --text-primary: oklch(0.925 0.01 105);
+  --text-secondary: oklch(0.84 0.014 155); /* brighter for legibility (user request) */
+  --text-tertiary: oklch(0.72 0.016 155);
+  --text-muted: oklch(0.42 0.014 155);
+
+  /* Quiet organic edges */
+  --border-subtle: oklch(0.32 0.018 155 / 0.45);
+  --border-active: oklch(0.45 0.022 155 / 0.6);
+
+  /* Hero: Solar Honey Amber */
+  --accent-primary: oklch(0.76 0.145 65);
+  --accent-glow: oklch(0.76 0.145 65 / 0.28);
+  --accent-text: #ffffff;
+
+  /* Flow / Photopic Peak: 555nm Bioluminescent Moss */
+  --km-sage: oklch(0.80 0.08 158);
+  --km-amber: oklch(0.76 0.145 65);
+  --km-slate: oklch(0.88 0.01 105);
+  --km-surface: oklch(0.24 0.02 155 / 0.85);
+
+  /* Tactile deep shadows with moss tint */
+  --shadow-sm: 0 1px 3px oklch(0.10 0.02 155 / 0.4), inset 0 1px 0 oklch(1 0 0 / 0.08);
+  --shadow-md: 0 8px 24px -4px oklch(0.10 0.02 155 / 0.6), inset 0 1px 0 oklch(1 0 0 / 0.1);
+  --shadow-lg: 0 20px 48px -12px oklch(0.08 0.02 155 / 0.8), 0 0 40px -10px oklch(0.76 0.145 65 / 0.2);
+}
+
+/* ---------- Theme Skin Specifics under html.komorebi ---------- */
+html.komorebi body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.5s var(--km-ease), color 0.5s var(--km-ease);
+}
+
+/* App Layout: transparent so KomorebiWorld (the engawa room, light, and cat) shines through */
+html.komorebi .app-layout {
+  background: transparent !important;
+}
+
+/* Floating Dock: River Stone Glass */
+html.komorebi .dock-nav {
+  background: var(--bg-glass) !important;
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-full);
+}
+
+/* Translucent Washi Glass for panels & cards so the engawa stays visible */
+html.komorebi .timer-card,
+html.komorebi .timer-control-deck,
+html.komorebi .task-panel,
+html.komorebi .notes-hub-container,
+html.komorebi .quest-card,
+html.komorebi .unboxed-task-row,
+html.komorebi .unboxed-note-card {
+  background: var(--bg-glass) !important;
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid var(--border-subtle) !important;
+}
+
+html.komorebi .isometric-editorial-hero {
+  background: transparent !important;
+}
+
+/* Vinyl Studio in Komorebi: airy frosted body so the cat and sunlight peek through */
+html.komorebi .turntable-canvas-stage {
+  opacity: 0.85;
+  transition: opacity 0.4s var(--km-ease);
+}
+@media (max-width: 640px) {
+  html.komorebi .turntable-canvas-stage {
+    opacity: 0.65;
+  }
+}
+
+/* Primary Focus CTA Button: Warm Solar Amber Glow */
+html.komorebi .glyph-timer-btn-primary,
+html.komorebi button[class*='bg-[#ff3b30]'],
+html.komorebi button[class*='bg-red-'] {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, oklch(0.70 0.135 55) 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 18px var(--accent-glow) !important;
+  border: none !important;
+}
+
+/* Preset active buttons */
+html.komorebi .preset-btn.active,
+html.komorebi [data-active='true'] {
+  border-color: var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
+}
+
+/* Matrix Wall inside Komorebi: Ink / Living Moss Dots */
+html.komorebi .green-dot-matrix-wall {
+  background: var(--bg-primary) !important;
+}
+
+html.komorebi[data-theme='light'] .green-dot-matrix-wall .giant-clock-touch-target svg circle[fill='#000000'] {
+  fill: var(--text-primary) !important;
+}
+
+html.komorebi[data-theme='dark'] .green-dot-matrix-wall .giant-clock-touch-target svg circle[fill='#000000'] {
+  fill: var(--text-primary) !important;
+}
+
+/* Atelier Preview Card: Komorebi Dappled Light Scene */
+.atl-scene-komorebi {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(145deg, oklch(0.24 0.02 155) 0%, oklch(0.18 0.018 155) 100%);
+}
+
+.atl-komorebi-moss {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 70%, oklch(0.35 0.06 150 / 0.5) 0%, transparent 60%);
+}
+
+.atl-komorebi-sunbeam {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 90%;
+  height: 120%;
+  background: linear-gradient(215deg, oklch(0.85 0.12 75 / 0.35) 0%, transparent 70%);
+  transform: rotate(-15deg);
+  pointer-events: none;
+}
+
+.atl-komorebi-stone {
+  position: absolute;
+  bottom: 12px;
+  left: 18px;
+  width: 32px;
+  height: 14px;
+  border-radius: 12px;
+  background: oklch(0.30 0.015 155);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.atl-komorebi-amber-dot {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: oklch(0.76 0.145 65);
+  box-shadow: 0 0 10px oklch(0.76 0.145 65 / 0.8);
+}
+
+/* Legibility (user request, added by Claude): the timer's left column sat
+   straight on the room, so its text fought the wood and the leaf shadows.
+   It gets the same washi glass as the other panels, and the unselected mode
+   tabs are no longer dimmed to half. */
+html.komorebi .glyph-timer-left-console {
+  background: var(--bg-glass);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  /* the glass reaches outward (content-box + negative margin), so the
+     controls keep exactly their original width and position */
+  box-sizing: content-box;
+  padding: 14px 16px;
+  margin-inline: -16px;
+  box-shadow: 0 10px 30px oklch(0.3 0.03 60 / 0.12);
+}
+html.komorebi .glyph-mode-btn { opacity: 1 !important; }
+@media (max-width: 640px) {
+  html.komorebi .glyph-timer-left-console { padding: 12px 8px; margin-inline: -8px; }
+}

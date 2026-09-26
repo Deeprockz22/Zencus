@@ -74,7 +74,7 @@ export default function JazzRadioPlayer({ className = '', compact = false }) {
             {isPlaying && <EqualizerWave isPlaying={true} barCount={3} />}
           </div>
           <span className="radio-compact-status">
-            {isPlaying ? 'LIVE ON AIR' : 'CLICK TO TUNE IN'}
+            {isPlaying ? 'Live on air' : 'Tune in'}
           </span>
         </div>
 
@@ -124,7 +124,7 @@ export default function JazzRadioPlayer({ className = '', compact = false }) {
             <div className="radio-genre-sub">
               {isPlaying ? (
                 <span className="radio-live-indicator">
-                  <span className="radio-live-dot" /> LIVE • {currentStation.bitrate}
+                  <span className="radio-live-dot" /> Live • {currentStation.bitrate}
                 </span>
               ) : (
                 currentStation.genre

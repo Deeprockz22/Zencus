@@ -1,31 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Volume2,
-  VolumeX,
   Maximize2,
   Settings,
   Sun,
   Moon,
-  Radio
+  Music2,
+  Volume2,
+  Lock,
+  PictureInPicture2
 } from 'lucide-react';
 import MagnetButton from './react-bits/MagnetButton';
 import FocusLogo from './brand/FocusLogo';
-import { COMPANIONS } from '../utils/companionPresets';
 import { jazzRadio } from '../utils/jazzRadioAudio';
+import { ambientSoundscapes } from '../utils/ambientAudio';
+import { isArtTheme, isNightTheme, toggleDayNight } from '../themeFamilies';
 
 export default function Header({
-  theme = 'light',
+  theme = 'dark',
   setTheme,
-  soundEnabled,
-  toggleSound,
   openSettings,
   openFullscreen,
-  companionType = 'dino',
-  openCompanionPicker,
-  toggleSketchMode
+  openMiniTimer,
+  miniTimerOpen = false,
+  soundEnabled,
+  toggleSound,
+  onLockApp
 }) {
-  const isSketch = theme === 'sketch';
   const [radioState, setRadioState] = useState(() => jazzRadio.getState());
+  const [ambientActive, setAmbientActive] = useState(() => ambientSoundscapes.activeType);
 
   useEffect(() => {
     return jazzRadio.subscribe((st) => setRadioState(st));
@@ -33,84 +35,56 @@ export default function Header({
 
   const toggleTheme = () => {
     if (setTheme) {
-      setTheme(theme === 'dark' ? 'light' : 'dark');
+      // day ↔ night within the current family (Crisp, Surreal or Lantern)
+      setTheme(toggleDayNight(theme));
+    }
+  };
+
+  const isAudioPlaying = radioState.isPlaying || Boolean(ambientActive);
+
+  const toggleQuickAudio = () => {
+    if (radioState.isPlaying) {
+      jazzRadio.pause();
+    } else if (ambientActive) {
+      ambientSoundscapes.stop();
+      setAmbientActive(null);
+    } else {
+      // Start relaxing vinyl jazz
+      jazzRadio.play('vinyl-lofi');
     }
   };
 
   return (
     <header className="app-header">
+      {/* Left: Brand Identity */}
       <div className="header-left">
-        {/* Pet Wardrobe Switcher Button */}
-        {!isSketch && (
-        <button
-          className={`theme-mode-trigger-btn pet-wardrobe-trigger-btn ${companionType === 'none' ? 'pet-disabled' : ''}`}
-          onClick={openCompanionPicker}
-          title={companionType === 'none' ? 'Adopt a Focus Companion Pet' : 'Change or Remove Active Companion Pet'}
-        >
-          <span className="theme-mode-icon">
-            {companionType === 'none' ? '🐾' : COMPANIONS.find((c) => c.id === companionType)?.icon || '🦖'}
+        <div className="header-brand-group flex items-center gap-2.5 select-none">
+          <FocusLogo size={32} className="brand-logo-icon" />
+          <span className="brand-wordmark font-bold text-sm tracking-tight text-[var(--text-primary)]">
+            Zencus
           </span>
-          <span className="theme-mode-name">
-            {companionType === 'none' ? '+ Add Pet' : 'Pets'}
-          </span>
-        </button>
-        )}
-
-        {/* Crisp Light / Dark Toggle — sketch is light-only, so it has no meaning there */}
-        {!isSketch && (
-          <MagnetButton
-            className="icon-btn theme-toggle-btn"
-            onClick={toggleTheme}
-            title={theme === 'dark' ? 'Switch to Crisp Light Mode' : 'Switch to Crisp Dark Mode'}
-            aria-label="Toggle Theme"
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </MagnetButton>
-        )}
-
-        {/* Sound toggle */}
-        <MagnetButton
-          className="icon-btn"
-          onClick={toggleSound}
-          title={soundEnabled ? 'Mute Audio' : 'Enable Audio'}
-          aria-label="Toggle Sound"
-        >
-          {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} className="muted-icon" />}
-        </MagnetButton>
+        </div>
       </div>
 
-      <div className="header-center">
+      {/* Right: Streamlined Control Suite */}
+      <div className="header-right flex items-center gap-1.5 sm:gap-2">
+        {/* Quick Audio / Lo-Fi Soundtrack Pill */}
         <button
           type="button"
-          className={`brand-container symbol-only brand-sketch-toggle ${isSketch ? 'is-sketch' : ''}`}
-          onClick={toggleSketchMode}
-          title={isSketch ? 'Zencus — leave Sketch Mode' : 'Zencus — switch to Sketch Mode'}
-          aria-label={isSketch ? 'Leave Sketch Mode' : 'Switch to Sketch Mode'}
-          aria-pressed={isSketch}
-        >
-          <FocusLogo size={38} className="brand-logo-icon" />
-        </button>
-      </div>
-
-      <div className="header-right">
-        {/* Quick Relaxing Sax & Jazz Radio Mini Widget */}
-        {!isSketch && (
-        <button
-          type="button"
-          className={`header-radio-pill ${radioState.isPlaying ? 'playing' : ''}`}
-          onClick={() => jazzRadio.toggle()}
-          aria-label={radioState.isPlaying ? 'Pause Radio' : 'Play Radio'}
+          className={`header-radio-pill ${isAudioPlaying ? 'playing' : ''}`}
+          onClick={toggleQuickAudio}
+          aria-label={isAudioPlaying ? 'Pause Audio' : 'Play Lo-Fi Soundtrack'}
           title={
-            radioState.isPlaying
-              ? `Playing: ${radioState.currentStation.name} (Click to pause)`
-              : 'Turn on Relaxing Saxophone & Jazz Radio'
+            isAudioPlaying
+              ? `Playing: ${radioState.isPlaying ? radioState.currentStation.shortName : ambientActive} (Click to pause)`
+              : 'Play Focus Lo-Fi Soundtrack'
           }
         >
-          <span>{radioState.isPlaying && radioState.currentStation.category === 'Saxophone' ? '🎷' : '📻'}</span>
-          <span className="radio-label">
-            {radioState.isPlaying ? radioState.currentStation.shortName : 'Radio'}
+          <Music2 size={13} className={isAudioPlaying ? 'text-white shrink-0' : 'text-[var(--text-secondary)] shrink-0'} />
+          <span className="radio-label text-xs font-medium">
+            {isAudioPlaying ? (radioState.isPlaying ? radioState.currentStation.shortName : 'Ambient') : 'Audio'}
           </span>
-          {radioState.isPlaying && (
+          {isAudioPlaying && (
             <div className="header-radio-bars">
               <span className="header-eq-bar" />
               <span className="header-eq-bar bar-2" />
@@ -118,26 +92,69 @@ export default function Header({
             </div>
           )}
         </button>
+
+        {/* Crisp Light / Dark Toggle */}
+        {setTheme && (
+          <MagnetButton
+            className="icon-btn theme-toggle-btn"
+            onClick={toggleTheme}
+            title={isArtTheme(theme) ? (isNightTheme(theme) ? 'Switch to day' : 'Switch to night') : theme === 'dark' ? 'Switch to Crisp Light Mode' : 'Switch to Crisp Dark Mode'}
+            aria-label="Toggle Theme"
+          >
+            {isNightTheme(theme) ? <Sun size={17} /> : <Moon size={17} />}
+          </MagnetButton>
         )}
 
-        <MagnetButton
-          className="icon-btn"
-          onClick={openFullscreen}
-          title="Fullscreen Zen Mode"
-          aria-label="Fullscreen Zen Mode"
-        >
-          <Maximize2 size={18} />
-        </MagnetButton>
+        {/* Fullscreen Zen Focus Mode */}
+        {openFullscreen && (
+          <MagnetButton
+            className="icon-btn"
+            onClick={openFullscreen}
+            title="Fullscreen Zen Mode (F)"
+            aria-label="Fullscreen Zen Mode"
+          >
+            <Maximize2 size={17} />
+          </MagnetButton>
+        )}
 
-        <MagnetButton
-          className="icon-btn"
-          onClick={openSettings}
-          title="Settings"
-          aria-label="Settings"
-        >
-          <Settings size={18} />
-        </MagnetButton>
+        {/* Floating mini timer (Document Picture-in-Picture; Chrome/Edge only) */}
+        {openMiniTimer && (
+          <MagnetButton
+            className={`icon-btn ${miniTimerOpen ? 'is-active' : ''}`}
+            onClick={openMiniTimer}
+            title={miniTimerOpen ? 'Close mini timer' : 'Float a mini timer over other windows'}
+            aria-label={miniTimerOpen ? 'Close mini timer' : 'Open mini timer'}
+            aria-pressed={miniTimerOpen}
+          >
+            <PictureInPicture2 size={17} />
+          </MagnetButton>
+        )}
+
+        {/* Quick Lock Dashboard */}
+        {onLockApp && (
+          <MagnetButton
+            className="icon-btn lock-btn"
+            onClick={onLockApp}
+            title="Lock Dashboard"
+            aria-label="Lock Dashboard"
+          >
+            <Lock size={17} />
+          </MagnetButton>
+        )}
+
+        {/* Settings Modal Trigger */}
+        {openSettings && (
+          <MagnetButton
+            className="icon-btn"
+            onClick={openSettings}
+            title="Settings & Soundtracks"
+            aria-label="Settings"
+          >
+            <Settings size={17} />
+          </MagnetButton>
+        )}
       </div>
     </header>
   );
 }
+

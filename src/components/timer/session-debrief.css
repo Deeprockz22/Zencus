@@ -1,0 +1,233 @@
+/* Session Debrief — a small card that rises above the dock when a focus
+   session ends. Built on theme tokens, so Crisp stays plain; Surreal and
+   Lantern get their glass below. */
+
+.debrief-layer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 104px;
+  z-index: 80;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  padding: 0 12px;
+}
+.debrief-card {
+  pointer-events: auto;
+  position: relative;
+  width: min(440px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 18px 16px;
+  border-radius: var(--radius-lg, 16px);
+  background: var(--bg-secondary);
+  /* Crisp's surfaces are slightly translucent; blur what's behind, like the header does */
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-lg);
+  animation: debrief-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes debrief-rise {
+  from { opacity: 0; transform: translateY(18px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.debrief-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+.debrief-close:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+
+.debrief-head { display: flex; flex-direction: column; gap: 2px; padding-right: 30px; }
+.debrief-kicker {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+.debrief-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.debrief-field { display: flex; flex-direction: column; gap: 5px; }
+.debrief-field span { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
+.debrief-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.debrief-field input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.debrief-feel { display: flex; flex-wrap: wrap; gap: 6px; }
+.debrief-chip {
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+}
+.debrief-chip:hover { transform: translateY(-1px); color: var(--text-primary); }
+.debrief-chip.is-on {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: transparent;
+}
+
+.debrief-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.debrief-totask {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.debrief-totask input { accent-color: var(--accent-primary); width: 15px; height: 15px; }
+.debrief-totask.is-muted { opacity: 0.5; cursor: default; }
+.debrief-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.debrief-skip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.debrief-skip:hover { color: var(--text-primary); }
+.debrief-save {
+  padding: 9px 16px !important;
+  border-radius: 999px !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+}
+.debrief-save:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* art themes: the card is glass floating in their world */
+html.surreal .debrief-card {
+  background: var(--sr-surface-strong);
+  border-color: var(--sr-surface-edge);
+  border-radius: var(--sr-organic-sm, 24px);
+  backdrop-filter: blur(22px) saturate(1.3);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+}
+html.surreal .debrief-title { font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: 1.5rem; }
+/* art themes paint --bg-primary as sky (hot pink / lavender), so their fields are glass instead */
+html.surreal .debrief-field input,
+html.lantern .debrief-field input {
+  background: color-mix(in srgb, var(--bg-secondary) 72%, transparent);
+  border-color: color-mix(in srgb, var(--text-primary) 14%, transparent);
+}
+html.surreal .debrief-chip.is-on { background: var(--sr-cool); color: #fff; }
+html.lantern .debrief-card {
+  background: var(--ln-surface-strong);
+  border-color: var(--ln-edge);
+  border-radius: 24px;
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+}
+html.lantern .debrief-title { font-family: var(--font-lantern); }
+html.lantern .debrief-chip.is-on { background: var(--ln-cta); color: #2a1640; }
+
+/* phones: a centred sheet */
+@media (max-width: 640px) {
+  .debrief-layer { bottom: 96px; }
+  .debrief-head, .debrief-field span { text-align: center; }
+  .debrief-head { padding: 0 28px; align-items: center; }
+  .debrief-field input { text-align: center; }
+  .debrief-feel { justify-content: center; }
+  .debrief-foot { flex-direction: column; }
+  .debrief-actions { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .debrief-card { animation: none; }
+}
+
+/* Parked Thoughts Summary (#5) */
+.debrief-parked-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px dashed var(--border-subtle);
+}
+.debrief-parked-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-primary, #34d399);
+}
+.debrief-parked-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.debrief-parked-tag {
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+/* Intention Callout (#3) */
+.debrief-intention-callout {
+  margin-top: 4px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.debrief-intention-label {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-primary, #34d399);
+}

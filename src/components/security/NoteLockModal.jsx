@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Lock, Unlock, X, ShieldCheck, KeyRound } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Lock, Unlock, X, ShieldCheck, KeyRound, Delete } from 'lucide-react';
 import MagnetButton from '../react-bits/MagnetButton';
 
 export default function NoteLockModal({
@@ -11,8 +11,6 @@ export default function NoteLockModal({
 }) {
   const [pin, setPin] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-
-  if (!isOpen) return null;
 
   const handleDigit = (digit) => {
     if (pin.length < 4) {
@@ -46,6 +44,25 @@ export default function NoteLockModal({
     }
   };
 
+  // Keyboard navigation & numeric entry
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (/^[0-9]$/.test(e.key)) {
+        handleDigit(e.key);
+      } else if (e.key === 'Backspace') {
+        handleBackspace();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, pin, mode, correctPin]);
+
+  if (!isOpen) return null;
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card pin-modal-card" onClick={(e) => e.stopPropagation()}>
@@ -64,7 +81,7 @@ export default function NoteLockModal({
           </h3>
           <p className="pin-subtitle">
             {mode === 'set'
-              ? 'Enter a 4-digit PIN to lock and encrypt this note'
+              ? 'Enter a 4-digit PIN to restrict access to this note on this device'
               : 'Enter your 4-digit PIN to view and edit this note'}
           </p>
 
@@ -102,11 +119,11 @@ export default function NoteLockModal({
             </button>
             <button
               type="button"
-              className="keypad-btn backspace"
+              className="keypad-btn backspace flex items-center justify-center"
               onClick={handleBackspace}
               aria-label="Backspace"
             >
-              ⌫
+              <Delete size={18} />
             </button>
           </div>
         </div>

@@ -44,38 +44,42 @@ export default function FolderSidebar({
   };
 
   return (
-    <aside className="folder-sidebar" aria-label="Notes Vault Folders">
-      <div className="folder-sidebar-header">
-        <div className="sidebar-title-row">
-          <span className="sidebar-title">Vault Folders</span>
-          <span className="sidebar-badge">{Object.values(notesCountByFolder).reduce((a, b) => a + b, 0)}</span>
+    <aside className="folder-sidebar unboxed-sidebar py-1" aria-label="Notes Vault Folders">
+      <div className="folder-sidebar-header pb-2 mb-2 border-b border-[var(--border-subtle)] flex items-center justify-between">
+        <div className="sidebar-title-row flex items-center gap-2">
+          <span className="sidebar-title text-xs font-semibold text-[var(--text-primary)]">
+            Folders
+          </span>
+          <span className="sidebar-badge text-[11px] text-[var(--text-tertiary)] opacity-60">
+            {Object.values(notesCountByFolder).reduce((a, b) => a + b, 0)}
+          </span>
         </div>
         <button
-          className={`folder-add-btn ${isCreating ? 'active' : ''}`}
+          className={`folder-add-btn p-1 text-[var(--text-secondary)] hover:text-[#ff3b30] transition-colors rounded-full ${isCreating ? 'active text-[#ff3b30]' : ''}`}
           onClick={() => setIsCreating(!isCreating)}
           title={isCreating ? 'Cancel' : 'Create Custom Folder'}
         >
-          {isCreating ? <X size={15} /> : <FolderPlus size={15} />}
+          {isCreating ? <X size={14} /> : <FolderPlus size={14} />}
         </button>
       </div>
 
       {isCreating && (
-        <form onSubmit={handleCreateFolder} className="new-folder-form">
+        <form onSubmit={handleCreateFolder} className="new-folder-form my-2 flex items-center gap-2 border-b border-[#ff3b30] pb-1">
           <input
             type="text"
             value={newFolderName}
             onChange={(e) => setNewFolderName(e.target.value)}
             placeholder="Folder name..."
-            className="new-folder-input"
+            className="new-folder-input flex-1 bg-transparent border-none text-xs text-[var(--text-primary)] outline-none"
             autoFocus
           />
-          <button type="submit" className="new-folder-submit">
+          <button type="submit" className="new-folder-submit text-[11px] font-semibold text-[#ff3b30]">
             Add
           </button>
         </form>
       )}
 
-      <div className="folder-list">
+      <div className="folder-list flex flex-col gap-1">
         {DEFAULT_FOLDERS.map((folder) => {
           const Icon = folder.icon;
           const count = notesCountByFolder[folder.id] || 0;
@@ -84,54 +88,76 @@ export default function FolderSidebar({
           return (
             <button
               key={folder.id}
-              className={`folder-item ${isActive ? 'active' : ''} ${folder.isTrash ? 'trash-item' : ''}`}
+              className={`folder-item flex items-center justify-between py-1.5 px-2 rounded transition-all text-xs ${
+                isActive
+                  ? 'active text-[var(--text-primary)] font-semibold bg-white/5'
+                  : 'text-[var(--text-secondary)] opacity-70 hover:opacity-100 hover:bg-white/[0.02]'
+              } ${folder.isTrash ? 'trash-item mt-3 pt-2 border-t border-[var(--border-subtle)]' : ''}`}
               onClick={() => setCurrentFolder(folder.id)}
             >
-              <div className="folder-item-left">
-                <span className="folder-dot" style={{ backgroundColor: folder.color }} />
-                <Icon size={15} className="folder-icon" />
-                <span className="folder-name">{folder.name}</span>
+              <div className="folder-item-left flex items-center gap-2">
+                {isActive ? (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#ff3b30] shadow-[0_0_6px_#ff3b30] shrink-0" />
+                ) : (
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/20 shrink-0" />
+                )}
+                <Icon size={14} className="folder-icon opacity-70" />
+                <span className="folder-name tracking-tight">{folder.name}</span>
               </div>
-              <span className="folder-count">{count}</span>
+              <span className="folder-count text-[10px] opacity-50">
+                {count}
+              </span>
             </button>
           );
         })}
 
         {customFolders.length > 0 && (
-          <div className="folder-divider">
+          <div className="folder-divider my-2 pt-2 border-t border-[var(--border-subtle)] text-[10px] uppercase tracking-widest text-[var(--text-tertiary)] opacity-40">
             <span>Custom</span>
           </div>
         )}
 
-        {customFolders.map((custom) => {
-          const count = notesCountByFolder[custom.id] || 0;
-          const isActive = currentFolder === custom.id;
+        {customFolders.map((custom, index) => {
+          const folderId = typeof custom === 'object' ? custom.id : String(custom);
+          const folderName = typeof custom === 'object' ? custom.name : String(custom);
+          const count = notesCountByFolder[folderId] || 0;
+          const isActive = currentFolder === folderId;
 
           return (
             <button
-              key={custom.id}
-              className={`folder-item custom-folder-item ${isActive ? 'active' : ''}`}
-              onClick={() => setCurrentFolder(custom.id)}
+              key={folderId || index}
+              className={`folder-item custom-folder-item flex items-center justify-between py-1.5 px-2 rounded transition-all text-xs ${
+                isActive
+                  ? 'active text-[var(--text-primary)] font-semibold bg-white/5'
+                  : 'text-[var(--text-secondary)] opacity-70 hover:opacity-100 hover:bg-white/[0.02]'
+              }`}
+              onClick={() => setCurrentFolder(folderId)}
             >
-              <div className="folder-item-left">
-                <span className="folder-dot custom" />
-                <Folder size={15} className="folder-icon" />
-                <span className="folder-name">{custom.name}</span>
+              <div className="folder-item-left flex items-center gap-2">
+                {isActive ? (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#ff3b30] shadow-[0_0_6px_#ff3b30] shrink-0" />
+                ) : (
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/20 shrink-0" />
+                )}
+                <Folder size={14} className="folder-icon opacity-70" />
+                <span className="folder-name tracking-tight">{folderName}</span>
               </div>
-              <div className="folder-item-right">
-                <span className="folder-count">{count}</span>
-                {onDeleteFolder && (
+              <div className="folder-item-right flex items-center gap-1.5">
+                <span className="folder-count text-[10px] opacity-50">
+                  {count}
+                </span>
+                {onDeleteFolder && typeof custom === 'object' && (
                   <span
-                    className="folder-delete-icon"
+                    className="folder-delete-icon text-[var(--text-tertiary)] hover:text-[#ff3b30] cursor-pointer"
                     title="Delete Folder"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (confirm(`Delete folder "${custom.name}"? Notes inside will stay in Quick Notes.`)) {
-                        onDeleteFolder(custom.id);
+                      if (confirm(`Delete folder "${folderName}"? Notes inside will stay in Quick Notes.`)) {
+                        onDeleteFolder(folderId);
                       }
                     }}
                   >
-                    <X size={12} />
+                    <X size={11} />
                   </span>
                 )}
               </div>

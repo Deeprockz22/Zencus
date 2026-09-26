@@ -49,9 +49,9 @@ export default function ShinyButton({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       animate={{ x: position.x, y: position.y }}
-      whileHover={disabled ? {} : { y: -1.5, scale: 1.02 }}
-      whileTap={disabled ? {} : { y: 0.5, scale: 0.96 }}
-      transition={{ type: 'spring', stiffness: 350, damping: 20 }}
+      whileHover={disabled ? {} : { scale: 1.015 }}
+      whileTap={disabled ? {} : { scale: 0.975 }}
+      transition={{ type: 'spring', stiffness: 450, damping: 28 }}
       className={`rb-shiny-btn rb-shiny-btn--${variant} rb-shiny-btn--${size} ${active ? 'rb-shiny-btn--active' : ''} ${className}`}
       style={style}
       {...props}

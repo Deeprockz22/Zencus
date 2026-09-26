@@ -3,15 +3,15 @@ import { motion } from 'framer-motion';
 import { Clock, CheckSquare, FileText } from 'lucide-react';
 
 const TABS = [
-  { id: 'timer', label: 'Timer', icon: Clock },
-  { id: 'tasks', label: 'Tasks', icon: CheckSquare },
-  { id: 'notes', label: 'Notes', icon: FileText }
+  { id: 'timer', label: 'Timer', index: '01', icon: Clock },
+  { id: 'tasks', label: 'Tasks', index: '02', icon: CheckSquare },
+  { id: 'notes', label: 'Notes', index: '03', icon: FileText }
 ];
 
 export default function DockNav({ activeTab, setActiveTab, taskCount = 0, noteCount = 0 }) {
   return (
     <nav className="dock-nav-container" aria-label="Main Navigation">
-      <div className="dock-nav">
+      <div className="dock-nav" role="tablist">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -26,6 +26,7 @@ export default function DockNav({ activeTab, setActiveTab, taskCount = 0, noteCo
               onClick={() => setActiveTab(tab.id)}
               className={`dock-tab ${isActive ? 'active' : ''}`}
               role="tab"
+              aria-label={tab.label}
               aria-selected={isActive}
             >
               {isActive && (
@@ -37,12 +38,21 @@ export default function DockNav({ activeTab, setActiveTab, taskCount = 0, noteCo
               )}
 
               <span className="dock-icon">
-                <Icon size={18} />
+                <Icon size={16} />
               </span>
-              <span className="dock-label">{tab.label}</span>
+
+              <span className="dock-label text-xs font-medium tracking-tight">
+                {tab.label}
+              </span>
+
+              {isActive && (
+                <span className="dock-active-dot w-1.5 h-1.5 rounded-full bg-[#ff3b30] shadow-[0_0_6px_#ff3b30] ml-1 shrink-0" />
+              )}
 
               {badge !== null && (
-                <span className="dock-badge">{badge}</span>
+                <span className="dock-badge text-[10px] font-semibold ml-1 opacity-70">
+                  {badge}
+                </span>
               )}
             </button>
           );

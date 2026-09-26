@@ -1,0 +1,69 @@
+/* The floating mini timer. It lives in the PiP window, which receives a copy
+   of the app's stylesheets and <html> theme classes, so the theme tokens
+   resolve exactly as they do in the app. */
+
+.mini-timer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #111);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  user-select: none;
+}
+.mini-ring { width: 56px; height: 56px; flex-shrink: 0; }
+.mini-ring circle { fill: none; stroke-width: 5; }
+.mini-ring-track { stroke: var(--border-subtle, rgba(0, 0, 0, 0.1)); }
+.mini-ring-fill {
+  stroke: var(--accent-primary, #ff4d3d);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.9s linear;
+}
+.mini-timer.is-shortBreak .mini-ring-fill,
+.mini-timer.is-longBreak .mini-ring-fill { stroke: var(--accent-secondary, #34a853); }
+
+.mini-readout { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.mini-mode {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary, #888);
+}
+.mini-clock {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.mini-timer:not(.is-running) .mini-clock { opacity: 0.6; }
+
+.mini-controls { display: flex; flex-direction: column; gap: 6px; }
+.mini-btn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.12));
+  background: transparent;
+  color: var(--text-secondary, #555);
+  cursor: pointer;
+}
+.mini-btn:hover { color: var(--text-primary, #111); }
+.mini-btn.mini-primary {
+  background: var(--accent-primary, #ff4d3d);
+  border-color: transparent;
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mini-ring-fill { transition: none; }
+}
+
+/* the header button while the mini timer is floating */
+.icon-btn.is-active { color: var(--accent-primary); }

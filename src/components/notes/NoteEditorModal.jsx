@@ -27,7 +27,8 @@ import {
   Eye,
   Edit3,
   Sparkles,
-  Check
+  Check,
+  Target
 } from 'lucide-react';
 import MagnetButton from '../react-bits/MagnetButton';
 import SketchCanvasModal from '../canvas/SketchCanvasModal';
@@ -50,14 +51,17 @@ export default function NoteEditorModal({
   onSave,
   onDelete,
   onExport,
+  onConvertToTask,
   folders = ['quick', 'work', 'personal', 'ideas', 'archive']
 }) {
+  const [currentNoteId, setCurrentNoteId] = useState(note?.id || null);
   const [title, setTitle] = useState('');
   const [folder, setFolder] = useState('quick');
   const [noteColor, setNoteColor] = useState('default');
   const [isPinned, setIsPinned] = useState(false);
   const [pin, setPin] = useState(null);
   const [previewMode, setPreviewMode] = useState(false); // Split/Live preview
+  const [previewHtml, setPreviewHtml] = useState('');
   const [autoSaveStatus, setAutoSaveStatus] = useState('Saved to Local Vault');
 
   // Modals for Sketch and Lock
@@ -70,18 +74,26 @@ export default function NoteEditorModal({
 
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
+  const currentNoteIdRef = useRef(note?.id || null);
 
   useEffect(() => {
     if (note) {
+      const nextNoteId = note.id || null;
+      currentNoteIdRef.current = nextNoteId;
+      setCurrentNoteId(nextNoteId);
       setTitle(note.title || '');
       setFolder(note.folder || 'quick');
       setNoteColor(note.color || 'default');
       setIsPinned(note.pinned || false);
       setPin(note.pin || null);
+      const cleanContent = note.content || '';
       if (editorRef.current) {
-        editorRef.current.innerHTML = note.content || '';
+        editorRef.current.innerHTML = cleanContent;
       }
+      setPreviewHtml(Sanitizer.clean(cleanContent));
     } else {
+      currentNoteIdRef.current = null;
+      setCurrentNoteId(null);
       setTitle('');
       setFolder('quick');
       setNoteColor('default');
@@ -90,6 +102,7 @@ export default function NoteEditorModal({
       if (editorRef.current) {
         editorRef.current.innerHTML = '';
       }
+      setPreviewHtml('');
     }
     setPreviewMode(false);
     setAutoSaveStatus('Saved to Local Vault');
@@ -104,6 +117,76 @@ export default function NoteEditorModal({
     const readingTime = Math.max(1, Math.ceil(words / 180));
     setStats({ words, chars, readingTime });
     setAutoSaveStatus('Editing...');
+  };
+
+  const handleSave = (shouldClose = false) => {
+    const currentHtml = editorRef.current ? Sanitizer.clean(editorRef.current.innerHTML) : '';
+    const noteTitle = title.trim();
+    const existingNoteId = currentNoteIdRef.current || note?.id || null;
+
+    // Only save if there is content/title or it's an existing note being edited
+    if (noteTitle || currentHtml.trim() || existingNoteId) {
+      const saved = onSave({
+        id: existingNoteId,
+        title: noteTitle || 'Untitled Note',
+        content: currentHtml,
+        folder,
+        color: noteColor,
+        pinned: isPinned,
+        pin,
+        updatedAt: new Date().toISOString()
+      });
+      if (saved?.id) {
+        currentNoteIdRef.current = saved.id;
+        setCurrentNoteId(saved.id);
+      }
+      setAutoSaveStatus('Saved to Local Vault');
+    }
+    if (shouldClose) {
+      onClose();
+    }
+  };
+
+  // Keyboard Shortcuts: Cmd+S / Ctrl+S to save in place, Escape to save & close
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        handleSave(false);
+      } else if (e.key === 'Escape' && !isSketchOpen && !isLockModalOpen) {
+        e.preventDefault();
+        handleSave(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, currentNoteId, note, title, folder, noteColor, isPinned, pin, isSketchOpen, isLockModalOpen]);
+
+  // Debounced auto-save (1.5s after user stops typing)
+  useEffect(() => {
+    if (!isOpen || autoSaveStatus !== 'Editing...') return;
+
+    const timer = setTimeout(() => {
+      handleSave(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [isOpen, autoSaveStatus, title, folder, noteColor, isPinned, pin, currentNoteId]);
+
+  const togglePreviewMode = () => {
+    if (!previewMode) {
+      const currentHtml = editorRef.current ? Sanitizer.clean(editorRef.current.innerHTML) : '';
+      setPreviewHtml(currentHtml);
+      setPreviewMode(true);
+    } else {
+      setPreviewMode(false);
+      setTimeout(() => {
+        editorRef.current?.focus();
+      }, 50);
+    }
   };
 
   const executeCommand = (command, value = null) => {
@@ -172,28 +255,11 @@ export default function NoteEditorModal({
     reader.readAsDataURL(file);
   };
 
-  const handleClose = () => {
-    const currentHtml = editorRef.current ? Sanitizer.clean(editorRef.current.innerHTML) : '';
-    if (title.trim() || currentHtml.trim()) {
-      onSave({
-        id: note?.id,
-        title: title.trim() || 'Untitled Note',
-        content: currentHtml,
-        folder,
-        color: noteColor,
-        pinned: isPinned,
-        pin,
-        updatedAt: new Date().toISOString()
-      });
-    }
-    onClose();
-  };
-
   if (!isOpen) return null;
 
   return (
     <>
-      <div className="modal-backdrop" onClick={handleClose}>
+      <div className="modal-backdrop" onClick={() => handleSave(true)}>
         <div className={`modal-card note-modal-card note-color-${noteColor}`} onClick={(e) => e.stopPropagation()}>
           {/* Header */}
           <div className="modal-header">
@@ -207,6 +273,7 @@ export default function NoteEditorModal({
                   setAutoSaveStatus('Editing...');
                 }}
                 placeholder="Note Title (e.g. #Project Planning)..."
+                aria-label="Note title"
                 className="note-title-modal-input"
                 autoFocus
               />
@@ -243,7 +310,12 @@ export default function NoteEditorModal({
                     title={c.label}
                     onClick={() => setNoteColor(c.id)}
                   >
-                    {noteColor === c.id && <Check size={10} color="#000" />}
+                    {noteColor === c.id && (
+                      <Check
+                        size={10}
+                        color={c.id === 'default' ? 'var(--text-primary)' : '#000'}
+                      />
+                    )}
                   </button>
                 ))}
               </div>
@@ -252,7 +324,7 @@ export default function NoteEditorModal({
               <button
                 type="button"
                 className={`icon-btn ${previewMode ? 'active' : ''}`}
-                onClick={() => setPreviewMode(!previewMode)}
+                onClick={togglePreviewMode}
                 title={previewMode ? 'Switch to Edit Mode' : 'Switch to Reader Preview'}
               >
                 {previewMode ? <Edit3 size={15} /> : <Eye size={15} />}
@@ -272,8 +344,9 @@ export default function NoteEditorModal({
               </button>
 
               <button
+                type="button"
                 className="icon-btn close-modal-btn"
-                onClick={handleClose}
+                onClick={() => handleSave(true)}
                 title="Save & Close (Esc)"
                 aria-label="Close"
               >
@@ -349,7 +422,7 @@ export default function NoteEditorModal({
 
               <span className="toolbar-separator" />
 
-              {/* Lists & Checklists */}
+              {/* Lists */}
               <button
                 type="button"
                 className="toolbar-btn"
@@ -370,33 +443,32 @@ export default function NoteEditorModal({
                 type="button"
                 className="toolbar-btn"
                 onClick={insertChecklist}
-                title="Checklist Item"
+                title="Interactive Checklist"
               >
                 <CheckSquare size={15} />
               </button>
 
               <span className="toolbar-separator" />
 
-              {/* Sketch Drawing Canvas */}
+              {/* Table */}
+              <button
+                type="button"
+                className="toolbar-btn"
+                onClick={insertTable}
+                title="Insert Markdown Table"
+              >
+                <Table size={15} />
+              </button>
+
+              {/* Freehand Sketchpad Drawing */}
               <button
                 type="button"
                 className="toolbar-btn media-tool-btn"
                 onClick={() => setIsSketchOpen(true)}
-                title="Draw / Sketch on Canvas"
+                title="Draw Sketch & Embed"
               >
                 <PenTool size={14} />
                 <span className="tool-label">Sketch</span>
-              </button>
-
-              {/* Table */}
-              <button
-                type="button"
-                className="toolbar-btn media-tool-btn"
-                onClick={insertTable}
-                title="Insert Table"
-              >
-                <Table size={14} />
-                <span className="tool-label">Table</span>
               </button>
 
               {/* Image */}
@@ -439,25 +511,25 @@ export default function NoteEditorModal({
             </div>
           )}
 
-          {/* Rich Content Area or Preview */}
-          {previewMode ? (
-            <div
-              className="rich-note-editor reader-preview"
-              dangerouslySetInnerHTML={{
-                __html: editorRef.current ? editorRef.current.innerHTML : ''
-              }}
-            />
-          ) : (
-            <div
-              ref={editorRef}
-              className="rich-note-editor"
-              contentEditable="true"
-              data-placeholder="Start typing your thoughts, markdown notes (#tags), sketch ideas, or organize tasks..."
-              onInput={updateStats}
-              onKeyUp={updateStats}
-              suppressContentEditableWarning
-            />
-          )}
+          {/* Rich Content Area and Preview (Both stay mounted to preserve editor contents & state) */}
+          <div
+            className="rich-note-editor reader-preview"
+            style={{ display: previewMode ? 'block' : 'none' }}
+            dangerouslySetInnerHTML={{
+              __html: previewHtml || '<p style="color: var(--text-tertiary); font-style: italic;">No content to preview yet...</p>'
+            }}
+          />
+
+          <div
+            ref={editorRef}
+            className="rich-note-editor"
+            style={{ display: previewMode ? 'none' : 'block' }}
+            contentEditable="true"
+            data-placeholder="Start typing your thoughts, markdown notes (#tags), sketch ideas, or organize tasks..."
+            onInput={updateStats}
+            onKeyUp={updateStats}
+            suppressContentEditableWarning
+          />
 
           {/* Modal Footer with Live Metrics */}
           <div className="modal-footer">
@@ -475,12 +547,12 @@ export default function NoteEditorModal({
             </div>
 
             <div className="footer-right">
-              {note?.id && (
+              {(currentNoteId || note?.id) && (
                 <button
                   type="button"
                   className="footer-btn delete"
                   onClick={() => {
-                    onDelete(note.id);
+                    onDelete(currentNoteId || note.id);
                     onClose();
                   }}
                   title="Delete this note"
@@ -489,9 +561,26 @@ export default function NoteEditorModal({
                 </button>
               )}
 
+              {onConvertToTask && (
+                <button
+                  type="button"
+                  className="footer-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  style={{ marginRight: '8px' }}
+                  onClick={() => {
+                    handleSave(false);
+                    onConvertToTask(title || 'Untitled Task from Notes');
+                    onClose();
+                  }}
+                  title="Turn this note into an actionable Task"
+                >
+                  <Target size={15} style={{ marginRight: 4 }} />
+                  <span>Turn into Task</span>
+                </button>
+              )}
+
               <MagnetButton
                 className="btn-action primary modal-save-btn"
-                onClick={handleClose}
+                onClick={() => handleSave(true)}
               >
                 <Save size={15} />
                 <span>Done</span>

@@ -151,6 +151,21 @@ export default function SketchCanvasModal({
     onClose();
   };
 
+  // Keyboard shortcuts: Escape to close, Cmd/Ctrl+Z to undo
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        handleUndo();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, history]);
+
   if (!isOpen) return null;
 
   return (

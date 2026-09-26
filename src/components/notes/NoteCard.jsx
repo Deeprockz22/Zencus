@@ -11,7 +11,6 @@ import {
   Clock,
   FileText
 } from 'lucide-react';
-import SpotlightCard from '../react-bits/SpotlightCard';
 
 export default function NoteCard({
   note,
@@ -61,33 +60,27 @@ export default function NoteCard({
   const noteColorClass = note.color ? `note-color-${note.color}` : 'note-color-default';
 
   return (
-    <SpotlightCard
-      className={`note-card ${note.pinned ? 'pinned' : ''} ${isLocked ? 'locked' : ''} ${noteColorClass} view-${viewMode}`}
+    <div
+      className={`note-card unboxed-note-card ${note.pinned ? 'pinned' : ''} ${isLocked ? 'locked' : ''} ${noteColorClass} view-${viewMode} py-4 border-b border-[var(--border-subtle)] transition-colors hover:bg-white/[0.02] cursor-pointer group`}
       onClick={() => onOpen(note)}
-      spotlightColor="rgba(255, 255, 255, 0.12)"
     >
       <div className="note-card-inner">
         {/* Header */}
-        <div className="note-card-header">
-          <div className="note-title-wrapper">
+        <div className="note-card-header flex items-center justify-between gap-2 mb-1.5">
+          <div className="note-title-wrapper flex items-center gap-2 flex-1 min-w-0">
             {isLocked ? (
-              <Lock size={14} className="note-lock-badge" />
+              <Lock size={14} className="note-lock-badge text-[#ff3b30] shrink-0" />
             ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" className="note-editorial-ribbon-glyph mr-1.5 shrink-0">
-                <g transform="translate(12, 12) scale(0.6)">
-                  <path d="M0,0 L8,8 L0,16 L-8,8 Z" fill="#ff3b30" />
-                  <path d="M0,0 L8,-8 L16,0 L8,8 Z" fill="var(--text-primary)" />
-                  <path d="M0,0 L-8,-8 L0,-16 L8,-8 Z" fill="#ff3b30" />
-                  <path d="M0,0 L-8,8 L-16,0 L-8,-8 Z" fill="var(--text-primary)" />
-                </g>
-              </svg>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff3b30] shadow-[0_0_6px_#ff3b30] shrink-0" />
             )}
-            <h3 className="note-card-title font-bold tracking-tight">{note.title || 'Untitled Note'}</h3>
+            <h3 className="note-card-title font-semibold tracking-tight text-sm text-[var(--text-primary)] truncate">
+              {note.title || 'Untitled Note'}
+            </h3>
           </div>
 
           {!isTrashView && (
             <button
-              className={`pin-btn ${note.pinned ? 'active' : ''}`}
+              className={`pin-btn p-1 text-[var(--text-secondary)] hover:text-[#ff3b30] transition-colors rounded-full ${note.pinned ? 'active' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
                 onPin(note.id);
@@ -95,28 +88,30 @@ export default function NoteCard({
               title={note.pinned ? 'Unpin Note' : 'Pin Note'}
               aria-label={note.pinned ? 'Unpin Note' : 'Pin Note'}
             >
-              <Pin size={14} className={note.pinned ? 'fill-current text-[#ff3b30]' : ''} />
+              <Pin size={13} className={note.pinned ? 'fill-current text-[#ff3b30]' : ''} />
             </button>
           )}
         </div>
 
         {/* Content Snippet or Lock Blur */}
         {isLocked ? (
-          <div className="locked-note-placeholder">
-            <Lock size={20} className="lock-blur-icon" />
-            <span>Encrypted Vault Note</span>
+          <div className="locked-note-placeholder py-2 text-xs text-[var(--text-muted)] flex items-center gap-2">
+            <Lock size={14} className="lock-blur-icon opacity-50" />
+            <span>PIN protected</span>
           </div>
         ) : (
-          <p className="note-card-snippet">{plainSnippet}</p>
+          <p className="note-card-snippet font-sans text-xs text-[var(--text-secondary)] line-clamp-2 leading-relaxed mb-2 opacity-80">
+            {plainSnippet}
+          </p>
         )}
 
-        {/* Tag Pills */}
+        {/* Tag Pills (Nothing Micro-Brackets) */}
         {!isLocked && tags.length > 0 && (
-          <div className="note-card-tags">
+          <div className="note-card-tags flex items-center gap-2 mb-2 flex-wrap">
             {tags.map((t) => (
               <span
                 key={t}
-                className="note-tag-chip"
+                className="note-tag-chip text-[11px] text-[var(--text-secondary)] opacity-70 hover:opacity-100 hover:text-[#ff3b30] transition-all cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (onTagClick) onTagClick(t);
@@ -129,33 +124,31 @@ export default function NoteCard({
         )}
 
         {/* Footer */}
-        <div className="note-card-footer">
-          <div className="note-footer-meta">
+        <div className="note-card-footer flex items-center justify-between text-[11px] font-medium text-[var(--text-tertiary)] pt-1">
+          <div className="note-footer-meta flex items-center gap-3">
             {note.folder && note.folder !== 'all' && (
-              <span className="note-folder-tag">
-                <Folder size={11} />
-                <span>{note.folder}</span>
+              <span className="note-folder-tag opacity-60 capitalize">
+                {note.folder}
               </span>
             )}
             {hasImage && !isLocked && (
-              <span className="note-has-image-indicator" title="Contains Drawing / Image">
+              <span className="note-has-image-indicator opacity-60" title="Contains Drawing / Image">
                 <ImageIcon size={11} />
               </span>
             )}
-            {!isLocked && plainSnippet !== 'No additional content...' && (
-              <span className="note-stats-pill" title={`${readingStats.words} words`}>
-                <Clock size={10} />
-                <span>{readingStats.readingTime}</span>
+            {!isLocked && readingStats.words >= 150 && (
+              <span className="note-stats-pill opacity-50" title={`${readingStats.words} words`}>
+                {readingStats.readingTime}
               </span>
             )}
-            <span className="note-date">{formattedDate}</span>
+            <span className="note-date opacity-40">{formattedDate}</span>
           </div>
 
-          <div className="note-footer-actions">
+          <div className="note-footer-actions flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
             {isTrashView ? (
               <>
                 <button
-                  className="note-icon-action restore"
+                  className="note-icon-action restore p-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
                     onRestore(note.id);
@@ -163,10 +156,10 @@ export default function NoteCard({
                   title="Restore Note"
                   aria-label="Restore Note"
                 >
-                  <RotateCcw size={14} />
+                  <RotateCcw size={13} />
                 </button>
                 <button
-                  className="note-icon-action delete"
+                  className="note-icon-action delete p-1 text-[var(--text-secondary)] hover:text-[#ff3b30] transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(note.id, true); // permanent
@@ -174,13 +167,13 @@ export default function NoteCard({
                   title="Delete Forever"
                   aria-label="Delete Forever"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={13} />
                 </button>
               </>
             ) : (
               <>
                 <button
-                  className="note-icon-action"
+                  className="note-icon-action p-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
                     onExport(note);
@@ -188,10 +181,10 @@ export default function NoteCard({
                   title="Export as Markdown (.md)"
                   aria-label="Export Markdown"
                 >
-                  <Download size={14} />
+                  <Download size={13} />
                 </button>
                 <button
-                  className="note-icon-action delete"
+                  className="note-icon-action delete p-1 text-[var(--text-secondary)] hover:text-[#ff3b30] transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(note.id, false); // soft delete to trash
@@ -199,13 +192,13 @@ export default function NoteCard({
                   title="Move to Trash"
                   aria-label="Move to Trash"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={13} />
                 </button>
               </>
             )}
           </div>
         </div>
       </div>
-    </SpotlightCard>
+    </div>
   );
 }

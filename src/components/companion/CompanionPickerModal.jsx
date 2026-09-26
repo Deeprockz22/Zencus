@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Check, Sparkles, Heart } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { X, Check, Sparkles, Heart, MinusCircle } from 'lucide-react';
 import MagnetButton from '../react-bits/MagnetButton';
 import SpotlightCard from '../react-bits/SpotlightCard';
 import { COMPANIONS } from '../../utils/companionPresets';
@@ -11,6 +11,18 @@ export default function CompanionPickerModal({
   activeCompanion = 'dino',
   onSelectCompanion
 }) {
+  // Close modal on Escape key press
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSelect = (companionId) => {
@@ -27,21 +39,28 @@ export default function CompanionPickerModal({
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card companion-picker-card" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-card companion-picker-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="companion-picker-title"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <div className="companion-header-title">
-            <h2 className="modal-title">🐾 Focus Pet Wardrobe</h2>
+            <h2 id="companion-picker-title" className="modal-title">🐾 Focus Pet Wardrobe</h2>
             <span className="companion-header-sub">Choose your loyal productivity companion</span>
           </div>
           <div className="flex items-center gap-2">
             {activeCompanion && activeCompanion !== 'none' && (
               <button
                 type="button"
-                className="remove-pet-header-btn"
+                className="remove-pet-header-btn flex items-center"
                 onClick={() => handleSelect('none')}
                 title="Remove Pet & Collapse Space"
               >
-                🚫 Remove Pet
+                <MinusCircle size={13} className="mr-1 inline-block" />
+                <span>Remove Pet</span>
               </button>
             )}
             <button className="icon-btn close-modal-btn" onClick={onClose} aria-label="Close">
@@ -59,6 +78,15 @@ export default function CompanionPickerModal({
                 key={comp.id}
                 className={`companion-select-card ${isSelected ? 'selected' : ''} ${comp.id === 'none' ? 'none-companion-card' : ''}`}
                 onClick={() => handleSelect(comp.id)}
+                role="button"
+                tabIndex={0}
+                aria-label={`${isSelected ? 'Selected' : 'Select'} ${comp.name}, ${comp.title}`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSelect(comp.id);
+                  }
+                }}
               >
                 <div className="companion-card-inner">
                   <div className="companion-card-top">

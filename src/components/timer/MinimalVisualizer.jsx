@@ -16,7 +16,8 @@ export default function MinimalVisualizer({
   handleEditSubmit,
   setIsEditing,
   startTimer,
-  pauseTimer
+  pauseTimer,
+  hideHeader = false
 }) {
   const progress = totalDuration > 0 ? ((totalDuration - timeLeft) / totalDuration) * 100 : 0;
   const radius = 135;
@@ -46,11 +47,12 @@ export default function MinimalVisualizer({
   };
 
   return (
-    <div className="minimal-visualizer-hero relative flex flex-col items-start justify-center my-2 select-none w-full max-w-xl mx-auto">
+    <div className="minimal-visualizer-hero relative flex flex-col items-center justify-center my-2 select-none w-full max-w-xl mx-auto">
       {/* ══════════ 1. TIMER DISPLAY HEADER (Left-Aligned Swiss Editorial) ══════════ */}
-      <div className="timer-display-panel flex flex-col items-start text-left z-10 w-full mb-1 px-4">
+      {!hideHeader && (
+        <div className="timer-display-panel flex flex-col items-start text-left z-10 w-full mb-1 px-4">
         {/* Mode Badge */}
-        <div className="editorial-mode-stamp mb-2 px-3 py-1 rounded border-2 border-[#121212] dark:border-[rgba(255,255,255,0.4)] bg-[#121212] text-white text-[11px] font-mono tracking-widest uppercase font-bold shadow-[2px_2px_0px_#ff3b30] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.25)]">
+        <div className="editorial-mode-stamp mb-2 px-3 py-1 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] text-[var(--text-primary)] text-[11px] font-mono tracking-widest uppercase font-bold shadow-xs">
           <DecryptedText text={getModeTitle ? getModeTitle() : 'Deep Focus Session'} speed={30} maxIterations={8} />
         </div>
 
@@ -65,7 +67,7 @@ export default function MinimalVisualizer({
               onChange={(e) => setEditMinutes(e.target.value)}
               autoFocus
               onBlur={() => setIsEditing(false)}
-              className="timer-edit-input text-5xl sm:text-6xl font-black bg-[var(--bg-secondary)] border-3 border-[#121212] dark:border-[rgba(255,255,255,0.4)] text-[var(--text-primary)] px-3 py-1 rounded shadow-[4px_4px_0px_#121212] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.25)]"
+              className="timer-edit-input text-5xl sm:text-6xl font-black bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[var(--text-primary)] px-3 py-1 rounded-xl shadow-xs"
             />
             <span className="timer-edit-label ml-2 font-mono font-bold text-[var(--text-primary)]">MIN</span>
           </form>
@@ -86,7 +88,7 @@ export default function MinimalVisualizer({
         )}
 
         {/* Progress Ribbon VU Meter */}
-        <div className="timer-progress-meter w-48 h-2.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border-2 border-[#121212] dark:border-[rgba(255,255,255,0.4)] shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.22)] my-2">
+        <div className="timer-progress-meter w-48 h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border border-[var(--border-subtle)] my-2">
           <motion.div
             className="h-full bg-[#ff3b30]"
             initial={{ width: 0 }}
@@ -95,6 +97,7 @@ export default function MinimalVisualizer({
           />
         </div>
       </div>
+      )}
 
       {/* ══════════ 2. DIETER RAMS / BRAUN MINIMAL ZEN FOCUS DIAL ══════════ */}
       <div

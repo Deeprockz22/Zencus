@@ -20,11 +20,11 @@ export default function FocusLogo({ size = 36, className = '' }) {
         {/* Top Blade */}
         <path d="M0,0 L10,-10 L20,0 L10,10 Z" fill="#ff3b30" />
         {/* Right Blade */}
-        <path d="M0,0 L10,10 L0,20 L-10,10 Z" fill="#121212" />
+        <path d="M0,0 L10,10 L0,20 L-10,10 Z" fill="var(--text-primary, #121212)" />
         {/* Bottom Blade */}
         <path d="M0,0 L-10,10 L-20,0 L-10,-10 Z" fill="#ff3b30" />
         {/* Left Blade */}
-        <path d="M0,0 L-10,-10 L0,-20 L10,-10 Z" fill="#121212" />
+        <path d="M0,0 L-10,-10 L0,-20 L10,-10 Z" fill="var(--text-primary, #121212)" />
       </g>
     </svg>
   );

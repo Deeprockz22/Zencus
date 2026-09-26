@@ -17,9 +17,18 @@ export const Storage = {
     }
   },
 
-  getArray(key) {
-    const value = this.get(key, []);
-    return Array.isArray(value) ? value : [];
+  getArray(key, defaultValue = []) {
+    const fallback = Array.isArray(defaultValue) ? defaultValue : [];
+    const value = this.get(key, fallback);
+    return Array.isArray(value) ? value : fallback;
+  },
+
+  getObject(key, defaultValue = {}) {
+    const fallback = defaultValue && typeof defaultValue === 'object' && !Array.isArray(defaultValue)
+      ? defaultValue
+      : {};
+    const value = this.get(key, fallback);
+    return value && typeof value === 'object' && !Array.isArray(value) ? value : fallback;
   },
 
   getNumber(key, defaultValue) {

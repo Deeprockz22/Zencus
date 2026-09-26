@@ -1,0 +1,173 @@
+/* =====================================================================
+   MATRIX WALL — Crisp (regular) themes
+   An LED wall in the theme's own paper/charcoal. Everything is built on
+   theme tokens so Crisp Light and Crisp Dark both work; the only fixed
+   colour is the Crisp red accent. (Surreal's "Golconda" lives in
+   surreal.css and is untouched by these rules.)
+   ===================================================================== */
+
+.green-dot-matrix-wall.is-crisp {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary);
+  /* live between the app header and the dock */
+  padding: 64px 0 96px;
+}
+
+.green-dot-matrix-wall.is-crisp .wall-dot-texture {
+  color: var(--text-primary);
+  opacity: 0.07;
+}
+
+.wall-vignette {
+  opacity: 0;
+  transition: opacity 0.7s ease;
+  background: radial-gradient(ellipse at center, transparent 42%, rgba(0, 0, 0, 0.09) 100%);
+}
+.green-dot-matrix-wall.is-crisp .wall-vignette {
+  background: radial-gradient(ellipse at center, transparent 45%, color-mix(in srgb, var(--text-primary) 7%, transparent) 100%);
+}
+.green-dot-matrix-wall.is-running .wall-vignette { opacity: 1; }
+
+/* controls: hover states that work on paper and charcoal alike */
+.green-dot-matrix-wall.is-crisp .wall-round-btn:hover,
+.green-dot-matrix-wall.is-crisp .wall-preset[aria-pressed='false']:hover,
+.green-dot-matrix-wall.is-crisp .wall-pill[aria-pressed='false']:hover {
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent) !important;
+}
+.green-dot-matrix-wall.is-crisp .wall-cta {
+  box-shadow: 0 8px 22px -8px rgba(255, 59, 48, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.green-dot-matrix-wall.is-crisp .wall-scene-switcher {
+  background: color-mix(in srgb, var(--text-primary) 7%, transparent);
+  border: 1px solid var(--border-subtle);
+}
+
+/* ---------- status line ---------- */
+.wall-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.wall-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff3b30;
+  box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.18);
+}
+.green-dot-matrix-wall.is-running .wall-status-dot { animation: wall-rec 1.2s ease-in-out infinite; }
+.wall-status-sep { opacity: 0.4; }
+@keyframes wall-rec { 50% { opacity: 0.25; } }
+
+/* ---------- meters under the clock ---------- */
+.wall-meters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: min(100%, 760px);
+  margin-top: 26px;
+}
+
+/* 60 dots: one per second of the current minute */
+.wall-seconds {
+  display: grid;
+  grid-template-columns: repeat(60, minmax(0, 1fr));
+  gap: 3px;
+  width: 100%;
+}
+.wall-sec {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--text-primary) 12%, transparent);
+  transform: scale(0.7);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.wall-sec.is-quarter { transform: scale(0.9); background: color-mix(in srgb, var(--text-primary) 22%, transparent); }
+.wall-sec.is-past { background: color-mix(in srgb, var(--text-primary) 62%, transparent); transform: scale(0.8); }
+.wall-sec.is-past.is-quarter { background: var(--text-primary); transform: scale(0.95); }
+.wall-sec.is-now {
+  background: #ff3b30;
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(255, 59, 48, 0.7);
+}
+
+/* the whole session as a row of dots */
+.wall-session {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.wall-session-label {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  min-width: 3.4em;
+}
+.wall-session-label:last-child { text-align: right; }
+.wall-session-dots {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(48, minmax(0, 1fr));
+  gap: 4px;
+}
+.wall-sdot {
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--text-primary) 12%, transparent);
+  transition: background 0.4s ease;
+}
+.wall-sdot.is-lit { background: var(--text-primary); }
+.wall-sdot.is-head { background: #ff3b30; box-shadow: 0 0 6px rgba(255, 59, 48, 0.6); }
+
+/* ---------- small screens: the clock leads, the page scrolls ---------- */
+@media (max-width: 1023px) {
+  .green-dot-matrix-wall.is-crisp {
+    overflow-y: auto !important;
+    padding: 60px 0 110px;
+  }
+  .green-dot-matrix-wall.is-crisp .wall-stage { flex: 0 0 auto; }
+  .green-dot-matrix-wall.is-crisp .wall-right { padding-top: 12px; }
+  .wall-meters { padding: 0 16px; }
+  .wall-seconds { gap: 2px; }
+  .wall-session-dots { gap: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wall-status-dot, .wall-sec, .wall-sdot, .wall-vignette { animation: none !important; transition: none !important; }
+}
+
+/* The wall's own spacing. (Originally a workaround for the unlayered
+   `* { margin: 0; padding: 0 }` reset in index.css, which has since been
+   removed; these values now simply override the matching Tailwind utilities
+   on the same elements, so nothing doubles up.) */
+.green-dot-matrix-wall.is-crisp .wall-left-panel {
+  padding: 24px clamp(28px, 4vw, 64px);
+  margin: 0 auto;
+}
+.green-dot-matrix-wall.is-crisp .wall-right { padding: 16px clamp(16px, 3vw, 40px); }
+.green-dot-matrix-wall.is-crisp .scene-toggle-pill { padding: 6px 14px; white-space: nowrap; }
+.green-dot-matrix-wall.is-crisp .wall-scene-switcher { padding: 4px; }
+.green-dot-matrix-wall.is-crisp .wall-preset { padding: 8px 0; }
+.green-dot-matrix-wall.is-crisp .wall-pill { padding: 6px 10px; }
+@media (min-width: 1024px) {
+  .green-dot-matrix-wall.is-crisp .wall-left-panel { margin: 0; }
+}
+
+/* the clock scales down to fit narrow screens instead of clipping its first and last digits */
+.green-dot-matrix-wall.is-crisp .giant-clock-touch-target .glyph-ndot-display-wrap { max-width: 100%; }
+.green-dot-matrix-wall.is-crisp .giant-clock-touch-target .glyph-ndot-svg { max-width: 100%; height: auto; }
+@media (max-width: 639px) {
+  .green-dot-matrix-wall.is-crisp .wall-right { padding: 12px 16px; }
+}

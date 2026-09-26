@@ -5,18 +5,78 @@ import DockNav from './components/DockNav';
 import PomodoroTimer from './components/timer/PomodoroTimer';
 import FullscreenZenMode from './components/timer/FullscreenZenMode';
 import MiniTimer from './components/timer/MiniTimer';
+import SessionDebrief, { debriefToNote } from './components/timer/SessionDebrief';
 import TaskManager from './components/tasks/TaskManager';
 import NotesHub from './components/notes/NotesHub';
 import SettingsModal from './components/SettingsModal';
 import CompanionPickerModal from './components/companion/CompanionPickerModal';
-import ParticlesBackground from './components/react-bits/ParticlesBackground';
+import LockScreen from './components/LockScreen';
 import ClickSpark from './components/react-bits/ClickSpark';
+import SurrealWorld from './components/surreal/SurrealWorld';
+import LanternWorld from './components/lantern/LanternWorld';
+import AsciiButterfly from './components/lantern/AsciiButterfly';
+import { isSurrealTheme, isLanternTheme, isKomorebiTheme, baseTheme } from './themeFamilies';
+import KomorebiWorld from './components/komorebi/KomorebiWorld';
+import FloatingMiniTimer from './components/pip/MiniTimer';
+import useDocumentPiP from './components/pip/useDocumentPiP';
 import useWakeLock from './hooks/useWakeLock';
 import { Storage, uid } from './utils/storage';
 import { themedAudio } from './utils/retroAudio';
+import { sfx } from './utils/sfx';
+import { jazzRadio } from './utils/jazzRadioAudio';
+import { ambientSoundscapes } from './utils/ambientAudio';
 import confetti from 'canvas-confetti';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
+import ParkingLotModal from './components/timer/ParkingLotModal';
+import { updateTabProgressRing, restoreTabFavicon } from './utils/tabProgress';
+import { canUseDocumentPiP, openDocumentPiP, closeDocumentPiP, isPiPOpen } from './utils/pipManager';
+import ShortcutSheetModal from './components/ui/ShortcutSheetModal';
+import { recordFocusSession } from './utils/focusSessionHistory';
+import useSoftLanding from './hooks/useSoftLanding';
 
 export default function App() {
+  // Ultra-Smooth Inertial Scroll (Lenis by darkroomengineering)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let lenis;
+    let rafId;
+
+    try {
+      lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        wheelMultiplier: 1,
+        touchMultiplier: 2,
+        // Without these, Lenis swallowed every wheel event: modals like Settings
+        // couldn't be scrolled with a mouse/trackpad and the page behind them
+        // scrolled instead. Scrollable areas now scroll natively, and nothing
+        // inside a dialog/overlay ever drives the page underneath.
+        allowNestedScroll: true,
+        prevent: (node) =>
+          !!node.closest?.('.modal-backdrop, [role="dialog"], .fullscreen-zen-overlay, .green-dot-matrix-wall, [data-lenis-prevent]')
+      });
+
+      const raf = (time) => {
+        lenis.raf(time);
+        rafId = requestAnimationFrame(raf);
+      };
+      rafId = requestAnimationFrame(raf);
+    } catch (err) {
+      console.warn('Lenis smooth scrolling note:', err);
+    }
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      if (lenis) {
+        try {
+          lenis.destroy();
+        } catch (_) {}
+      }
+    };
+  }, []);
+
   // Theme state: Crisp Light & Dark Modes
   const [theme, setTheme] = useState(() => Storage.get('theme', 'light'));
   const [soundEnabled, setSoundEnabled] = useState(() => Storage.get('soundEnabled', true));
@@ -28,71 +88,89 @@ export default function App() {
   const [isCompanionPickerOpen, setIsCompanionPickerOpen] = useState(false);
 
   // Navigation
+  const miniPip = useDocumentPiP(); // floating mini timer (#33)
   const [activeTab, setActiveTab] = useState('timer'); // 'timer' | 'tasks' | 'notes'
 
-  // Settings & Fullscreen Modals
+  // Settings & Fullscreen Modals & Privacy Lock
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [visualizerType, setVisualizerType] = useState('turntable');
+  const [visualizerType, setVisualizerType] = useState('portal');
+  const [isAppLocked, setIsAppLocked] = useState(false);
+  // the short reflection that follows a finished focus session
+  const [debrief, setDebrief] = useState(null);
 
-  // Morph the visualizer between its inline deck slot and the fullscreen stage.
-  // View Transitions interpolate on the compositor, so the 60fps is free.
-  const isMorphingRef = useRef(false);
+  // Foundations: Stray Thought Parking Lot (#5), Distraction Tally (#4), Garden Permanence (#23)
+  const [isParkingLotOpen, setIsParkingLotOpen] = useState(false);
+  const [parkedThoughts, setParkedThoughts] = useState(() => Storage.get('thelidhu_session_parked_thoughts', []));
+  const [distractionCount, setDistractionCount] = useState(() => Storage.get('thelidhu_session_distractions', 0));
+  const [gardenProgress, setGardenProgress] = useState(() =>
+    Storage.get('thelidhu_garden_progress', { stones: 0, lanterns: 0, koi: 0 })
+  );
+  const [isPiPActive, setIsPiPActive] = useState(false);
+  const [intention, setIntention] = useState(() => Storage.get('thelidhu_session_intention', ''));
+  const [isShortcutSheetOpen, setIsShortcutSheetOpen] = useState(false);
 
-  const setFullscreenAnimated = async (next) => {
-    // Starting a second transition aborts the first, which can drop its pending
-    // state update — ignore toggles until the current morph settles.
-    if (isMorphingRef.current) return;
-    isMorphingRef.current = true;
+  // Fullscreen mode handler: immediate state update + native browser fullscreen request
+  const setFullscreenAnimated = (next) => {
+    setIsFullscreen(next);
+    if (soundEnabled) {
+      if (next) sfx.zenEnter();
+      else sfx.zenExit();
+    }
 
     try {
-      if (
-        !document.startViewTransition ||
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      ) {
-        setIsFullscreen(next);
-      } else {
-        document.documentElement.dataset.zenTransition = next ? 'enter' : 'exit';
-        const transition = document.startViewTransition(() => {
-          flushSync(() => setIsFullscreen(next));
-        });
-        transition.ready.catch(() => {});
-        try {
-          await transition.finished;
-        } catch {
-          /* aborted mid-flight; fall through and settle the state below */
-        }
-        delete document.documentElement.dataset.zenTransition;
-        setIsFullscreen(next);
-      }
-
-      // Native fullscreen is toggled *after* the morph, in both directions.
-      // Requesting it first resizes the viewport while the snapshots are being
-      // captured, which swallowed the enlarge animation entirely.
       if (next) {
-        if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch(() => {});
+        const docEl = document.documentElement;
+        const req = docEl.requestFullscreen ||
+                    docEl.webkitRequestFullscreen ||
+                    docEl.mozRequestFullScreen ||
+                    docEl.msRequestFullscreen;
+        if (req && !document.fullscreenElement && !document.webkitFullscreenElement) {
+          req.call(docEl).catch(() => {});
         }
-      } else if (document.exitFullscreen && document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
+      } else {
+        const exit = document.exitFullscreen ||
+                     document.webkitExitFullscreen ||
+                     document.mozCancelFullScreen ||
+                     document.msExitFullscreen;
+        if (exit && (document.fullscreenElement || document.webkitFullscreenElement)) {
+          exit.call(document).catch(() => {});
+        }
       }
-    } finally {
-      isMorphingRef.current = false;
+    } catch {
+      // Gracefully ignore native fullscreen permission restrictions
     }
   };
+
+  // Synchronize state if user exits via browser Escape or native controls
+  useEffect(() => {
+    const handleNativeFullscreenChange = () => {
+      const isNative = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+      if (!isNative && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+    document.addEventListener('fullscreenchange', handleNativeFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleNativeFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleNativeFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleNativeFullscreenChange);
+    };
+  }, [isFullscreen]);
 
   // Gamification & XP
   const [xp, setXp] = useState(() => Storage.getNumber('focus_xp', 0));
 
   // Timer Settings & Stats
-  const [timerSettings, setTimerSettings] = useState(() =>
-    Storage.get('timerSettings', {
+  const [timerSettings, setTimerSettings] = useState(() => {
+    const defaults = {
       workDuration: 25,
       breakDuration: 5,
       longBreakDuration: 15,
       sessionsBeforeLong: 4
-    })
-  );
+    };
+    return { ...defaults, ...Storage.getObject('timerSettings', defaults) };
+  });
 
   const [sessionsCompleted, setSessionsCompleted] = useState(() =>
     Storage.getNumber('sessionsCompleted', 0)
@@ -159,10 +237,9 @@ export default function App() {
     }, SKETCH_FALL_MS);
   };
 
-  // Tasks State
+  // Task & Notes State
   const [tasks, setTasks] = useState(() => Storage.getArray('tasks'));
-
-  // Notes & Folders State
+  const [activeTimerTaskId, setActiveTimerTaskId] = useState(null);
   const [notes, setNotes] = useState(() => Storage.getArray('notes'));
   const [customFolders, setCustomFolders] = useState(() =>
     Storage.getArray('custom_folders')
@@ -170,7 +247,8 @@ export default function App() {
 
   // Apply Theme to document root
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    // Surreal & Lantern ride on the light/dark base; their skins are added by their worlds
+    document.documentElement.setAttribute('data-theme', baseTheme(theme));
     Storage.set('theme', theme);
   }, [theme]);
 
@@ -178,8 +256,20 @@ export default function App() {
     setSoundEnabled((prev) => {
       const next = !prev;
       Storage.set('soundEnabled', next);
+      sfx.setEnabled(next);
+      sfx.toggle(next);
       return next;
     });
+  };
+
+  const changeVisualizerType = (newType) => {
+    setVisualizerType(newType);
+    if (soundEnabled) sfx.onVisualizerChange(newType);
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (soundEnabled) sfx.tabChange();
   };
 
   const addXp = (amount) => {
@@ -221,7 +311,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, [isRunning, mode, timerSettings, soundEnabled, sessionsCompleted, totalFocusMinutes, theme]);
 
-  // Update document title with remaining time
+  // Update document title and dynamic favicon progress ring with remaining time (#34)
   useEffect(() => {
     const mins = Math.floor(timeLeft / 60);
     const secs = timeLeft % 60;
@@ -229,15 +319,111 @@ export default function App() {
 
     if (isRunning) {
       document.title = `(${formatted}) ${mode === 'work' ? 'Focus' : 'Break'} • Zencus`;
+      const elapsedRatio = totalDuration > 0 ? (totalDuration - timeLeft) / totalDuration : 0;
+      updateTabProgressRing(elapsedRatio, mode, theme, true);
     } else {
       document.title = 'Zencus • Where Zen Meets Focus';
+      restoreTabFavicon();
     }
-  }, [timeLeft, isRunning, mode]);
+  }, [timeLeft, isRunning, mode, totalDuration, theme]);
+
+  const handleParkThought = (thought) => {
+    setParkedThoughts((prev) => {
+      const next = [...prev, thought];
+      Storage.set('thelidhu_session_parked_thoughts', next);
+      return next;
+    });
+    setDistractionCount((prev) => {
+      const next = prev + 1;
+      Storage.set('thelidhu_session_distractions', next);
+      return next;
+    });
+    if (soundEnabled) sfx.play('select');
+  };
+
+  const handleTallyDistraction = () => {
+    setDistractionCount((prev) => {
+      const next = prev + 1;
+      Storage.set('thelidhu_session_distractions', next);
+      return next;
+    });
+    if (soundEnabled) sfx.play('pop');
+  };
+
+  const togglePiP = async () => {
+    if (isPiPOpen()) {
+      closeDocumentPiP();
+      setIsPiPActive(false);
+      return;
+    }
+    if (!canUseDocumentPiP()) return;
+    try {
+      const { container } = await openDocumentPiP({
+        width: 280,
+        height: 160,
+        theme,
+        onClose: () => setIsPiPActive(false)
+      });
+      setIsPiPActive(true);
+
+      const mins = Math.floor(timeLeft / 60);
+      const secs = timeLeft % 60;
+      const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+      container.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;font-family:monospace;user-select:none;">
+          <div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.7;">
+            ${mode === 'work' ? 'Focus' : 'Break'}
+          </div>
+          <div style="font-size:36px;font-weight:800;letter-spacing:-0.03em;">
+            ${formatted}
+          </div>
+          <button id="pip-action-btn" style="background:var(--accent,#4ade80);border:none;border-radius:999px;padding:5px 18px;font-weight:700;font-size:11px;cursor:pointer;color:#0b1510;margin-top:2px;">
+            ${isRunning ? 'Pause' : 'Start'}
+          </button>
+        </div>
+      `;
+      const btn = container.querySelector('#pip-action-btn');
+      if (btn) {
+        btn.onclick = () => {
+          isRunning ? pauseTimer() : startTimer();
+        };
+      }
+    } catch (err) {
+      console.warn('PiP launch error:', err);
+    }
+  };
+
+  // Keyboard shortcuts: Press 'F' for Zen, 'P' for Thought Tray, 'D' for Tally
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      const tag = e.target?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target?.isContentEditable) {
+        return;
+      }
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        setFullscreenAnimated(!isFullscreen);
+      } else if ((e.key === 'p' || e.key === 'P') && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setIsParkingLotOpen((prev) => !prev);
+      } else if ((e.key === 'd' || e.key === 'D') && isRunning && mode === 'work' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        handleTallyDistraction();
+      } else if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        e.preventDefault();
+        setIsShortcutSheetOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isFullscreen, isRunning, mode]);
 
   const handleSessionComplete = () => {
     setIsRunning(false);
 
     if (soundEnabled) {
+      sfx.sessionComplete();
       themedAudio.playThemeChime(theme);
     }
 
@@ -259,6 +445,52 @@ export default function App() {
       setTotalFocusMinutes(newFocusMins);
       addXp(50); // Award 50 XP per work block
 
+      // offer a 20-second debrief: what got done (→ notes), what's next (→ tasks), plus parked thoughts (#5)
+      const finishedTask = tasks.find((t) => t.id === activeTimerTaskId);
+      setDebrief({
+        minutes: addedMins,
+        taskTitle: finishedTask?.title || '',
+        category: finishedTask?.category || 'Work',
+        intention,
+        parkedThoughts: [...parkedThoughts],
+        distractionCount
+      });
+
+      // Record in local-first focus history (#18)
+      recordFocusSession({
+        durationMinutes: addedMins,
+        mode: 'work',
+        theme,
+        intention,
+        distractionCount,
+        parkedThoughts: [...parkedThoughts],
+      });
+
+      // Advance garden permanence (#23: 1 stone per 4 sessions, max 7)
+      const nextGarden = {
+        ...gardenProgress,
+        stones: Math.min(7, Math.floor(newSessions / 4))
+      };
+      setGardenProgress(nextGarden);
+      Storage.set('thelidhu_garden_progress', nextGarden);
+
+      // Clear current session parking lot, tally, and intention
+      setParkedThoughts([]);
+      setDistractionCount(0);
+      setIntention('');
+      Storage.set('thelidhu_session_parked_thoughts', []);
+      Storage.set('thelidhu_session_distractions', 0);
+      Storage.set('thelidhu_session_intention', '');
+
+      if (activeTimerTaskId) {
+        setTasks(prev => {
+          const updated = prev.map(t => t.id === activeTimerTaskId ? { ...t, completed: true } : t);
+          Storage.set('tasks', updated);
+          return updated;
+        });
+        setActiveTimerTaskId(null);
+      }
+
       Storage.set('sessionsCompleted', newSessions);
       Storage.set('totalFocusMinutes', newFocusMins);
 
@@ -277,17 +509,35 @@ export default function App() {
   const startTimer = (overrideMode) => {
     const currentMode = overrideMode || mode;
     setIsRunning(true);
-    if (currentMode === 'chill') {
-      setIsFullscreen(true);
+    if (soundEnabled) sfx.timerStart();
+
+    // Auto-play focus soundtrack if enabled by user in settings
+    if (Storage.get('focus_autoplay_audio', false)) {
+      const soundtrack = Storage.get('focus_soundtrack', 'vinyl-lofi');
+      if (soundtrack === 'window-rain') ambientSoundscapes.playWindowRain();
+      else if (soundtrack === 'zen-rain') ambientSoundscapes.playZenRain();
+      else if (soundtrack === 'alphabeats') ambientSoundscapes.playAlphaBeats();
+      else if (soundtrack !== 'silent') jazzRadio.play(soundtrack);
     }
   };
-  const pauseTimer = () => setIsRunning(false);
+  const pauseTimer = () => {
+    setIsRunning(false);
+    if (soundEnabled) sfx.timerPause();
+
+    // Pause focus soundtrack if auto-play is active
+    if (Storage.get('focus_autoplay_audio', false)) {
+      jazzRadio.pause();
+      ambientSoundscapes.stop();
+    }
+  };
   const resetTimer = () => {
     setIsRunning(false);
+    if (soundEnabled) sfx.timerReset();
     setTimeLeft(totalDuration);
   };
   const skipTimer = () => {
     setIsRunning(false);
+    if (soundEnabled) sfx.play('skip-next');
     if (mode === 'work') {
       setMode('shortBreak');
     } else {
@@ -311,6 +561,7 @@ export default function App() {
     const updated = [created, ...tasks];
     setTasks(updated);
     Storage.set('tasks', updated);
+    if (soundEnabled) sfx.taskAdd();
   };
 
   const toggleTask = (taskId) => {
@@ -320,10 +571,15 @@ export default function App() {
         if (nextState) {
           addXp(15);
           if (soundEnabled) {
+            sfx.taskCheck();
             if (theme === 'retro-pixel') themedAudio.play8BitCoin();
             else if (theme === 'cyberpunk') themedAudio.playCyberpunkSynth();
             else if (theme === 'scifi-hud') themedAudio.playSciFiSonar();
           }
+        } else {
+          // They unchecked the task by mistake! Deduct the XP.
+          addXp(-15);
+          if (soundEnabled) sfx.taskUncheck();
         }
         return { ...t, completed: nextState };
       }
@@ -337,6 +593,7 @@ export default function App() {
     const updated = tasks.filter((t) => t.id !== taskId);
     setTasks(updated);
     Storage.set('tasks', updated);
+    if (soundEnabled) sfx.taskDelete();
   };
 
   const editTask = (taskId, newTitle) => {
@@ -347,22 +604,30 @@ export default function App() {
 
   // Note Operations
   const saveNote = (noteData) => {
-    let updated;
-    if (noteData.id) {
-      updated = notes.map((n) => (n.id === noteData.id ? { ...n, ...noteData } : n));
-    } else {
-      const newNote = {
-        id: uid(),
-        createdAt: new Date().toISOString(),
-        trash: false,
-        folder: noteData.folder || 'quick',
-        ...noteData
-      };
-      updated = [newNote, ...notes];
+    const isNewNote = !noteData.id;
+    const savedNote = isNewNote
+      ? {
+          ...noteData,
+          id: uid(),
+          createdAt: new Date().toISOString(),
+          trash: false,
+          folder: noteData.folder || 'quick'
+        }
+      : { ...noteData };
+
+    setNotes((prevNotes) => {
+      const updated = isNewNote
+        ? [savedNote, ...prevNotes]
+        : prevNotes.map((n) => (n.id === savedNote.id ? { ...n, ...savedNote } : n));
+      Storage.set('notes', updated);
+      return updated;
+    });
+
+    if (isNewNote) {
       addXp(20);
     }
-    setNotes(updated);
-    Storage.set('notes', updated);
+
+    return savedNote;
   };
 
   const deleteNote = (noteId, permanent = false) => {
@@ -440,23 +705,25 @@ export default function App() {
   };
 
   const handleImportAllData = (backupData) => {
-    if (backupData.tasks) {
+    if (!backupData || typeof backupData !== 'object' || Array.isArray(backupData)) return;
+
+    if (Array.isArray(backupData.tasks)) {
       setTasks(backupData.tasks);
       Storage.set('tasks', backupData.tasks);
     }
-    if (backupData.notes) {
+    if (Array.isArray(backupData.notes)) {
       setNotes(backupData.notes);
       Storage.set('notes', backupData.notes);
     }
-    if (backupData.customFolders) {
+    if (Array.isArray(backupData.customFolders)) {
       setCustomFolders(backupData.customFolders);
       Storage.set('custom_folders', backupData.customFolders);
     }
-    if (backupData.timerSettings) {
+    if (backupData.timerSettings && typeof backupData.timerSettings === 'object' && !Array.isArray(backupData.timerSettings)) {
       setTimerSettings(backupData.timerSettings);
       Storage.set('timerSettings', backupData.timerSettings);
     }
-    if (backupData.stats) {
+    if (backupData.stats && typeof backupData.stats === 'object' && !Array.isArray(backupData.stats)) {
       setSessionsCompleted(backupData.stats.sessionsCompleted || 0);
       setTotalFocusMinutes(backupData.stats.totalFocusMinutes || 0);
       setXp(backupData.stats.xp || 0);
@@ -466,26 +733,87 @@ export default function App() {
     }
   };
 
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const minSwipeDistance = 50;
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe || isRightSwipe) {
+      const tabs = ['timer', 'tasks', 'notes'];
+      const currentIndex = tabs.indexOf(activeTab);
+      
+      if (isLeftSwipe) {
+        // Swipe left -> Next tab
+        const nextIndex = (currentIndex + 1) % tabs.length;
+        setActiveTab(tabs[nextIndex]);
+      } else if (isRightSwipe) {
+        // Swipe right -> Prev tab
+        const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+        setActiveTab(tabs[prevIndex]);
+      }
+    }
+  };
+
+  if (isAppLocked) {
+    return (
+      <div className={`app-layout theme-${theme} mode-${mode}`} data-theme={baseTheme(theme)}>
+        {isSurrealTheme(theme) && <SurrealWorld theme={theme} />}
+        {isLanternTheme(theme) && <LanternWorld theme={theme} />}
+        {isKomorebiTheme(theme) && <KomorebiWorld theme={theme} />}
+        <LockScreen
+          surreal={isSurrealTheme(theme)}
+          onUnlock={() => {
+            setIsAppLocked(false);
+            if (soundEnabled) sfx.play('select');
+          }}
+          correctPin="1234"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={`app-layout theme-${theme} mode-${mode}`} data-timer-mode={mode}>
-      {/* Background Ambient Particles — both run render loops, so sketch drops
-          them from the tree rather than hiding them */}
-      {theme !== 'sketch' && (
-        <ParticlesBackground
-          particleCount={20}
-          particleColor={theme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}
-          lineColor={theme === 'dark' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)'}
-        />
+
+      {/* The painted worlds of the art themes */}
+      {isSurrealTheme(theme) && <SurrealWorld theme={theme} />}
+      {/* The anime night garden, and the ASCII butterfly that visits it */}
+      {isLanternTheme(theme) && <LanternWorld theme={theme} />}
+      {isLanternTheme(theme) && <AsciiButterfly />}
+      {/* The sunlit engawa: light follows the session, the calico follows the light */}
+      {isKomorebiTheme(theme) && (
+        <KomorebiWorld theme={theme} progress={totalDuration ? 1 - timeLeft / totalDuration : 0} mode={mode}
+          isRunning={isRunning} sessionsCompleted={sessionsCompleted} soundEnabled={soundEnabled}
+          gardenProgress={gardenProgress} />
       )}
 
       {/* Tactile Click Sparks */}
       {theme !== 'sketch' && (
         <ClickSpark
-          sparkColor={theme === 'dark' ? '#ffffff' : '#0f172a'}
+          sparkColor={baseTheme(theme) === 'dark' ? '#ffffff' : '#0f172a'}
           sparkCount={6}
           sparkSize={7}
         />
       )}
+
+      {/* Floating mini timer: renders into the PiP window, sharing this state */}
+      <FloatingMiniTimer pipWindow={miniPip.pipWindow} timeLeft={timeLeft} totalDuration={totalDuration} mode={mode}
+        isRunning={isRunning} onToggle={() => (isRunning ? pauseTimer() : startTimer())} onSkip={skipTimer} />
 
       {/* Persistent App Header */}
       <Header
@@ -494,14 +822,28 @@ export default function App() {
         toggleSketchMode={toggleSketchMode}
         soundEnabled={soundEnabled}
         toggleSound={toggleSound}
-        openSettings={() => setIsSettingsOpen(true)}
-        openFullscreen={() => setIsFullscreen(true)}
+        openSettings={() => {
+          setIsSettingsOpen(true);
+          if (soundEnabled) sfx.modalOpen();
+        }}
+        openFullscreen={() => setFullscreenAnimated(true)}
+        openMiniTimer={miniPip.supported ? miniPip.toggle : undefined}
+        miniTimerOpen={!!miniPip.pipWindow}
         companionType={companionType}
         openCompanionPicker={() => setIsCompanionPickerOpen(true)}
+        onLockApp={() => {
+          setIsAppLocked(true);
+          if (soundEnabled) sfx.play('select');
+        }}
       />
 
       {/* Main Content Area */}
-      <main className="app-content-container">
+      <main 
+        className="app-content-container"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {activeTab === 'timer' && (
           <PomodoroTimer
             timeLeft={timeLeft}
@@ -527,7 +869,22 @@ export default function App() {
             onOpenFullscreen={() => setFullscreenAnimated(true)}
             isFullscreen={isFullscreen}
             visualizerType={visualizerType}
-            setVisualizerType={setVisualizerType}
+            setVisualizerType={changeVisualizerType}
+            activeTimerTask={tasks.find(t => t.id === activeTimerTaskId)}
+            onClearActiveTask={() => setActiveTimerTaskId(null)}
+            activeTab={activeTab}
+            setActiveTab={handleTabChange}
+            openSettings={() => {
+              setIsSettingsOpen(true);
+              if (soundEnabled) sfx.modalOpen();
+            }}
+            soundEnabled={soundEnabled}
+            toggleSound={toggleSound}
+            onOpenParkingLot={() => setIsParkingLotOpen(true)}
+            onTogglePiP={canUseDocumentPiP() ? togglePiP : null}
+            intention={intention}
+            setIntention={setIntention}
+            onOpenShortcuts={() => setIsShortcutSheetOpen(true)}
           />
         )}
 
@@ -538,6 +895,11 @@ export default function App() {
             toggleTask={toggleTask}
             deleteTask={deleteTask}
             editTask={editTask}
+            onFocusTask={(taskId) => {
+              setActiveTimerTaskId(taskId);
+              setActiveTab('timer');
+              if (mode !== 'work') setMode('work');
+            }}
           />
         )}
 
@@ -558,14 +920,52 @@ export default function App() {
               setCompanionType(newPet);
               Storage.set('active_companion', newPet);
             }}
+            onConvertToTask={(noteTitle) => {
+              addTask({ title: noteTitle, priority: 'high', category: 'Ideas', completed: false });
+              setActiveTab('tasks');
+            }}
           />
         )}
       </main>
 
+      {/* Session debrief: done → a #focuslog note, next → a task */}
+      <SessionDebrief
+        open={!!debrief}
+        minutes={debrief?.minutes}
+        taskTitle={debrief?.taskTitle}
+        intention={debrief?.intention}
+        parkedThoughts={debrief?.parkedThoughts || []}
+        distractionCount={debrief?.distractionCount || 0}
+        onSkip={() => setDebrief(null)}
+        onSave={(answers) => {
+          saveNote(debriefToNote(answers, debrief));
+          if (answers.addTask) {
+            addTask({ title: answers.next, priority: 'medium', category: debrief.category, completed: false });
+          }
+          setDebrief(null);
+        }}
+      />
+
+      {/* Stray Thought Parking Lot & Distraction Tally Modal (#5 & #4) */}
+      <ParkingLotModal
+        isOpen={isParkingLotOpen}
+        onClose={() => setIsParkingLotOpen(false)}
+        onParkThought={handleParkThought}
+        onTallyDistraction={handleTallyDistraction}
+        distractionCount={distractionCount}
+        parkedThoughts={parkedThoughts}
+      />
+
+      {/* Keyboard Shortcut Discovery Sheet (#17) */}
+      <ShortcutSheetModal
+        open={isShortcutSheetOpen}
+        onClose={() => setIsShortcutSheetOpen(false)}
+      />
+
       {/* Bottom Floating Navigation Dock */}
       <DockNav
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         taskCount={tasks.filter((t) => !t.completed).length}
         noteCount={notes.filter((n) => !n.trash).length}
       />
@@ -577,7 +977,7 @@ export default function App() {
           isRunning={isRunning}
           startTimer={startTimer}
           pauseTimer={pauseTimer}
-          onClick={() => setActiveTab('timer')}
+          onClick={() => handleTabChange('timer')}
           mode={mode}
         />
       )}
@@ -597,13 +997,16 @@ export default function App() {
         companionType={companionType}
         setCompanionType={setCompanionType}
         visualizerType={visualizerType}
-        setVisualizerType={setVisualizerType}
+        setVisualizerType={changeVisualizerType}
       />
 
       {/* Global Settings & Backup Modal */}
       <SettingsModal
         isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
+        onClose={() => {
+          setIsSettingsOpen(false);
+          if (soundEnabled) sfx.modalClose();
+        }}
         timerSettings={timerSettings}
         saveTimerSettings={saveTimerSettings}
         onClearAllData={handleClearAllData}
@@ -613,6 +1016,12 @@ export default function App() {
         onSelectCompanion={(newPet) => {
           setCompanionType(newPet);
           Storage.set('active_companion', newPet);
+        }}
+        theme={theme}
+        setTheme={setTheme}
+        onLockApp={() => {
+          setIsAppLocked(true);
+          if (soundEnabled) sfx.play('select');
         }}
       />
 

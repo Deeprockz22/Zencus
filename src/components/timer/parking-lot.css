@@ -1,0 +1,174 @@
+/* Stray Thought Parking Lot (#5 & #4) Styling */
+
+.parking-lot-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: parkingLotFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.parking-lot-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-glass, rgba(26, 32, 28, 0.88));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 24px;
+  color: var(--text-primary, #e2e8f0);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  animation: parkingLotSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.komorebi:not(.dark) .parking-lot-card {
+  background: rgba(246, 243, 235, 0.94);
+  border-color: rgba(60, 75, 65, 0.15);
+  color: #1e2621;
+}
+
+.parking-lot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.parking-lot-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent, #4ade80);
+}
+
+.parking-lot-close {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary, #94a3b8);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.parking-lot-close:hover {
+  color: var(--text-primary, #fff);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.parking-lot-prompt {
+  margin: 0 0 16px 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--text-secondary, #cbd5e1);
+}
+
+.parking-lot-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.parking-lot-input {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
+  color: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+html.komorebi:not(.dark) .parking-lot-input {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.parking-lot-input:focus {
+  border-color: var(--accent, #4ade80);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15);
+}
+
+.parking-lot-submit {
+  padding: 0 20px;
+  border-radius: 12px;
+  background: var(--accent, #4ade80);
+  color: #0b1510;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.parking-lot-submit:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.parking-lot-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-tertiary, #94a3b8);
+}
+
+.parking-lot-hint strong {
+  color: var(--text-secondary, #e2e8f0);
+}
+
+.parking-lot-tally-btn {
+  background: transparent;
+  border: 1px dashed var(--border-subtle, rgba(255, 255, 255, 0.2));
+  color: var(--text-secondary, #cbd5e1);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.parking-lot-tally-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--accent, #4ade80);
+  color: var(--text-primary, #fff);
+}
+
+.parking-lot-success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 0;
+  color: var(--accent, #4ade80);
+  font-weight: 500;
+  font-size: 0.95rem;
+  animation: parkingLotFadeIn 0.2s ease;
+}
+
+@keyframes parkingLotFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes parkingLotSlideUp {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}

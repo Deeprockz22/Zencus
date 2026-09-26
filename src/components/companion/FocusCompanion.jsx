@@ -13,14 +13,12 @@ export default function FocusCompanion({
   onOpenPicker,
   onRemovePet
 }) {
-  if (!companionType || companionType === 'none') {
-    return null;
-  }
-
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [petCount, setPetCount] = useState(0);
 
   useEffect(() => {
+    if (!companionType || companionType === 'none') return undefined;
+
     let list = COMPANION_PHRASES.idle;
 
     if (context === 'notes') {
@@ -63,6 +61,10 @@ export default function FocusCompanion({
 
     return () => clearInterval(interval);
   }, [state, streak, theme, context, companionType]);
+
+  if (!companionType || companionType === 'none') {
+    return null;
+  }
 
   const handlePet = () => {
     setPetCount((prev) => prev + 1);

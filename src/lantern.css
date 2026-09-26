@@ -1,0 +1,558 @@
+/* =====================================================================
+   LANTERN GARDEN — an anime night garden
+   ---------------------------------------------------------------------
+   Two variants, each scoped to html.lantern (added by <LanternWorld/>):
+     lantern       (Mist, day)    on the light base
+     lantern-night (Sakura, night) on the dark base
+   Direction: the user's two reference paintings (a misty lavender forest
+   with a glowing greenhouse; cherry blossoms, paper lanterns and spirit
+   lights under a starry sky), plus details from the Design Prompts library:
+   Botanical (paper grain, pill buttons, slow honey motion, arch shapes) and
+   Modern Dark (drifting ambient light pools, cursor spotlight, light-based
+   depth, multi-layer glow shadows).
+   ===================================================================== */
+
+/* ---------- tokens ---------- */
+html.lantern {
+  --font-display: 'Zen Maru Gothic', 'Inter', sans-serif;
+  --font-lantern: 'Zen Maru Gothic', 'Inter', sans-serif;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --ln-ease: cubic-bezier(0.22, 1, 0.36, 1); /* slow, honey-like */
+}
+
+html.lantern[data-theme='light'] {
+  --bg-primary: #b6aaea;
+  --bg-secondary: #f7f3ff;
+  --bg-tertiary: #e7dffb;
+  --bg-elevated: #fbf9ff;
+  --bg-glass: rgba(247, 243, 255, 0.6);
+  --text-primary: #241b4e;
+  --text-secondary: #4a3f7d;
+  --text-tertiary: #685d98;
+  --text-muted: #8a80b6;
+  --border-subtle: rgba(70, 50, 150, 0.13);
+  --border-active: rgba(70, 50, 150, 0.3);
+  --accent-primary: #d9669c;
+  --accent-glow: rgba(217, 102, 156, 0.28);
+
+  --ln-surface: rgba(248, 244, 255, 0.6);
+  --ln-surface-strong: rgba(250, 247, 255, 0.86);
+  --ln-edge: rgba(255, 255, 255, 0.78);
+  --ln-glow: rgba(255, 205, 170, 0.55);
+  --ln-cta: linear-gradient(135deg, #ffb99a 0%, #f08ab4 55%, #b18cf0 100%);
+  --ln-cta-glow: rgba(240, 138, 180, 0.55);
+  --ln-accent-2: #7c6ae0;
+  --shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 6px 16px -8px rgba(60, 40, 140, 0.25);
+  --shadow-md: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 14px 30px -14px rgba(60, 40, 140, 0.35);
+  --shadow-lg: 0 1px 0 rgba(255, 255, 255, 0.75) inset, 0 30px 60px -28px rgba(60, 40, 140, 0.45), 0 0 50px -20px var(--ln-glow);
+}
+
+html.lantern[data-theme='dark'] {
+  --bg-primary: #0b0f2a;
+  --bg-secondary: #16163a;
+  --bg-tertiary: #24224f;
+  --bg-elevated: #1a1942;
+  --bg-glass: rgba(18, 16, 48, 0.6);
+  --text-primary: #fff3ef;
+  --text-secondary: #e3d0ea;
+  --text-tertiary: #b7a5d3;
+  --text-muted: #8d80b2;
+  --border-subtle: rgba(255, 190, 225, 0.13);
+  --border-active: rgba(255, 190, 225, 0.3);
+  --accent-primary: #ff6fa8;
+  --accent-glow: rgba(255, 111, 168, 0.3);
+
+  --ln-surface: rgba(17, 15, 46, 0.6);
+  --ln-surface-strong: rgba(20, 18, 52, 0.88);
+  --ln-edge: rgba(255, 166, 201, 0.22);
+  --ln-glow: rgba(255, 200, 107, 0.3);
+  --ln-cta: linear-gradient(135deg, #ffe08a 0%, #ffb347 45%, #ff6fa8 100%);
+  --ln-cta-glow: rgba(255, 179, 71, 0.55);
+  --ln-accent-2: #5ef2ff;
+  --shadow-sm: 0 0 0 1px rgba(255, 190, 225, 0.08), 0 6px 18px -8px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 0 0 1px rgba(255, 190, 225, 0.1), 0 16px 34px -14px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 0 0 1px rgba(255, 190, 225, 0.12), 0 30px 60px -26px rgba(0, 0, 0, 0.75), 0 0 60px -24px var(--ln-glow);
+}
+
+html.lantern body { background: var(--bg-primary); }
+
+/* =====================================================================
+   THE WORLD
+   ===================================================================== */
+.lantern-world {
+  --lw-px: 0;
+  --lw-py: 0;
+  --lw-cx: 50vw;
+  --lw-cy: 50vh;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
+}
+.lw-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* three depths drift against the pointer */
+.lw-layer-far,
+.lw-layer-mid,
+.lw-layer-near {
+  transition: transform 1.4s var(--ln-ease, ease-out);
+}
+.lw-layer-far  { transform: translate(calc(var(--lw-px) * -10px), calc(var(--lw-py) * -6px)); }
+.lw-layer-mid  { transform: translate(calc(var(--lw-px) * -22px), calc(var(--lw-py) * -12px)); }
+.lw-layer-near { transform: translate(calc(var(--lw-px) * -40px), calc(var(--lw-py) * -20px)); }
+
+/* stars twinkle in three groups */
+.lw-stars { animation: lw-twinkle 5s ease-in-out infinite; }
+.lw-stars-1 { animation-delay: -1.7s; animation-duration: 6.5s; }
+.lw-stars-2 { animation-delay: -3.1s; animation-duration: 4.2s; }
+@keyframes lw-twinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+.lw-moon circle:first-child { animation: lw-breathe 7s ease-in-out infinite; }
+
+/* a shooting star once in a while */
+.lw-shooting {
+  opacity: 0;
+  transform-box: view-box;
+  animation: lw-shoot 14s linear infinite;
+}
+@keyframes lw-shoot {
+  0%, 88% { opacity: 0; transform: translate(0, 0); }
+  89% { opacity: 1; }
+  94% { opacity: 1; transform: translate(-220px, -66px); }
+  96%, 100% { opacity: 0; transform: translate(-260px, -78px); }
+}
+
+/* lanterns sway on their strings; their light flickers like a real flame */
+.lw-lantern {
+  transform-box: view-box;
+  animation: lw-sway 6.5s ease-in-out infinite;
+}
+@keyframes lw-sway {
+  0%, 100% { transform: rotate(-2.4deg); }
+  50% { transform: rotate(2.4deg); }
+}
+.lw-lantern-glow { animation: lw-flicker 3.4s steps(1, end) infinite; }
+@keyframes lw-flicker {
+  0% { opacity: 1; } 12% { opacity: 0.86; } 19% { opacity: 1; } 43% { opacity: 0.93; }
+  47% { opacity: 0.78; } 51% { opacity: 1; } 76% { opacity: 0.9; } 100% { opacity: 1; }
+}
+
+/* spirit-lights rise and fade */
+.lw-orb {
+  transform-box: fill-box;
+  animation: lw-rise 14s ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes lw-rise {
+  0% { opacity: 0; transform: translate(0, 0); }
+  15% { opacity: 1; }
+  50% { transform: translate(18px, -150px); }
+  85% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(-10px, -300px); }
+}
+
+/* petals fall, swaying */
+.lw-petal {
+  transform-box: fill-box;
+  animation: lw-fall 16s linear infinite;
+}
+@keyframes lw-fall {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(var(--sway, 60px), 240px) rotate(90deg); }
+  50% { transform: translate(0, 480px) rotate(180deg); }
+  75% { transform: translate(calc(var(--sway, 60px) * -0.6), 720px) rotate(270deg); }
+  100% { transform: translate(0, 960px) rotate(360deg); }
+}
+
+/* fireflies blink */
+.lw-fly { animation: lw-blink 3.2s ease-in-out infinite; }
+@keyframes lw-blink {
+  0%, 100% { opacity: 0.15; }
+  45% { opacity: 1; }
+  60% { opacity: 0.9; }
+}
+.lw-dew circle { animation: lw-blink 4.6s ease-in-out infinite; }
+
+/* mist: fog drifts, light shafts breathe, vines sway, the greenhouse glows */
+.lw-fog { animation: lw-drift 38s ease-in-out infinite alternate; }
+.lw-fog-2 { animation-duration: 52s; animation-direction: alternate-reverse; }
+@keyframes lw-drift { from { transform: translateX(-160px); } to { transform: translateX(160px); } }
+.lw-rays path { animation: lw-breathe 9s ease-in-out infinite; }
+@keyframes lw-breathe { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+.lw-vine {
+  transform-box: view-box;
+  animation: lw-vine 8s ease-in-out infinite;
+}
+@keyframes lw-vine { 0%, 100% { transform: rotate(-1.6deg); } 50% { transform: rotate(1.6deg); } }
+.lw-house-glow { animation: lw-breathe 6s ease-in-out infinite; }
+
+/* ambient light pools (Modern Dark), drifting slowly */
+.lw-pool {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.5;
+  mix-blend-mode: screen;
+  animation: lw-pool 22s ease-in-out infinite alternate;
+}
+.lw-pool-a { width: 46vw; height: 46vw; left: -10vw; top: 30vh; }
+.lw-pool-b { width: 38vw; height: 38vw; right: -8vw; top: 10vh; animation-duration: 28s; }
+.lw-pool-c { width: 30vw; height: 30vw; left: 35vw; bottom: -12vh; animation-duration: 34s; }
+.lw-night .lw-pool-a { background: radial-gradient(closest-side, rgba(255, 111, 168, 0.55), transparent); }
+.lw-night .lw-pool-b { background: radial-gradient(closest-side, rgba(94, 242, 255, 0.35), transparent); }
+.lw-night .lw-pool-c { background: radial-gradient(closest-side, rgba(255, 200, 107, 0.5), transparent); }
+.lw-day .lw-pool { mix-blend-mode: soft-light; opacity: 0.7; }
+.lw-day .lw-pool-a { background: radial-gradient(closest-side, rgba(255, 215, 184, 0.9), transparent); }
+.lw-day .lw-pool-b { background: radial-gradient(closest-side, rgba(255, 255, 255, 0.9), transparent); }
+.lw-day .lw-pool-c { background: radial-gradient(closest-side, rgba(200, 180, 255, 0.9), transparent); }
+@keyframes lw-pool {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(6vw, -4vh) scale(1.15); }
+}
+
+/* your own lantern: a warm light that follows the cursor */
+.lw-cursor-light {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 420px;
+  height: 420px;
+  margin: -210px 0 0 -210px;
+  border-radius: 50%;
+  transform: translate(var(--lw-cx), var(--lw-cy));
+  background: radial-gradient(closest-side, rgba(255, 214, 150, 0.45), rgba(255, 214, 150, 0.12) 55%, transparent);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.7s var(--ln-ease, ease-out);
+}
+.lw-day .lw-cursor-light {
+  background: radial-gradient(closest-side, rgba(255, 236, 214, 0.7), rgba(255, 236, 214, 0.15) 55%, transparent);
+  mix-blend-mode: soft-light;
+}
+.lantern-world.has-pointer .lw-cursor-light { opacity: 1; }
+
+.lw-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(20, 10, 50, 0.45) 100%);
+}
+.lw-day .lw-vignette { background: radial-gradient(ellipse at 50% 45%, transparent 60%, rgba(90, 70, 170, 0.28) 100%); }
+
+/* Botanical's non-negotiable paper grain */
+.lw-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.lw-day .lw-grain { opacity: 0.1; mix-blend-mode: multiply; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lantern-world *,
+  html.lantern .dock-nav,
+  html.lantern .paper-lantern * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .lw-orb, .lw-shooting { opacity: 0; }
+}
+
+/* =====================================================================
+   THE APP, IN THE GARDEN
+   ===================================================================== */
+
+/* soft rounded Japanese display type for every title */
+html.lantern .brand-wordmark,
+html.lantern .view-title,
+html.lantern .modal-title,
+html.lantern .settings-section-title,
+html.lantern .atl-section-title,
+html.lantern .atl-world-name,
+html.lantern .atl-subtitle,
+html.lantern .atl-stepper-input,
+html.lantern .atl-volume-value,
+html.lantern .atl-cycle-total,
+html.lantern .lock-title {
+  font-family: var(--font-lantern) !important;
+  font-style: normal !important;
+  letter-spacing: -0.01em;
+}
+html.lantern .view-title { font-weight: 700 !important; font-size: clamp(1.7rem, 3vw, 2.3rem) !important; }
+html.lantern .modal-title { font-weight: 700 !important; }
+html.lantern .brand-wordmark { font-weight: 700 !important; font-size: 1.15rem !important; }
+html.lantern[data-theme='dark'] .brand-wordmark,
+html.lantern[data-theme='dark'] .view-title {
+  text-shadow: 0 0 18px rgba(255, 166, 201, 0.55);
+}
+
+/* header: nothing but the sky; the controls hang on a glass pill */
+html.lantern .app-header {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-primary) 55%, transparent), transparent) !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* one glass recipe for every floating surface: frosted, with a light rim
+   and a soft glow of lantern light instead of a hard shadow */
+html.lantern :is(.glyph-timer-left-console, .tasks-view, .folder-sidebar, .notes-main-area, .modal-card,
+  .header-right, .scene-switcher-pills, .dock-nav, .green-dot-matrix-wall .wall-left-panel) {
+  background: var(--ln-surface) !important;
+  border: 1px solid var(--ln-edge) !important;
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  box-shadow: var(--shadow-lg) !important;
+}
+html.lantern :is(.glyph-timer-left-console, .tasks-view, .folder-sidebar, .notes-main-area, .modal-card) {
+  border-radius: 28px !important;
+}
+html.lantern :is(.modal-card, .dock-nav, .scene-switcher-pills) { background: var(--ln-surface-strong) !important; }
+html.lantern .glyph-timer-left-console { padding: 24px 22px !important; }
+html.lantern .tasks-view { padding: 26px 28px 30px !important; }
+html.lantern .notes-main-area { padding: 24px 26px 30px !important; }
+html.lantern .folder-sidebar { padding: 20px 14px !important; align-self: flex-start; }
+html.lantern .header-right { border-radius: 999px !important; padding: 4px 6px; }
+html.lantern .dock-nav { border-radius: 999px !important; }
+html.lantern .modal-backdrop {
+  background: color-mix(in srgb, var(--bg-primary) 45%, transparent) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* primary actions glow like a lit lantern; pills, uppercase, wide tracking (Botanical) */
+html.lantern :is(.rb-shiny-btn--primary, .btn-action.primary, .btn-action, .wall-cta, .zen-main-btn, .atl-save) {
+  background: var(--ln-cta) !important;
+  color: #2a1640 !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35) inset, 0 10px 28px -8px var(--ln-cta-glow) !important;
+  letter-spacing: 0.08em;
+  transition: transform 0.5s var(--ln-ease), box-shadow 0.5s var(--ln-ease) !important;
+}
+html.lantern :is(.rb-shiny-btn--primary, .btn-action, .wall-cta, .atl-save):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45) inset, 0 16px 36px -8px var(--ln-cta-glow) !important;
+}
+
+/* active states: a warm glass glow rather than a flat fill */
+html.lantern .dock-indicator {
+  background: var(--ln-cta) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: 0 6px 18px -6px var(--ln-cta-glow) !important;
+}
+html.lantern .dock-tab.active { color: #2a1640 !important; }
+html.lantern .dock-tab { border-radius: 999px; }
+html.lantern .scene-toggle-pill { border-radius: 999px !important; }
+html.lantern .scene-toggle-pill.bg-\[var\(--bg-primary\)\],
+html.lantern .scene-toggle-pill[data-active] {
+  background: var(--ln-cta) !important;
+  color: #2a1640 !important;
+}
+html.lantern .glyph-mode-btn.active,
+html.lantern .filter-tab[class*='active'],
+html.lantern .folder-item.active {
+  background: color-mix(in srgb, var(--accent-primary) 18%, transparent) !important;
+  color: var(--text-primary) !important;
+  border-radius: 999px !important;
+}
+
+/* progress glows the colour of the lantern light */
+html.lantern .glyph-linear-bar > div,
+html.lantern .task-progress-fill,
+html.lantern .zen-bottom-progress-fill {
+  background: var(--ln-cta) !important;
+  box-shadow: 0 0 10px var(--ln-cta-glow) !important;
+}
+
+/* tasks & notes: soft glass slips that lift slowly on hover */
+html.lantern .unboxed-task-row {
+  margin: 6px 0;
+  padding: 12px 16px !important;
+  border-radius: 18px;
+  background: var(--ln-surface-strong);
+  border: 1px solid var(--ln-edge) !important;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.6s var(--ln-ease), box-shadow 0.6s var(--ln-ease);
+}
+html.lantern .unboxed-task-row:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+html.lantern .unboxed-note-card {
+  border-radius: 22px !important;
+  background: var(--ln-surface-strong) !important;
+  border: 1px solid var(--ln-edge) !important;
+  box-shadow: var(--shadow-md) !important;
+  transition: transform 0.6s var(--ln-ease), box-shadow 0.6s var(--ln-ease);
+}
+html.lantern .unboxed-note-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg) !important; }
+/* Botanical's staggered rhythm: every second note sits a little lower */
+@media (min-width: 900px) {
+  html.lantern .notes-grid > :nth-child(2n) { transform: translateY(14px); }
+}
+html.lantern .task-input-bar,
+html.lantern .task-search-input,
+html.lantern .search-bar-wrapper {
+  border-radius: 999px !important;
+  background: var(--ln-surface-strong) !important;
+  border: 1px solid var(--ln-edge) !important;
+}
+html.lantern .companion-speech-bubble {
+  background: var(--ln-surface-strong) !important;
+  border: 1px solid var(--ln-edge) !important;
+  border-radius: 22px 22px 22px 6px !important;
+}
+
+/* the Crisp Matrix Wall, hung in the garden */
+html.lantern .green-dot-matrix-wall,
+html.lantern .green-dot-matrix-wall.is-crisp {
+  background: transparent !important;
+}
+html.lantern .green-dot-matrix-wall .wall-dot-texture { opacity: 0.05; }
+html.lantern .green-dot-matrix-wall .wall-left-panel { border-radius: 28px !important; }
+
+/* fullscreen zen: the garden, full-bleed */
+html.lantern .fullscreen-zen-overlay { background: transparent !important; }
+html.lantern .fullscreen-zen-overlay .zen-bottom-digits,
+html.lantern .fullscreen-zen-overlay .zen-bottom-mode-tag { display: none !important; }
+
+/* lock screen: glass bubbles in the garden */
+html.lantern .lock-screen { background: transparent !important; }
+html.lantern .lock-key {
+  background: var(--ln-surface) !important;
+  border: 1px solid var(--ln-edge) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  font-family: var(--font-lantern) !important;
+  transition: transform 0.5s var(--ln-ease), box-shadow 0.5s var(--ln-ease) !important;
+}
+html.lantern .lock-key:hover { transform: translateY(-3px); box-shadow: 0 10px 24px -8px var(--ln-cta-glow); }
+
+/* Settings (The Atelier) in lantern light */
+html.lantern .atl-card { --atl-tile: color-mix(in oklch, var(--bg-secondary) 55%, transparent); }
+html.lantern .atl-footer { background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg-secondary) 94%, transparent) 45%) !important; }
+
+/* =====================================================================
+   THE ASCII BUTTERFLY — while it rests, the app drifts out of focus
+   ===================================================================== */
+.butterfly-focus {
+  position: fixed;
+  inset: 0;
+  z-index: 1990;
+  pointer-events: none;
+  opacity: 0;
+  backdrop-filter: blur(10px) saturate(1.05) brightness(0.9);
+  -webkit-backdrop-filter: blur(10px) saturate(1.05) brightness(0.9);
+  background: radial-gradient(circle at 50% 46%, transparent 18%, rgba(12, 6, 34, 0.32) 88%);
+  /* opacity is driven frame by frame by the butterfly's approach and departure */
+  will-change: opacity;
+}
+html.lantern[data-theme='light'] .butterfly-focus {
+  background: radial-gradient(circle at 50% 46%, transparent 18%, rgba(70, 50, 150, 0.22) 88%);
+}
+.ascii-butterfly {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: none;
+  /* a thin dark outline keeps the glyphs legible over bright paper, then a soft colour glow */
+  filter: drop-shadow(0 0 1px rgba(20, 8, 40, 0.95)) drop-shadow(0 0 2px rgba(20, 8, 40, 0.7)) drop-shadow(0 0 10px rgba(255, 190, 240, 0.45));
+}
+
+/* =====================================================================
+   PAPER LANTERN — the Lantern Garden's timer
+   ===================================================================== */
+.paper-lantern { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.paper-lantern-stage {
+  position: relative;
+  width: min(100%, 50vh, 420px);
+  aspect-ratio: 400 / 600;
+  cursor: pointer;
+  outline: none;
+}
+.paper-lantern-stage:focus-visible { outline: 2px solid var(--ln-accent-2, #5ef2ff); outline-offset: 8px; border-radius: 24px; }
+.paper-lantern-svg { width: 100%; height: auto; overflow: visible; display: block; }
+.pl-sway {
+  transform-box: view-box;
+  transform-origin: 200px 0px;
+  animation: pl-sway 7s ease-in-out infinite;
+}
+.paper-lantern.is-running .pl-sway { animation-duration: 4.5s; }
+@keyframes pl-sway { 0%, 100% { transform: rotate(-1.8deg); } 50% { transform: rotate(1.8deg); } }
+.pl-tassel { transform-box: view-box; transform-origin: 200px 426px; animation: pl-sway 3.2s ease-in-out infinite reverse; }
+.pl-light { transition: y 1s linear, height 1s linear; }
+.pl-meniscus { animation: lw-breathe 3s ease-in-out infinite; }
+.paper-lantern.is-running .pl-halo { animation: lw-flicker 2.6s steps(1, end) infinite; }
+.pl-mode {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  fill: #3a1a1e;
+  opacity: 0.85;
+}
+.pl-time {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: 64px;
+  font-weight: 700;
+  fill: #2a1016;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+}
+.pl-flies { opacity: 0; transition: opacity 1.2s ease; }
+.paper-lantern.is-running .pl-flies { opacity: 1; }
+.pl-fly {
+  fill: #eaff9a;
+  filter: drop-shadow(0 0 4px #eaff9a);
+  transform-box: view-box;
+  transform-origin: 200px 262px;
+  animation: pl-orbit 10s linear infinite;
+}
+@keyframes pl-orbit {
+  from { transform: rotate(0deg) translateX(var(--orbit, 160px)) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(var(--orbit, 160px)) rotate(-360deg); }
+}
+.pl-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2%;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+html.lantern .glyph-layout-desktop:has(.paper-lantern) .glyph-digits-hero { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .pl-sway, .pl-tassel, .pl-fly, .pl-halo, .pl-meniscus { animation: none !important; }
+}
+html.lantern .zen-lantern-stage {
+  width: min(92vw, 80vh);
+  height: min(92vw, 80vh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+html.lantern .zen-lantern-stage .paper-lantern-stage { width: min(100%, 60vh); }
+/* the lantern carries the time, so the console recomposes without digits */
+html.lantern .glyph-layout-desktop:has(.paper-lantern) .glyph-timer-left-console {
+  height: auto !important;
+  justify-content: center !important;
+  gap: 24px;
+  align-self: center;
+}
+@media (max-width: 640px) {
+  /* the stacked new-task bar is tall on phones: a soft card, not a pill */
+  html.lantern .task-input-bar { border-radius: 24px !important; padding: 10px !important; }
+}

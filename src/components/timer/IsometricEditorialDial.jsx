@@ -14,7 +14,8 @@ export default function IsometricEditorialDial({
   editMinutes,
   setEditMinutes,
   handleEditSubmit,
-  setIsEditing
+  setIsEditing,
+  hideHeader = false
 }) {
   const [radioState, setRadioState] = useState(() => jazzRadio.getState());
 
@@ -26,12 +27,13 @@ export default function IsometricEditorialDial({
   const isDiscSpinning = isRunning || radioState.isPlaying;
 
   return (
-    <div className="isometric-editorial-hero relative flex flex-col items-start justify-center my-4 select-none w-full max-w-xl mx-auto">
+    <div className="isometric-editorial-hero relative flex flex-col items-center justify-center my-4 select-none w-full max-w-xl mx-auto">
       {/* ══════════ 1. SWISS EDITORIAL TIMER DISPLAY (Left-Aligned) ══════════ */}
-      <div className="timer-display-panel flex flex-col items-start text-left z-10 w-full mb-1 px-4">
+      {!hideHeader && (
+        <div className="timer-display-panel flex flex-col items-start text-left z-10 w-full mb-1 px-4">
         {/* Mode Badge */}
-        <div className="editorial-mode-stamp mb-2 px-3 py-1 rounded border-2 border-[#121212] dark:border-[rgba(255,255,255,0.4)] bg-[#121212] text-white text-[11px] font-mono tracking-widest uppercase font-bold shadow-[2px_2px_0px_#ff3b30] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.25)]">
-          <DecryptedText text={getModeTitle()} speed={30} maxIterations={8} />
+        <div className="editorial-mode-stamp mb-2 px-3 py-1 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] text-[var(--text-primary)] text-[11px] font-mono tracking-widest uppercase font-bold shadow-xs">
+          <DecryptedText text={getModeTitle ? getModeTitle() : 'Deep Focus Session'} speed={30} maxIterations={8} />
         </div>
 
         {/* Big Bold Time Digits (Always readable in light and dark mode) */}
@@ -45,7 +47,7 @@ export default function IsometricEditorialDial({
               onChange={(e) => setEditMinutes(e.target.value)}
               autoFocus
               onBlur={() => setIsEditing(false)}
-              className="timer-edit-input text-5xl sm:text-6xl font-black bg-[var(--bg-secondary)] border-3 border-[#121212] dark:border-[rgba(255,255,255,0.4)] text-[var(--text-primary)] px-3 py-1 rounded shadow-[4px_4px_0px_#121212] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.25)]"
+              className="timer-edit-input text-5xl sm:text-6xl font-black bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[var(--text-primary)] px-3 py-1 rounded-xl shadow-xs"
             />
             <span className="timer-edit-label ml-2 font-mono font-bold text-[var(--text-primary)]">MIN</span>
           </form>
@@ -54,25 +56,26 @@ export default function IsometricEditorialDial({
             className="timer-editorial-digits text-6xl sm:text-7xl font-black tracking-tighter text-[var(--text-primary)] cursor-pointer hover:scale-105 transition-transform drop-shadow-sm leading-none"
             style={{ fontFamily: 'Plus Jakarta Sans, Inter, sans-serif' }}
             onClick={() => {
-              if (!isRunning) {
+              if (!isRunning && setIsEditing) {
                 setEditMinutes(Math.floor(timeLeft / 60));
                 setIsEditing(true);
               }
             }}
             title={isRunning ? undefined : 'Click to adjust minutes'}
           >
-            {formatTime(timeLeft)}
+            {formatTime ? formatTime(timeLeft) : '25:00'}
           </div>
         )}
 
         {/* Progress Ribbon VU Meter */}
-        <div className="timer-progress-meter w-48 h-2.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border-2 border-[#121212] dark:border-[rgba(255,255,255,0.4)] shadow-[2px_2px_0px_#121212] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.22)] my-2">
+        <div className="timer-progress-meter w-48 h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden border border-[var(--border-subtle)] my-2">
           <div
             className="h-full bg-[#ff3b30] transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
+      )}
 
       {/* ══════════ 2. 3D ISOMETRIC TURNTABLE & COFFEE HERO ILLUSTRATION ══════════ */}
       <div

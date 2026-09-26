@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
 import { THEME_MODES } from '../../utils/themePresets';
 
 export default function DynamicIslandModesDock({ currentTheme, setTheme }) {
@@ -77,7 +78,7 @@ export default function DynamicIslandModesDock({ currentTheme, setTheme }) {
           >
             <span className="island-active-dot" />
             <span className="island-collapsed-label">{activeTheme.name}</span>
-            <span className="island-badge-hint">MODES</span>
+            <span className="island-badge-hint">Modes</span>
           </motion.button>
         )}
 
@@ -93,27 +94,27 @@ export default function DynamicIslandModesDock({ currentTheme, setTheme }) {
             transition={{ duration: 0.18 }}
           >
             <div className="dynamic-island-header">
-              <span className="island-header-title">THEME PALETTES</span>
+              <span className="island-header-title">Theme Palettes</span>
               <button
-                className="island-close-btn"
+                className="island-close-btn flex items-center justify-center"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsExpanded(false);
                 }}
                 aria-label="Collapse Modes Dock"
               >
-                ✕
+                <X size={12} />
               </button>
             </div>
 
             <div className="dynamic-island-scroll-list">
               {/* Solid Dual Section */}
-              <div className="island-category-label">SOLID DUAL</div>
+              <div className="island-category-label">Dual Tones</div>
               {solidDualModes.map(renderModeItem)}
 
               {/* Experiential Section */}
               <div className="island-category-label" style={{ marginTop: '8px' }}>
-                EXPERIENCES
+                Atmospheres
               </div>
               {experientialModes.map(renderModeItem)}
             </div>

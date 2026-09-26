@@ -1,0 +1,521 @@
+/* KomorebiWorld: the engawa room behind the app (Claude's file).
+   Only the world lives here, scoped to .komorebi-world; the app skin and
+   theme tokens are Antigravity's, in src/themes/komorebi.css.
+   Colour is OKLCH: leaf shadows lean cool green (real komorebi shadows are
+   tinted by the sky and the leaves), the light leans warm. */
+
+.komorebi-world {
+  /* day: Dawn */
+  --kw-wall-top: oklch(0.955 0.018 85);
+  --kw-wall-bottom: oklch(0.915 0.028 78);
+  --kw-shoji-frame: oklch(0.62 0.06 62 / 0.55);
+  --kw-floor-far: oklch(0.66 0.075 58);
+  --kw-floor-near: oklch(0.54 0.08 50);
+  --kw-plank-line: oklch(0.38 0.06 45 / 0.45);
+  --kw-light-am: oklch(0.97 0.07 95);     /* pale morning gold */
+  --kw-light-pm: oklch(0.76 0.145 65);    /* late amber, Round 39 */
+  --kw-light-blend: screen;
+  --kw-light-alpha: 0.62;
+  --kw-leaf: oklch(0.36 0.06 155);
+  --kw-leaf-alpha: 0.22;
+  --kw-stone: oklch(0.6 0.012 250);
+  --kw-stone-dark: oklch(0.44 0.012 250);
+  --kw-water: oklch(0.34 0.04 210);
+  --kw-moss: oklch(0.5 0.1 135);
+  --kw-bamboo: oklch(0.7 0.11 115);
+
+  --kw-sun: 0;
+  --kw-patch-w: clamp(250px, 36vw, 600px);
+  --kw-patch-h: clamp(170px, 34vh, 360px);
+  /* the sunbeam stays where it is; only its colour warms through the session */
+  --kw-patch-x: -6vw;
+  --kw-cat-w: clamp(104px, 12vw, 190px);
+  --kw-lift: 3vh; /* how far the sunlit floor sits above the bottom edge */
+  --kw-basin-r: max(2vw, 10px);
+  --kw-basin-w: clamp(104px, 12vw, 196px);
+  --kw-basin-b: 2.5vh;
+
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
+  background: var(--kw-wall-top);
+}
+.komorebi-world.kw-night {
+  /* night: Obsidian, the same room by moonlight, a temple courtyard at 2 a.m.
+     Hues sit near Antigravity's river slate (h155) so world and skin agree;
+     the light stays cool and nearly still, with no warm drift at session end. */
+  --kw-wall-top: oklch(0.2 0.016 175);
+  --kw-wall-bottom: oklch(0.235 0.018 165);
+  --kw-shoji-frame: oklch(0.12 0.012 170 / 0.75);
+  --kw-floor-far: oklch(0.25 0.028 60);
+  --kw-floor-near: oklch(0.19 0.024 55);
+  --kw-plank-line: oklch(0.1 0.015 50 / 0.6);
+  --kw-light-am: oklch(0.88 0.03 225);    /* moonlight */
+  --kw-light-pm: oklch(0.83 0.035 215);   /* the moon lower, a touch dimmer */
+  --kw-light-blend: screen;
+  --kw-light-alpha: 0.34;
+  --kw-leaf: oklch(0.08 0.012 170);
+  --kw-leaf-alpha: 0.4;
+  --kw-stone: oklch(0.36 0.012 190);
+  --kw-stone-dark: oklch(0.24 0.012 190);
+  --kw-water: oklch(0.15 0.02 200);
+  --kw-moss: oklch(0.3 0.05 150);
+  --kw-bamboo: oklch(0.4 0.06 120);
+}
+/* at night everything breathes slower */
+.kw-night .kw-canopy-far { animation-duration: 28s; }
+.kw-night .kw-canopy-mid { animation-duration: 19s; }
+.kw-night .kw-canopy-near { animation-duration: 14s; }
+.kw-night .kw-dapples { animation-duration: 12s; }
+
+/* ---------------- the room ---------------- */
+.kw-room,
+.kw-canopy-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.kw-wall-top { stop-color: var(--kw-wall-top); }
+.kw-wall-bottom { stop-color: var(--kw-wall-bottom); }
+.kw-floor-far { stop-color: var(--kw-floor-far); }
+.kw-floor-near { stop-color: var(--kw-floor-near); }
+.kw-shoji rect { fill: var(--kw-shoji-frame); }
+.kw-shoji .kw-shoji-rail { fill: var(--kw-floor-near); }
+.kw-planks line { stroke: var(--kw-plank-line); stroke-width: 2; }
+.kw-floor-edge { fill: var(--kw-plank-line); }
+
+/* ---------------- the light ---------------- */
+.kw-sunpatch,
+.kw-shaft {
+  position: absolute;
+  left: 0;
+  width: var(--kw-patch-w);
+  transform: translateX(var(--kw-patch-x)) skewX(-24deg);
+  transition: transform 1.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: transform;
+}
+.kw-sunpatch {
+  bottom: var(--kw-lift);
+  height: var(--kw-patch-h);
+  mix-blend-mode: var(--kw-light-blend);
+  opacity: var(--kw-light-alpha);
+  filter: blur(5px);
+  /* the shoji lattice casts its grid into the patch */
+  -webkit-mask-image:
+    repeating-linear-gradient(90deg, #000 0 calc(25% - 5px), transparent calc(25% - 5px) 25%),
+    radial-gradient(ellipse 70% 80% at 50% 50%, #000 55%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    repeating-linear-gradient(90deg, #000 0 calc(25% - 5px), transparent calc(25% - 5px) 25%),
+    radial-gradient(ellipse 70% 80% at 50% 50%, #000 55%, transparent 100%);
+  mask-composite: intersect;
+}
+/* morning light and evening light, cross-faded by --kw-sun */
+.kw-sunpatch::before,
+.kw-sunpatch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+.kw-sunpatch::before {
+  background: linear-gradient(180deg, var(--kw-light-am), color-mix(in oklch, var(--kw-light-am) 70%, white));
+  opacity: calc(1 - var(--kw-sun));
+}
+.kw-sunpatch::after {
+  background: linear-gradient(180deg, var(--kw-light-pm), color-mix(in oklch, var(--kw-light-pm) 80%, oklch(0.7 0.16 40)));
+  opacity: var(--kw-sun);
+}
+/* bright dapples inside the patch: little pinhole suns through the leaves */
+.kw-dapples {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 18% 30%, #fff 0 5%, transparent 9%),
+    radial-gradient(circle at 42% 62%, #fff 0 4%, transparent 8%),
+    radial-gradient(circle at 70% 24%, #fff 0 6%, transparent 10%),
+    radial-gradient(circle at 84% 70%, #fff 0 3.5%, transparent 7%),
+    radial-gradient(circle at 30% 82%, #fff 0 4%, transparent 7.5%),
+    radial-gradient(circle at 58% 40%, #fff 0 3%, transparent 6%);
+  opacity: 0.55;
+  animation: kw-shimmer 7s ease-in-out infinite alternate;
+}
+.kw-night .kw-dapples { opacity: 0.3; }
+@keyframes kw-shimmer {
+  0% { opacity: 0.35; transform: translate(0, 0); }
+  40% { opacity: 0.6; transform: translate(1.5%, -1%); }
+  100% { opacity: 0.45; transform: translate(-1%, 1.5%); }
+}
+/* a faint shaft of light falling from the window onto the patch */
+.kw-shaft {
+  bottom: calc(var(--kw-lift) + var(--kw-patch-h) - 4px);
+  height: 62vh;
+  background: linear-gradient(0deg, color-mix(in oklch, var(--kw-light-am) 60%, var(--kw-light-pm)) 0%, transparent 85%);
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  filter: blur(18px);
+}
+.kw-night .kw-shaft { opacity: 0.1; }
+
+/* ---------------- leaf shadows ---------------- */
+.kw-canopy {
+  position: absolute;
+  inset: -8%;
+  fill: var(--kw-leaf);
+  opacity: var(--kw-leaf-alpha);
+  mix-blend-mode: multiply;
+  transform-origin: 70% 0%;
+  will-change: transform;
+}
+.kw-night .kw-canopy { mix-blend-mode: normal; }
+.kw-canopy-far { filter: blur(14px); opacity: calc(var(--kw-leaf-alpha) * 0.8); animation: kw-sway 17s ease-in-out infinite alternate; }
+.kw-canopy-mid { filter: blur(8px); animation: kw-sway 11s ease-in-out -4s infinite alternate-reverse; }
+.kw-canopy-near { filter: blur(4px); opacity: calc(var(--kw-leaf-alpha) * 1.15); animation: kw-sway-near 8s ease-in-out -2s infinite alternate; }
+@keyframes kw-sway {
+  0% { transform: rotate(-0.8deg) translate(-0.6%, 0); }
+  100% { transform: rotate(0.9deg) translate(0.8%, 0.4%); }
+}
+@keyframes kw-sway-near {
+  0% { transform: rotate(-1.4deg) translate(-1%, 0.3%); }
+  55% { transform: rotate(0.6deg) translate(0.4%, -0.2%); }
+  100% { transform: rotate(1.5deg) translate(1.2%, 0.5%); }
+}
+
+/* ---------------- tsukubai + suikinkutsu ---------------- */
+/* bottom-right: the sun (and the cat) start on the left, so they never overlap */
+.kw-basin {
+  position: absolute;
+  right: var(--kw-basin-r);
+  bottom: var(--kw-basin-b);
+  width: var(--kw-basin-w);
+}
+.kw-basin svg { display: block; width: 100%; height: auto; overflow: visible; }
+.kw-kakei rect { fill: var(--kw-bamboo); }
+.kw-kakei .kw-kakei-hi { fill: color-mix(in oklch, var(--kw-bamboo) 55%, white); }
+.kw-kakei line { stroke: color-mix(in oklch, var(--kw-bamboo) 60%, black); stroke-width: 1.5; }
+.kw-stone { fill: var(--kw-stone); stroke: var(--kw-stone-dark); stroke-width: 2; }
+.kw-stone-hi { fill: none; stroke: color-mix(in oklch, var(--kw-stone) 55%, white); stroke-width: 2; opacity: 0.6; }
+.kw-water { fill: var(--kw-water); }
+.kw-moss { fill: var(--kw-moss); }
+.kw-drop {
+  fill: color-mix(in oklch, var(--kw-water) 30%, white);
+  animation: kw-drop 0.34s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+@keyframes kw-drop {
+  0% { transform: translateY(0); opacity: 0.9; }
+  92% { opacity: 0.9; }
+  100% { transform: translateY(44px); opacity: 0; }
+}
+.kw-ripple {
+  fill: none;
+  stroke: color-mix(in oklch, var(--kw-water) 25%, white);
+  stroke-width: 1.2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kw-ripple 2.4s cubic-bezier(0.2, 0.6, 0.3, 1) 0.32s forwards;
+}
+.kw-ripple-2 { animation-delay: 0.62s; }
+@keyframes kw-ripple {
+  0% { transform: scale(0.2); opacity: 0.9; }
+  100% { transform: scale(4.2); opacity: 0; }
+}
+
+/* ---------------- the calico ---------------- */
+.kw-cat-track {
+  position: absolute;
+  /* she stays put on the right, just left of the tsukubai */
+  right: calc(var(--kw-basin-r) + var(--kw-basin-w) + 1.5vw);
+  bottom: calc(var(--kw-lift) + var(--kw-patch-h) * 0.14);
+  width: var(--kw-cat-w);
+}
+.kw-cat { position: relative; }
+.calico-cat { display: block; width: 100%; height: auto; overflow: visible; }
+.kw-night .calico-cat { filter: brightness(0.62) saturate(0.7) hue-rotate(-8deg); }
+.cat-pose {
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.calico-cat.is-asleep .cat-asleep,
+.calico-cat.is-stretch .cat-stretch,
+.calico-cat.is-awake .cat-awake { opacity: 1; }
+
+.cat-breathe {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: kw-breathe 4.2s ease-in-out infinite;
+}
+@keyframes kw-breathe {
+  0%, 100% { transform: scale(1, 1); }
+  45% { transform: scale(1.012, 1.045); }
+}
+.cat-knead {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kw-knead 0.9s ease-in-out infinite;
+}
+.cat-knead-2 { animation-delay: -0.45s; }
+@keyframes kw-knead {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2px, -2.5px); }
+}
+.cat-yawn {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: kw-yawn 4.2s ease-in-out both;
+}
+.calico-cat:not(.is-stretch) .cat-yawn { animation: none; }
+@keyframes kw-yawn {
+  0% { transform: scale(0.2); }
+  30%, 60% { transform: scale(1.1); }
+  100% { transform: scale(0.1); }
+}
+.cat-stretch {
+  transform-box: view-box;
+  transform-origin: 20% 90%;
+}
+.calico-cat.is-stretch .cat-stretch { animation: kw-stretch 4.2s ease-in-out both; }
+@keyframes kw-stretch {
+  0% { transform: scale(0.9, 0.9); }
+  35%, 65% { transform: scale(1.08, 0.94); }
+  100% { transform: scale(1, 1); }
+}
+.cat-blink {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kw-blink 6s ease-in-out infinite;
+}
+@keyframes kw-blink {
+  0%, 88%, 100% { transform: scaleY(1); }
+  92%, 95% { transform: scaleY(0.08); }  /* the slow blink: a cat's "I trust you" */
+}
+.cat-tail-swish {
+  transform-box: fill-box;
+  transform-origin: 100% 0%;
+  animation: kw-swish 3.4s ease-in-out infinite alternate;
+}
+@keyframes kw-swish {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-6deg); }
+}
+
+/* the teacup appears beside her for the break */
+.kw-teacup {
+  position: absolute;
+  left: -34%;
+  bottom: 2%;
+  width: 34%;
+  height: auto;
+  overflow: visible;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.9s ease 0.4s, transform 0.9s ease 0.4s;
+}
+.komorebi-world[data-pose='awake'] .kw-teacup { opacity: 1; transform: none; }
+.kw-cup { fill: oklch(0.62 0.07 175); stroke: oklch(0.4 0.05 175); stroke-width: 1.2; }
+.kw-cup-glaze { fill: none; stroke: oklch(0.8 0.06 170); stroke-width: 2; opacity: 0.7; }
+.kw-tea { fill: oklch(0.72 0.12 115); }
+.kw-cup-shadow { fill: rgba(40, 25, 10, 0.2); }
+.kw-steam path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  animation: kw-steam 3.6s ease-in-out infinite;
+}
+.kw-steam path:nth-child(2) { animation-delay: -1.8s; }
+@keyframes kw-steam {
+  0% { opacity: 0; transform: translateY(4px); }
+  40% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+.kw-night .kw-steam path { stroke: rgba(210, 220, 255, 0.35); }
+
+/* ---------------- air ---------------- */
+.kw-motes {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 23% 41%, rgba(255, 244, 214, 0.9) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 71% 13%, rgba(255, 244, 214, 0.7) 0 1.3px, transparent 2.2px),
+    radial-gradient(circle at 57% 77%, rgba(255, 244, 214, 0.5) 0 0.8px, transparent 1.5px);
+  background-size: 337px 293px, 461px 389px, 283px 431px;
+  background-position: 0 0, 70px 40px, 190px 120px;
+  opacity: 0.3;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
+  animation: kw-motes 40s linear infinite;
+}
+.kw-night .kw-motes { opacity: 0.15; }
+@keyframes kw-motes {
+  to { background-position: 60px -293px, -30px -389px, 250px -311px; }
+}
+.kw-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 120% 90% at 50% 45%, transparent 60%, rgba(60, 35, 15, 0.22) 100%);
+}
+.kw-night .kw-vignette {
+  background: radial-gradient(ellipse 120% 90% at 50% 45%, transparent 50%, rgba(4, 6, 16, 0.55) 100%);
+}
+.kw-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.09;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.kw-night .kw-grain { opacity: 0.06; mix-blend-mode: overlay; }
+
+/* phones: the sunbeam, the cat and the basin all sit clear of the dock */
+@media (max-width: 640px) {
+  .komorebi-world {
+    --kw-patch-w: 72vw;
+    --kw-patch-h: 24vh;
+    --kw-cat-w: 96px;
+    --kw-lift: 104px;
+    --kw-basin-r: 8px;
+    --kw-basin-w: 78px;
+    --kw-basin-b: calc(var(--kw-lift) - 6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .komorebi-world *,
+  .komorebi-world *::before,
+  .komorebi-world *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .kw-drop { opacity: 0; }
+}
+
+/* Garden permanence river stones (#23) */
+.kw-garden-stone {
+  fill: #3e4c42;
+  opacity: 0.9;
+  transition: opacity 0.8s ease;
+}
+.kw-night .kw-garden-stone {
+  fill: #222e28;
+  opacity: 0.8;
+}
+
+/* ---------------- the sparrow (#26) ---------------- */
+.kw-sparrow {
+  position: absolute;
+  left: 54%;
+  bottom: 46%;
+  width: 30%;
+  transform-origin: 50% 100%;
+}
+.kw-sparrow svg { display: block; width: 100%; height: auto; overflow: visible; }
+.sp-belly { fill: oklch(0.86 0.035 80); }
+.sp-back, .sp-tail { fill: oklch(0.5 0.07 55); }
+.sp-wing path { fill: oklch(0.44 0.07 50); }
+.sp-wing .sp-wingbar { fill: none; stroke: oklch(0.95 0.01 90); stroke-width: 1.4; }
+.sp-cheek { fill: oklch(0.96 0.01 90); }
+.sp-cap { fill: oklch(0.45 0.09 40); }            /* the tree sparrow's chestnut cap */
+.sp-spot, .sp-eye { fill: #1d1a18; }
+.sp-beak { fill: oklch(0.3 0.02 60); }
+.sp-legs line { stroke: oklch(0.5 0.05 40); stroke-width: 1.6; stroke-linecap: round; }
+.kw-night .kw-sparrow { filter: brightness(0.6) saturate(0.6); }
+
+.sp-wing { transform-box: fill-box; transform-origin: 20% 50%; }
+.kw-sparrow.is-in .sp-wing,
+.kw-sparrow.is-out .sp-wing { animation: sp-flap 0.12s linear infinite alternate; }
+.kw-sparrow.is-in .sp-legs,
+.kw-sparrow.is-out .sp-legs { opacity: 0; }
+@keyframes sp-flap {
+  from { transform: scaleY(1) rotate(0deg); }
+  to { transform: scaleY(-0.6) rotate(-14deg); }
+}
+.kw-sparrow.is-in { animation: sp-arrive 1.6s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+@keyframes sp-arrive {
+  0% { transform: translate(260%, -420%) rotate(-12deg); opacity: 0; }
+  15% { opacity: 1; }
+  80% { transform: translate(8%, -20%) rotate(4deg); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+/* two sips from the basin, a look around, a hop */
+.kw-sparrow.is-perch { animation: sp-hop 7.6s ease-in-out both; }
+.kw-sparrow.is-perch .sp-body {
+  transform-box: fill-box;
+  transform-origin: 30% 100%;
+  animation: sp-sip 7.6s ease-in-out both;
+}
+@keyframes sp-sip {
+  0%, 8%, 22%, 30%, 44%, 100% { transform: rotate(0); }
+  12%, 17% { transform: rotate(28deg); }
+  34%, 39% { transform: rotate(28deg); }
+  55% { transform: rotate(-8deg); }
+  62% { transform: rotate(0); }
+}
+@keyframes sp-hop {
+  0%, 70% { transform: translate(0, 0) scaleX(1); }
+  75% { transform: translate(-22%, -26%) scaleX(1); }
+  80%, 100% { transform: translate(-40%, 0) scaleX(1); }
+}
+.kw-sparrow.is-out { animation: sp-leave 1.8s cubic-bezier(0.5, 0, 0.8, 0.4) both; }
+@keyframes sp-leave {
+  0% { transform: translate(-40%, 0) rotate(0); opacity: 1; }
+  100% { transform: translate(-320%, -520%) rotate(-18deg) scaleX(-1); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kw-sparrow { display: none; }
+}
+
+/* ---------------- short break: her reminder ---------------- */
+.kw-say {
+  position: absolute;
+  /* beside her, at head height, tail pointing at her: clear of the panels above */
+  right: 100%;
+  bottom: 42%;
+  margin-right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px 7px 11px;
+  border-radius: 999px;
+  background: oklch(0.985 0.012 85 / 0.92);
+  color: oklch(0.36 0.05 55);
+  border: 1px solid oklch(0.62 0.06 62 / 0.35);
+  box-shadow: 0 6px 18px oklch(0.35 0.05 55 / 0.18);
+  font-size: clamp(12px, 1.05vw, 14px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  animation: kw-say-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both, kw-say-bob 4s ease-in-out 0.6s infinite;
+}
+/* the little tail of the speech bubble, pointing at her */
+.kw-say::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  bottom: 50%;
+  width: 10px;
+  height: 10px;
+  background: inherit;
+  border-right: inherit;
+  border-bottom: inherit;
+  transform: translateY(50%) rotate(-45deg);
+}
+.kw-say svg { width: 11px; height: 15px; flex-shrink: 0; fill: oklch(0.62 0.11 230); }
+.kw-night .kw-say {
+  background: oklch(0.26 0.02 200 / 0.92);
+  color: oklch(0.9 0.02 200);
+  border-color: oklch(0.5 0.03 200 / 0.4);
+}
+.kw-night .kw-say svg { fill: oklch(0.78 0.08 225); }
+@keyframes kw-say-in {
+  from { opacity: 0; transform: translateX(8px) scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes kw-say-bob {
+  0%, 100% { transform: none; }
+  50% { transform: translateY(-3px); }
+}

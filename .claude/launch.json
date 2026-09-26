@@ -1,0 +1,33 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "thelidhu-dev",
+      "url": "http://localhost:5173"
+    },
+    {
+      "name": "thelidhu-steve",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3401", "--strictPort"],
+      "port": 3401
+    },
+    {
+      "name": "thelidhu-qa-inspector",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3201", "--strictPort"],
+      "port": 3201
+    },
+    {
+      "name": "thelidhu-qa-user",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3202", "--strictPort"],
+      "port": 3202
+    },
+    {
+      "name": "thelidhu-qa-verifier",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3203", "--strictPort"],
+      "port": 3203
+    }
+  ]
+}

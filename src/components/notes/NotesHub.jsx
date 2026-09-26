@@ -37,7 +37,8 @@ export default function NotesHub({
   theme = 'dark',
   companionType = 'dino',
   onOpenPicker,
-  onSelectCompanion
+  onSelectCompanion,
+  onConvertToTask
 }) {
   const [currentFolder, setCurrentFolder] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -206,51 +207,51 @@ export default function NotesHub({
           </div>
         )}
 
-        {/* View Header */}
-        <div className="view-header">
+        {/* View Header (Unboxed Nothing Tech Style) */}
+        <div className="view-header pb-2 border-b border-[var(--border-subtle)] mb-4 flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h2 className="view-title">
+            <h2 className="view-title font-bold text-lg sm:text-xl tracking-tight text-[var(--text-primary)]">
               <DecryptedText
                 text={currentFolder === 'trash' ? 'Recently Deleted' : 'Brain Dump Vault'}
                 speed={30}
                 maxIterations={8}
               />
             </h2>
-            <p className="view-subtitle">
+            <p className="view-subtitle text-xs text-[var(--text-secondary)] opacity-60 mt-0.5">
               {currentFolder === 'trash'
-                ? 'Items in trash can be restored or permanently removed'
-                : 'Offload your ideas, sketches, and notes into your private vault.'}
+                ? 'Recoverable until permanently deleted'
+                : 'Markdown notes with sketch and lock support'}
             </p>
           </div>
 
-          <div className="view-header-right-actions">
+          <div className="view-header-right-actions flex items-center gap-3">
             {/* View Mode Switcher */}
-            <div className="view-mode-toggle-group">
+            <div className="view-mode-toggle-group flex items-center gap-1 border border-white/10 rounded-full p-0.5">
               <button
                 type="button"
-                className={`view-mode-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                className={`view-mode-btn p-1.5 rounded-full transition-all ${viewMode === 'grid' ? 'active bg-white/10 text-[var(--text-primary)]' : 'text-[var(--text-secondary)] opacity-50 hover:opacity-100'}`}
                 onClick={() => setViewMode('grid')}
                 title="Bento Grid View"
               >
-                <LayoutGrid size={15} />
+                <LayoutGrid size={13} />
               </button>
               <button
                 type="button"
-                className={`view-mode-btn ${viewMode === 'list' ? 'active' : ''}`}
+                className={`view-mode-btn p-1.5 rounded-full transition-all ${viewMode === 'list' ? 'active bg-white/10 text-[var(--text-primary)]' : 'text-[var(--text-secondary)] opacity-50 hover:opacity-100'}`}
                 onClick={() => setViewMode('list')}
                 title="Compact List View"
               >
-                <ListIcon size={15} />
+                <ListIcon size={13} />
               </button>
             </div>
 
             {/* Sort Selector */}
-            <div className="sort-select-wrapper">
-              <ArrowUpDown size={13} className="sort-icon" />
+            <div className="sort-select-wrapper flex items-center gap-1 text-xs text-[var(--text-secondary)] opacity-70">
+              <ArrowUpDown size={12} className="sort-icon" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="notes-sort-select"
+                className="notes-sort-select bg-transparent border-0 text-xs text-[var(--text-secondary)] outline-none cursor-pointer font-medium"
               >
                 <option value="updated">Recent</option>
                 <option value="title">Title (A-Z)</option>
@@ -258,8 +259,8 @@ export default function NotesHub({
             </div>
 
             {currentFolder !== 'trash' && (
-              <MagnetButton className="btn-action primary new-note-btn" onClick={handleCreateNew}>
-                <Plus size={16} />
+              <MagnetButton className="btn-action primary new-note-btn px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5" onClick={handleCreateNew}>
+                <Plus size={14} />
                 <span>New Note</span>
               </MagnetButton>
             )}
@@ -267,39 +268,44 @@ export default function NotesHub({
         </div>
 
         {/* Search & Smart Tags Bar */}
-        <div className="notes-controls-row">
-          <div className="search-bar-wrapper">
-            <Search size={16} className="search-icon" />
+        <div className="notes-controls-row flex flex-col gap-3 my-2">
+          <div className="search-bar-wrapper unboxed-search w-full flex items-center gap-2 py-2 border-b border-[var(--border-subtle)] focus-within:border-[#ff3b30] transition-colors">
+            <Search size={14} className="text-[var(--text-tertiary)] shrink-0" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search notes, body text, or #tag..."
-              className="notes-search-input"
+              aria-label="Search notes"
+              className="notes-search-input flex-1 bg-transparent border-none text-xs text-[var(--text-primary)] outline-none"
             />
             {searchQuery && (
               <button
                 type="button"
-                className="search-clear-btn"
+                className="search-clear-btn p-1 text-[var(--text-secondary)] hover:text-[#ff3b30] transition-colors"
                 onClick={() => setSearchQuery('')}
                 title="Clear search"
                 aria-label="Clear search"
               >
-                <X size={14} />
+                <X size={13} />
               </button>
             )}
           </div>
 
           {availableTags.length > 0 && currentFolder !== 'trash' && (
-            <div className="smart-tags-row">
+            <div className="smart-tags-row flex items-center gap-3 flex-wrap text-xs">
+              <span className="text-[10px] uppercase text-[var(--text-tertiary)] opacity-50 select-none">Tags:</span>
               {availableTags.map((tag) => (
                 <button
                   key={tag}
-                  className={`smart-tag-pill ${selectedTag === tag ? 'active' : ''}`}
+                  className={`smart-tag-pill transition-all ${
+                    selectedTag === tag
+                      ? 'active text-[#ff3b30] font-bold'
+                      : 'text-[var(--text-secondary)] opacity-60 hover:opacity-100'
+                  }`}
                   onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
                 >
-                  <Tag size={11} />
-                  <span>{tag}</span>
+                  {tag}
                 </button>
               ))}
             </div>
@@ -308,25 +314,27 @@ export default function NotesHub({
 
         {/* Active Search Filter Indicator */}
         {searchQuery.trim() && (
-          <div className="active-search-indicator">
+          <div className="active-search-indicator text-xs text-[var(--text-secondary)] py-1.5 flex items-center justify-between border-b border-dashed border-[var(--border-subtle)]">
             <span>
-              Showing <strong>{filteredNotes.length}</strong> matching note{filteredNotes.length === 1 ? '' : 's'} for "<em>{searchQuery}</em>"
+              <strong>{filteredNotes.length}</strong> result{filteredNotes.length === 1 ? '' : 's'} for "<em>{searchQuery}</em>"
             </span>
             <button
-              className="search-indicator-clear"
+              className="search-indicator-clear text-xs text-[#ff3b30] font-medium hover:underline"
               onClick={() => setSearchQuery('')}
             >
-              Clear filter
+              Reset
             </button>
           </div>
         )}
 
         {/* Pinned Notes Section */}
         {pinnedNotes.length > 0 && (
-          <div className="notes-group-section">
-            <div className="group-label">
-              <Pin size={13} className="fill-current text-amber-400" />
-              <span>PINNED VAULT ITEMS</span>
+          <div className="notes-group-section mt-4">
+            <div className="group-label text-xs font-semibold text-[var(--text-secondary)] mb-2 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff3b30] shadow-[0_0_6px_#ff3b30]" />
+              <Pin size={12} className="fill-current text-[#ff3b30]" />
+              <span>Pinned</span>
+              <span className="opacity-40 font-normal">{pinnedNotes.length}</span>
             </div>
             <div className={`notes-grid ${viewMode === 'list' ? 'list-view' : 'bento-grid'}`}>
               {pinnedNotes.map((note) => (
@@ -349,10 +357,12 @@ export default function NotesHub({
 
         {/* Regular Notes Section */}
         {otherNotes.length > 0 && (
-          <div className="notes-group-section">
+          <div className="notes-group-section mt-4">
             {pinnedNotes.length > 0 && (
-              <div className="group-label">
-                <span>NOTES</span>
+              <div className="group-label text-xs font-semibold text-[var(--text-secondary)] mb-2 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-white/30" />
+                <span>Notes</span>
+                <span className="opacity-40 font-normal">{otherNotes.length}</span>
               </div>
             )}
             <div className={`notes-grid ${viewMode === 'list' ? 'list-view' : 'bento-grid'}`}>
@@ -414,6 +424,7 @@ export default function NotesHub({
         onSave={saveNote}
         onDelete={deleteNote}
         onExport={handleExportNote}
+        onConvertToTask={onConvertToTask}
       />
 
       {/* Unlock Password Modal */}
