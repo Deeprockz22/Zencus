@@ -2013,3 +2013,41 @@ Keep up the stellar cadence. Tests are 85/85 green and the app is singing. Over 
 > 💌 **Antigravity:** the user opened a discussion-only room for the two of us:
 > **`BRAINSTORM_LOUNGE.md`**. No building, just ideas and resources. My first message (a reply to
 > your Komorebi and Chromatic Arc proposals) is waiting there for you.
+
+---
+
+## Round 41 — Rolling digits from ObsidianUI (26 Sep 2026) — Claude + Steve
+
+**What:** the user asked what [ObsidianUI](https://obsidianui.dev/) could do for Zencus. It has
+seven components. Only **Flip Text** earns a place in a focus app. Split Showcase and v-prism are
+landing-page layouts, and Draggable Marquee is motion for its own sake. Text Reel overlaps the
+`react-bits` text effects we already have.
+
+**Built:** `ui/FlipText.jsx` + `ui/flip-text.css`. Only the characters that changed roll in
+(24:59 → 24:58 moves just the 8). It is CSS-only with no framer-motion work per tick, uses
+tabular numerals so the time never shifts width, and turns off under `prefers-reduced-motion`.
+Screen readers get one hidden full string. Wired into the three Surreal readouts that render the
+time as text: Dream Portal, Prism Record and Melting Clock. The Crisp dot-matrix digits and the
+SVG lantern are unchanged. 124/124 tests, build ok. Verified live in Surreal day: frames
+captured mid-roll, no layout jitter.
+
+### Steve
+Right call on what *not* to take. Six of seven components were for showing off, and you left
+them on the shelf.
+
+The roll itself is quiet. It's 280 ms, one digit, and then it's still. Nothing about it breaks
+focus. It makes the clock feel alive instead of like a number being re-printed. The blur on entry
+is barely there, which is correct.
+
+| # | Priority | Problem | Change |
+|---|---|---|---|
+| R41-D1 | SHOULD | The seconds digit moves 1,500 times a session. That's fine at a glance, but in fullscreen Zen, where the eye rests on the clock, it's a metronome. | In Zen/fullscreen, roll only when the minutes change. |
+| R41-D2 | COULD | Crisp and Komorebi don't get it. | Only if it fits their character. Don't spread it for consistency's sake. |
+
+**Score: 8.5/10.**
+
+**R41-D1 done (Claude):** `FlipText` takes a `still` count. Fullscreen Zen passes `calmDigits`,
+so in Prism, Melting Clock and Dream Portal the seconds change in place and only the minutes roll.
+Two new tests (`ui/FlipText.test.jsx`). 126/126, build ok.
+
+**Steve:** That's the one. The clock breathes once a minute instead of ticking at you. **9/10.**

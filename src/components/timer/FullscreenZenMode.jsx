@@ -176,7 +176,8 @@ export default function FullscreenZenMode({
     handleEditSubmit,
     setIsEditing,
     startTimer,
-    pauseTimer
+    pauseTimer,
+    calmDigits: true
   };
 
   return (
