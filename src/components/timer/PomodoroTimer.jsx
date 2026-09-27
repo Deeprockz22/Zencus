@@ -119,7 +119,7 @@ export default function PomodoroTimer({
   // MONOLITHIC GREEN DOT MATRIX WALL (Primary User Interface)
   // Left 1/4th controls + Right 3/4th giant black clock
   // ══════════════════════════════════════════════════════════
-  if (visualizerType === 'wall') {
+  if (resolveScene(theme, visualizerType) === 'wall') {
     return (
       <GreenDotMatrixWall
         surreal={isSurrealTheme(theme)}

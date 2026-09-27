@@ -48,6 +48,9 @@ describe('Theme families', () => {
     expect(resolveScene('lantern-night', 'wall')).toBe('wall');
     expect(scenesFor('komorebi').map((s) => s.value)).toEqual(['minimal']);
     expect(resolveScene('komorebi', 'wall')).toBe('minimal');
+    // the vinyl is Crisp's alone
+    expect(scenesFor('lantern').map((s) => s.value)).not.toContain('turntable');
+    expect(resolveScene('lantern', 'turntable')).toBe('lantern');
     expect(isArtTheme('lantern-night')).toBe(true);
     expect(isArtTheme('komorebi')).toBe(true);
     expect(isArtTheme('komorebi-night')).toBe(true);

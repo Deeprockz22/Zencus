@@ -2186,3 +2186,99 @@ craft nobody sees until it's gone. Every frosted surface in the app just started
 
 **Score: 9/10.** Next: make sure new rules always put the prefix first. A one-line lint rule
 would do it.
+
+---
+
+## Round 47 — The vinyl stays in Crisp (27 Sep 2026) — Claude + Steve
+
+**What:** the vinyl record is Crisp's alone (light and dark).
+- **Komorebi full screen** shows the Minimal Dial instead of the record. It sits on the room's own
+  washi (day) or river slate (night), not Crisp's grey and navy.
+- **Lantern** loses "Vinyl Studio" from its scenes. Full screen shows the Paper Lantern (or the
+  Minimal Dial, if that's the scene you picked). It used to show the vinyl for everything but the lantern.
+- **Crisp** keeps the vinyl. Full screen now follows your scene choice for the Minimal Dial too,
+  instead of always showing the record.
+- **Komorebi's timer is honey, not red**, on the page and full screen: Start, the active preset, the
+  dots and the dial. Its own CSS already asked for this, but that rule had stopped reaching the
+  buttons. Button text is sumi ink, since white on honey is too faint to read. On washi, text uses a
+  deeper honey.
+
+**Found on the way:**
+- A Matrix Wall picked in Crisp stayed on after switching to Komorebi, whose only scene is the dial.
+  The wall check now respects each theme's scenes.
+- In Lantern full screen, "tap to light the lantern" printed on top of "Space to pause · Esc to exit".
+- On phones, the full-screen top bar wrapped to two lines and pushed the exit button past the edge.
+  It now keeps to one line: the "Fullscreen" label and the weather city step aside under 480px.
+
+### Steve
+Good. A record player in a tatami room was a costume. Now each world has one object that belongs
+to it: the record, the portal, the lantern, the dial. And red was never Komorebi's colour. The
+honey finally reaches the button you press most.
+
+**Score: 9/10.** Next: Komorebi's Tasks and Notes still use Crisp's red. Give them the same honey.
+
+---
+
+## Round 48 — Honey all the way through (27 Sep 2026) — Claude + Steve
+
+**What:** Steve's two open asks.
+- **Komorebi is honey everywhere, not just the timer.** Tasks and Notes used Crisp's red for
+  Add Task, New Note, the prompt, filter and folder dots, pins, locks and the dock dot. They now
+  use honey. The task progress bar grows from moss into sunlight, where it was Crisp's teal-to-blue.
+  Warnings use persimmon, the room's own alarm: "High" priority, delete hovers, the folder-name
+  error and every "Delete forever / Empty trash / Clear all data" button. Honey buttons carry ink
+  text, never honey on honey. The brand logo keeps its red. A scan of every visible element on the
+  Timer, Tasks, Notes, folder form and note editor, day and night, finds no red left.
+- **The blur-order guard.** A new test reads every stylesheet and fails if any rule lists
+  `backdrop-filter` before `-webkit-backdrop-filter`, so the silent no-blur build bug can't come
+  back. Checked that it catches a bad rule and passes a good one.
+
+**Found on the way:** the "New folder" field was wider than its form in every theme, pushing
+"Add" outside the sidebar. The field can shrink now, so "Add" sits inside.
+
+### Steve
+Now it's one room. You can walk from the timer to your notes and never trip over a colour
+from another house. Persimmon for danger is the right call: it's warm and still says stop. And
+the guard is the kind of thing I like best, a mistake we made once and can't make twice.
+
+**Score: 9.5/10.** The half point is the last mile: the Surreal and Lantern Tasks and Notes pages
+deserve the same audit.
+
+---
+
+## Round 49 — Every world speaks its own colour (27 Sep 2026) — Claude + Steve
+
+**What:** Steve's last half point: the Surreal and Lantern Tasks and Notes audit.
+- **One accent layer for all three art worlds** (`src/themes/art-accents.css`). Each world names
+  four colours: its accent, a readable accent ink, its call-to-action, and a warning. One set of
+  rules puts them wherever Crisp's red was written into a component. Surreal speaks dreamberry,
+  Lantern speaks blossom, Komorebi speaks honey. Warnings are each world's own coral or persimmon.
+  Komorebi's rules moved into the shared layer, so there's one source, not three copies.
+- **Bugs the audit found:**
+  - Surreal Night: Add Task and New Note were Crisp red, and in both Surreal themes they turned red
+    on hover. A Crisp dark-mode rule outranked Surreal's gradient.
+  - Lantern Night: the same buttons turned red-glowing with white text on hover.
+  - Surreal and Lantern painted every button with their CTA, so "Cancel" looked exactly like
+    "Delete forever". Secondary buttons are now quiet glass in the world's colours. Destructive
+    confirms wear the warning colour in all three worlds. Komorebi Night's Cancel was Crisp charcoal.
+  - The chosen timer preset glowed Crisp red under its new colour.
+  - Lantern's active dock tab hid its blossom dot on a blossom pill. It now takes the pill's ink.
+- **Proof:** a scan of every visible element's computed colour, glow and border across all six art
+  themes (day and night) finds no Crisp red. It covered the timer, Tasks, Add Task hover, Notes,
+  New Note hover, the delete confirm, the folder form and the note editor. Crisp is untouched: its
+  record and its red are exactly as they were.
+- **Guard:** a new test finds every red utility a component uses and fails if the art layer has no
+  rule for it, or if a red glow appears on anything but a recoloured dot. Checked that it catches a
+  new `ring-[#ff3b30]`.
+
+### Steve
+This is the one I've been waiting for. I opened every room and pressed every button, and nothing
+belonged to another house. Surreal is loud where it should be and quiet on "Cancel". Lantern
+glows, Komorebi is warm, and when something is about to be destroyed, each world says so in its
+own voice. Crisp is still pure Crisp.
+
+What earns the last point isn't the colour. It's that the fix is a system: four named colours per
+world, one layer, and two tests that stop the old mistakes from coming back. Taste, craft and
+discipline in the same change.
+
+**Score: 10/10.**

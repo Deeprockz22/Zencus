@@ -4478,6 +4478,7 @@ body {
 
 .new-folder-input {
   flex: 1;
+  min-width: 0; /* let the field shrink, so "Add" stays inside the sidebar */
   background: var(--bg-tertiary);
   border: 1px solid var(--border-active);
   color: var(--text-primary);
@@ -4488,6 +4489,7 @@ body {
 }
 
 .new-folder-submit {
+  flex-shrink: 0;
   background: var(--accent-primary);
   color: var(--accent-text);
   border: none;
@@ -9679,6 +9681,17 @@ select option,
   text-align: center;
   line-height: 1.6;
   margin: 0;
+}
+
+/* Phones: the top bar keeps to one line, so the exit button never falls off the edge */
+@media (max-width: 480px) {
+  .fullscreen-zen-overlay .zen-brand-text > span:nth-child(2),
+  .fullscreen-zen-overlay .zen-weather-city {
+    display: none;
+  }
+  .fullscreen-zen-overlay .zen-brand-text > span {
+    white-space: nowrap;
+  }
 }
 
 /* Weather pill & close button */

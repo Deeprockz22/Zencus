@@ -1,0 +1,116 @@
+/* =====================================================================
+   ART ACCENTS — Crisp's red, recast in each art world.
+   Crisp's accent lives in Tailwind utilities (bg-/text-/border-[#ff3b30])
+   and in the primary-button rules. Surreal, Lantern and Komorebi each give
+   four roles, and these rules put them where the red was:
+     --art-accent      fills: dots, active pills, borders
+     --art-accent-ink  text and icons, dark or light enough to read
+     --art-cta         the family's call-to-action fill; --art-on-cta its text
+     --art-warn        delete, errors, high priority; --art-on-warn its text
+   Unlayered rules outrank Tailwind's layered utilities.
+   ===================================================================== */
+
+html.surreal[data-theme='light'] {
+  --art-accent: var(--c-dreamberry);
+  --art-accent-ink: oklch(0.5 0.24 355);
+  --art-warn: oklch(0.55 0.2 30);
+  --art-on-warn: oklch(0.99 0.01 330);
+}
+html.surreal[data-theme='dark'] {
+  --art-accent: oklch(0.72 0.24 355);
+  --art-accent-ink: oklch(0.8 0.18 355);
+  --art-warn: oklch(0.74 0.17 35);
+  --art-on-warn: oklch(0.2 0.09 290);
+}
+html.surreal {
+  --art-cta: var(--sr-hot);
+  --art-on-cta: #ffffff;
+}
+
+html.lantern[data-theme='light'] {
+  --art-accent: #d9669c;
+  --art-accent-ink: #a8406f;
+  --art-warn: oklch(0.55 0.17 32);
+  --art-on-warn: #ffffff;
+}
+html.lantern[data-theme='dark'] {
+  --art-accent: #ff6fa8;
+  --art-accent-ink: #ff9cc4;
+  --art-warn: oklch(0.76 0.14 40);
+  --art-on-warn: #0b0f2a;
+}
+html.lantern {
+  --art-cta: var(--ln-cta);
+  --art-on-cta: #2a1640;
+}
+
+html.komorebi {
+  --art-accent: var(--km-amber);
+  --art-accent-ink: var(--km-amber-ink);
+  --art-cta: linear-gradient(135deg, var(--accent-primary) 0%, oklch(0.70 0.135 55) 100%);
+  --art-on-cta: oklch(0.22 0.012 155); /* sumi ink: white on honey is too faint to read */
+  --art-warn: var(--km-persimmon);
+  --art-on-warn: var(--km-on-persimmon);
+}
+
+/* ---------- the accent ---------- */
+html:is(.surreal, .lantern, .komorebi) .bg-\[\#ff3b30\] {
+  background: var(--art-accent) !important;
+  box-shadow: none !important;
+}
+html:is(.surreal, .lantern, .komorebi) .text-\[\#ff3b30\],
+html:is(.surreal, .lantern, .komorebi) .hover\:text-\[\#ff3b30\]:hover {
+  color: var(--art-accent-ink) !important;
+}
+html:is(.surreal, .lantern, .komorebi) .border-\[\#ff3b30\],
+html:is(.surreal, .lantern, .komorebi) .hover\:border-\[\#ff3b30\]:hover,
+html:is(.surreal, .lantern, .komorebi) .focus\:border-\[\#ff3b30\]:focus,
+html:is(.surreal, .lantern, .komorebi) .focus-within\:border-\[\#ff3b30\]:focus-within {
+  border-color: var(--art-accent) !important;
+}
+/* the chosen pill (e.g. the timer's 25-minute preset) wears the family's CTA */
+html:is(.surreal, .lantern, .komorebi) .rb-shiny-btn--active {
+  background: var(--art-cta) !important;
+  color: var(--art-on-cta) !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 14px -4px color-mix(in oklch, var(--art-accent) 55%, transparent) !important;
+}
+
+/* ---------- warnings ---------- */
+html:is(.surreal, .lantern, .komorebi) .priority-badge.text-\[\#ff3b30\],
+html:is(.surreal, .lantern, .komorebi) :is(.delete-btn, .note-icon-action.delete, .folder-delete-icon):hover,
+html:is(.surreal, .lantern, .komorebi) .new-folder-error {
+  color: var(--art-warn) !important;
+}
+html:is(.surreal, .lantern, .komorebi) .priority-badge .bg-\[\#ff3b30\] {
+  background: var(--art-warn) !important;
+}
+/* every confirm dialog asks before destroying something (delete forever, empty trash,
+   clear all data), so its confirm button is the warning, not the family's CTA */
+html:is(.surreal, .lantern, .komorebi) .confirm-dialog-confirm.btn-action.primary,
+html:is(.surreal, .lantern, .komorebi) .confirm-dialog-confirm.btn-action.primary:hover {
+  background: var(--art-warn) !important;
+  color: var(--art-on-warn) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  -webkit-box-reflect: unset;
+}
+
+/* ---------- quiet secondary buttons ----------
+   Surreal and Lantern paint every .btn-action with their CTA, so "Cancel" looked
+   exactly like "Delete forever", and Komorebi's night fell back to Crisp's
+   charcoal. Secondary actions are quiet glass in the room's own colours. */
+html:is(.surreal, .lantern, .komorebi) .btn-action.secondary,
+html:is(.surreal, .lantern, .komorebi) .btn-action.secondary:hover {
+  background: color-mix(in oklch, var(--bg-secondary) 82%, transparent) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-active) !important;
+  box-shadow: none !important;
+  -webkit-box-reflect: unset;
+}
+
+/* Lantern fills the active dock tab with its CTA, so the tab's dot takes the CTA's ink
+   (a blossom dot on a blossom pill disappeared) */
+html.lantern .dock-tab.active .dock-active-dot {
+  background: var(--art-on-cta) !important;
+}
