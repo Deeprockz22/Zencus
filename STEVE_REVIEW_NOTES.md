@@ -2133,3 +2133,7 @@ now. All six landing screenshots were retaken.
 
 **Steve:** That's the timer I asked for in Round 1: the time, then one big Start, then everything
 else. The landing page and the app finally say the same thing. **9.5/10.**
+
+**R44-D2 closed by the owner (27 Sep 2026):** the site keeps opening straight into the app, on the
+timer. No landing page in front, no extra click. The landing page stays at `/landing.html` for
+sharing, and its buttons open the app, which always starts on the Timer tab.
