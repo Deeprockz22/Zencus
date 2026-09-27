@@ -2086,3 +2086,17 @@ fine for "keep my roommate out". It isn't fine for "keep a determined attacker o
 matters, offer a longer passcode. That's a product decision for the owner.
 
 **Score: 9.5/10.**
+
+---
+
+## Round 43 — The dashboard lock is removed (27 Sep 2026) — Claude + Steve
+
+**What:** at the owner's request, the app-wide lock screen is gone. It locked the whole app
+behind a fixed PIN (1234) that couldn't be changed. Removed: the header lock button, the "Lock
+Dashboard" rows in both Settings designs (and the Atelier's Privacy chapter), `LockScreen.jsx`,
+and its theme styles. Per-note PINs are unchanged.
+
+### Steve
+Good riddance. A lock whose combination is printed in the settings isn't a lock. It's an extra
+tap on the way to your own timer. The header has one icon fewer, and the real protection lives
+where it belongs, on the notes that need it.

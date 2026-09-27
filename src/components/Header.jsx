@@ -6,7 +6,6 @@ import {
   Moon,
   Music2,
   Volume2,
-  Lock,
   PictureInPicture2
 } from 'lucide-react';
 import MagnetButton from './react-bits/MagnetButton';
@@ -24,7 +23,6 @@ export default function Header({
   miniTimerOpen = false,
   soundEnabled,
   toggleSound,
-  onLockApp
 }) {
   const [radioState, setRadioState] = useState(() => jazzRadio.getState());
   const [ambientActive, setAmbientActive] = useState(() => ambientSoundscapes.activeType);
@@ -127,18 +125,6 @@ export default function Header({
             aria-pressed={miniTimerOpen}
           >
             <PictureInPicture2 size={17} />
-          </MagnetButton>
-        )}
-
-        {/* Quick Lock Dashboard */}
-        {onLockApp && (
-          <MagnetButton
-            className="icon-btn lock-btn"
-            onClick={onLockApp}
-            title="Lock Dashboard"
-            aria-label="Lock Dashboard"
-          >
-            <Lock size={17} />
           </MagnetButton>
         )}
 

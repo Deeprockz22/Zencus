@@ -10,7 +10,6 @@ import TaskManager from './components/tasks/TaskManager';
 import NotesHub from './components/notes/NotesHub';
 import SettingsModal from './components/SettingsModal';
 import CompanionPickerModal from './components/companion/CompanionPickerModal';
-import LockScreen from './components/LockScreen';
 import ClickSpark from './components/react-bits/ClickSpark';
 import SurrealWorld from './components/surreal/SurrealWorld';
 import LanternWorld from './components/lantern/LanternWorld';
@@ -97,7 +96,6 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [visualizerType, setVisualizerType] = useState('portal');
-  const [isAppLocked, setIsAppLocked] = useState(false);
   // the short reflection that follows a finished focus session
   const [debrief, setDebrief] = useState(null);
 
@@ -806,24 +804,6 @@ export default function App() {
     }
   };
 
-  if (isAppLocked) {
-    return (
-      <div className={`app-layout theme-${theme} mode-${mode}`} data-theme={baseTheme(theme)}>
-        {isSurrealTheme(theme) && <SurrealWorld theme={theme} />}
-        {isLanternTheme(theme) && <LanternWorld theme={theme} />}
-        {isKomorebiTheme(theme) && <KomorebiWorld theme={theme} />}
-        <LockScreen
-          surreal={isSurrealTheme(theme)}
-          onUnlock={() => {
-            setIsAppLocked(false);
-            if (soundEnabled) sfx.play('select');
-          }}
-          correctPin="1234"
-        />
-      </div>
-    );
-  }
-
   return (
     <div className={`app-layout theme-${theme} mode-${mode}`} data-timer-mode={mode}>
 
@@ -868,10 +848,6 @@ export default function App() {
         miniTimerOpen={!!miniPip.pipWindow}
         companionType={companionType}
         openCompanionPicker={() => setIsCompanionPickerOpen(true)}
-        onLockApp={() => {
-          setIsAppLocked(true);
-          if (soundEnabled) sfx.play('select');
-        }}
       />
 
       {/* Main Content Area */}
@@ -1057,10 +1033,6 @@ export default function App() {
         }}
         theme={theme}
         setTheme={setTheme}
-        onLockApp={() => {
-          setIsAppLocked(true);
-          if (soundEnabled) sfx.play('select');
-        }}
       />
 
       {/* Focus Pet Wardrobe Modal */}

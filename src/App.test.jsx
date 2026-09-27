@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 
 // Core App & Navigation
 import App from './App';
-import LockScreen from './components/LockScreen';
 import PomodoroTimer from './components/timer/PomodoroTimer';
 import TaskManager from './components/tasks/TaskManager';
 import NotesHub from './components/notes/NotesHub';
@@ -570,22 +569,10 @@ describe('Thelidhu Comprehensive Screen Test Suite', () => {
       expect(screen.getByText('ThreeUI (DesignCode)')).toBeInTheDocument();
     });
 
-    it('locks dashboard and unlocks via PIN 1234', () => {
+    it('has no dashboard lock screen or fixed PIN', () => {
       render(<App />);
-      const lockBtn = screen.getByTitle(/Lock Dashboard/i);
-      expect(lockBtn).toBeInTheDocument();
-
-      fireEvent.click(lockBtn);
-      expect(screen.getByText('Enter PIN')).toBeInTheDocument();
-
-      // Type 1, 2, 3, 4
-      fireEvent.keyDown(window, { key: '1' });
-      fireEvent.keyDown(window, { key: '2' });
-      fireEvent.keyDown(window, { key: '3' });
-      fireEvent.keyDown(window, { key: '4' });
-
-      // Should unlock and return to main dashboard
-      expect(screen.queryByText('Enter PIN')).not.toBeInTheDocument();
+      expect(screen.queryByTitle(/Lock Dashboard/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/PIN 1234/i)).not.toBeInTheDocument();
     });
   });
 });
