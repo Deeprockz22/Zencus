@@ -7,15 +7,47 @@ import { Link001, Link002, Link003, Link004, Link005 } from './ui/skiper-ui/skip
 import { Storage } from '../utils/storage';
 import { SOUNDTRACK_OPTIONS } from '../utils/soundtracks';
 import { themeFamily, pickFamily } from '../themeFamilies';
+import ConfirmDialog from './ui/ConfirmDialog';
 import './settings-atelier.css';
+import './settings-skins.css';
 
 /*
- * Settings — "The Atelier" (the Surreal theme's settings page).
+ * Settings — "The Atelier", the settings page for every theme.
  * A studio rather than a form: a chapter rail on the left (each chapter owns
- * one colour of the Dream Spectrum), and one long, calm page on the right.
- * Durations are big steppers with a live, to-scale drawing of the cycle they
- * produce; themes are chosen by looking at them; switches are switches.
+ * one colour), and one long, calm page on the right. Durations are big
+ * steppers with a live, to-scale drawing of the cycle they produce; themes
+ * are chosen by looking at them; switches are switches.
+ * Each theme family dresses it in its own palette, type and words
+ * (settings-skins.css + FAMILY_COPY below).
  */
+
+const FAMILY_COPY = {
+  crisp: {
+    title: 'Settings',
+    subtitle: 'Everything in its place.',
+    rhythm: 'Focus and break lengths, and when the long break comes.',
+    world: 'Choose how Zencus looks.'
+  },
+  surreal: {
+    title: 'Preferences & Settings',
+    subtitle: 'Tune the dream.',
+    rhythm: 'How long you dive, how long you surface.',
+    world: 'Choose the painting you work inside.'
+  },
+  lantern: {
+    title: 'Settings',
+    subtitle: 'Tend the garden.',
+    rhythm: 'How long the lantern burns, and how long you rest beneath it.',
+    world: 'Choose the garden you sit in.'
+  },
+  komorebi: {
+    title: 'Settings',
+    subtitle: 'Arrange the room.',
+    rhythm: 'How long you sit in the light, and when you step out of it.',
+    world: 'Choose the room you work in.'
+  }
+};
+FAMILY_COPY.sketch = FAMILY_COPY.crisp;
 
 const CORE_THEMES = [
   { id: 'light', name: 'Crisp Light', desc: 'Clean daylight paper and sharp type' },
@@ -100,6 +132,10 @@ export default function AtelierSettingsModal({
   const [longBreakMins, setLongBreakMins] = useState(timerSettings.longBreakDuration || 15);
   const [sessionsBeforeLong, setSessionsBeforeLong] = useState(timerSettings.sessionsBeforeLong || 4);
   const [activeChapter, setActiveChapter] = useState('rhythm');
+  const [confirmClear, setConfirmClear] = useState(false);
+  // Sketch mode is Crisp in black and white, so it gets its own monochrome skin
+  const skin = theme === 'sketch' ? 'sketch' : themeFamily(theme);
+  const copy = FAMILY_COPY[skin] || FAMILY_COPY.crisp;
   const scrollRef = useRef(null);
   const railRef = useRef(null);
 
@@ -238,11 +274,11 @@ export default function AtelierSettingsModal({
 
   return (
     <div className="modal-backdrop atl-backdrop" onClick={onClose}>
-      <div className="modal-card settings-modal atl-card" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="atl-title">
+      <div className="modal-card settings-modal atl-card" data-family={skin} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="atl-title">
         <div className="modal-header atl-header">
           <div>
-            <h2 className="modal-title" id="atl-title">Preferences & Settings</h2>
-            <p className="atl-subtitle">Tune the dream.</p>
+            <h2 className="modal-title" id="atl-title">{copy.title}</h2>
+            <p className="atl-subtitle">{copy.subtitle}</p>
           </div>
           <button className="icon-btn close-modal-btn atl-close" onClick={onClose} aria-label="Close">
             <X size={18} />
@@ -272,7 +308,7 @@ export default function AtelierSettingsModal({
                 <Clock size={16} />
                 <span>Timer Configuration</span>
               </div>
-              <p className="atl-lede">How long you dive, how long you surface.</p>
+              <p className="atl-lede">{copy.rhythm}</p>
 
               <div className="atl-steppers">
                 <Stepper label="Work Duration (mins)" value={workMins} onChange={setWorkMins} min={1} max={120} hue="dreamberry" />
@@ -307,7 +343,7 @@ export default function AtelierSettingsModal({
                 <Palette size={16} />
                 <span>Theme Appearance</span>
               </div>
-              <p className="atl-lede">Choose the painting you work inside.</p>
+              <p className="atl-lede">{copy.world}</p>
 
               <div className="atl-worlds">
                 {CORE_THEMES.map((t) => {
@@ -457,7 +493,7 @@ export default function AtelierSettingsModal({
                   <div className="atl-row">
                     <div className="atl-row-text">
                       <span className="atl-row-title">Adaptive Zen Mode Feel</span>
-                      <span className="atl-row-desc">Match the sound's feel to the art on screen (Portal, Record, Clock or Golconda).</span>
+                      <span className="atl-row-desc">Match the sound's feel to the scene on screen.</span>
                     </div>
                     <Switch checked={sfxAdaptive} label="Adaptive Zen Mode Feel" onChange={handleToggleAdaptive} />
                   </div>
@@ -547,12 +583,7 @@ export default function AtelierSettingsModal({
                 <button
                   type="button"
                   className="atl-keep-tile is-danger"
-                  onClick={() => {
-                    if (confirm('Are you sure you want to reset all tasks, notes, and stats? This cannot be undone.')) {
-                      onClearAllData();
-                      onClose();
-                    }
-                  }}
+                  onClick={() => setConfirmClear(true)}
                 >
                   <Trash2 size={18} />
                   <span className="atl-row-title">Clear All Data</span>
@@ -576,7 +607,7 @@ export default function AtelierSettingsModal({
                   <div className="about-badge-role">Creator & Design Engineer</div>
                   <h4 className="about-creator-name">Jakka Sai Srinivasa Manideep</h4>
                   <p className="about-text">
-                    Building a focus room that feels like a painting: surreal, colourful and calm, with sound and motion made by hand.
+                    Building a calm room for deep work, with sound and motion made by hand.
                   </p>
                   <div className="about-meta-row">
                     <span className="about-version">Zencus v2.1.0 • PWA</span>
@@ -618,6 +649,19 @@ export default function AtelierSettingsModal({
           </form>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmClear}
+        title="Clear all data?"
+        message="All tasks, notes and stats on this device will be deleted. This can't be undone."
+        confirmLabel="Clear All Data"
+        onCancel={() => setConfirmClear(false)}
+        onConfirm={() => {
+          setConfirmClear(false);
+          onClearAllData();
+          onClose();
+        }}
+      />
     </div>
   );
 }

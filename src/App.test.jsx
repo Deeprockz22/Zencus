@@ -437,7 +437,7 @@ describe('Thelidhu Comprehensive Screen Test Suite', () => {
         />
       );
 
-      expect(screen.getByText('Preferences & Settings')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Settings' })).toBeInTheDocument();
       expect(screen.getByText('Work Duration (mins)')).toBeInTheDocument();
       expect(screen.getByText('UI Sound Effects (UI SFX)')).toBeInTheDocument();
     });
@@ -455,12 +455,39 @@ describe('Thelidhu Comprehensive Screen Test Suite', () => {
       setTheme: vi.fn(),
     };
 
-    it('shows the original settings page in the Crisp themes, with Surreal on offer', () => {
+    it('dresses the one settings page in each theme family\'s own look and words', () => {
+      const cases = [
+        ['light', 'crisp', 'Everything in its place.'],
+        ['dark', 'crisp', 'Everything in its place.'],
+        ['sketch', 'sketch', 'Everything in its place.'],
+        ['surreal', 'surreal', 'Tune the dream.'],
+        ['lantern-night', 'lantern', 'Tend the garden.'],
+        ['komorebi', 'komorebi', 'Arrange the room.']
+      ];
+      for (const [theme, family, subtitle] of cases) {
+        const { unmount } = render(<SettingsModal {...settingsProps} theme={theme} />);
+        expect(document.querySelector('.atl-card').dataset.family).toBe(family);
+        expect(screen.getByText(subtitle)).toBeInTheDocument();
+        unmount();
+      }
+    });
+
+    it('offers every theme from the Crisp settings page', () => {
       render(<SettingsModal {...settingsProps} theme="light" />);
-      expect(document.querySelector('.atl-card')).toBeNull();
-      expect(screen.getByText('Crisp Light Mode')).toBeInTheDocument();
       fireEvent.click(screen.getByText('Surreal'));
       expect(settingsProps.setTheme).toHaveBeenCalledWith('surreal');
+    });
+
+    it('asks in-app before clearing all data', () => {
+      const onClearAllData = vi.fn();
+      const confirmSpy = vi.spyOn(window, 'confirm');
+      render(<SettingsModal {...settingsProps} theme="light" onClearAllData={onClearAllData} />);
+      fireEvent.click(screen.getByRole('button', { name: /Clear All Data/i }));
+      expect(onClearAllData).not.toHaveBeenCalled();
+      fireEvent.click(document.querySelector('.confirm-dialog-confirm'));
+      expect(onClearAllData).toHaveBeenCalled();
+      expect(confirmSpy).not.toHaveBeenCalled();
+      confirmSpy.mockRestore();
     });
 
     it('shows The Atelier in the Surreal theme', () => {

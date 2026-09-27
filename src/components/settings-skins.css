@@ -1,0 +1,173 @@
+/* =====================================================================
+   SETTINGS SKINS — one settings page, one look per theme family.
+   The Atelier's colours are seven roles (focus, short break, long break
+   and the chapter hues); each family recasts them in its own palette,
+   typeface and amount of glow. Day and night variants follow from the
+   theme's own --bg-* / --text-* tokens. Surreal keeps the defaults.
+   ===================================================================== */
+
+/* ---------- Crisp: Swiss and quiet. One red, hairlines, no glow ---------- */
+.atl-card[data-family='crisp'],
+.atl-card[data-family='sketch'] {
+  --atl-dreamberry: #ff3b30;
+  --atl-ember: #ff3b30;
+  --atl-mint: color-mix(in oklch, var(--text-primary) 40%, var(--bg-secondary));
+  --atl-ultraviolet: var(--text-primary);
+  --atl-lagoon: var(--text-secondary);
+  --atl-orchid: var(--text-secondary);
+  --atl-solar: var(--text-secondary);
+  --atl-hot: linear-gradient(#ff3b30, #ff3b30);
+  --atl-save-glow: rgba(255, 59, 48, 0.35);
+  --atl-on-hue: #ffffff;
+  --atl-serif: 'JetBrains Mono', ui-monospace, monospace;
+  --atl-tile: var(--bg-primary);
+}
+
+/* Sketch mode is black and white: the red becomes ink */
+.atl-card[data-family='sketch'] {
+  --atl-dreamberry: var(--text-primary);
+  --atl-ember: var(--text-primary);
+  --atl-hot: linear-gradient(var(--text-primary), var(--text-primary));
+  --atl-save-glow: transparent;
+  --atl-on-hue: var(--bg-primary);
+}
+.atl-card[data-family='sketch'] .atl-save {
+  color: var(--bg-primary) !important;
+}
+
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-header .modal-title {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: clamp(1.5rem, 2.6vw, 1.85rem) !important;
+  letter-spacing: -0.02em !important;
+}
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-style: normal;
+  font-size: 0.9rem;
+}
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-section-title {
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+}
+/* every chapter's orb is neutral; the one you're on is the accent */
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-rail-orb {
+  --atl-h: var(--text-secondary);
+}
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-rail-item.is-active,
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-rail-item.is-active .atl-rail-orb {
+  --atl-h: var(--atl-dreamberry);
+}
+/* (pseudo-elements can't sit inside :is(), so ::before gets its own selectors) */
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) :is(.atl-rail-item.is-active .atl-rail-orb, .atl-cycle-seg, .atl-world.is-active),
+.atl-card[data-family='crisp'] .atl-stepper::before,
+.atl-card[data-family='sketch'] .atl-stepper::before {
+  box-shadow: none !important;
+}
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-world.is-active {
+  outline: 2px solid var(--atl-dreamberry);
+  outline-offset: 2px;
+}
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-section-title svg {
+  filter: none;
+}
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-rail-item:hover {
+  transform: none;
+}
+
+/* ---------- Lantern Garden: lantern gold, blossom, fireflies, night indigo ---------- */
+.atl-card[data-family='lantern'] {
+  --atl-dreamberry: oklch(0.8 0.15 65); /* lantern gold: focus */
+  --atl-ember: oklch(0.72 0.17 355); /* blossom */
+  --atl-mint: oklch(0.84 0.11 175); /* firefly: short break */
+  --atl-lagoon: oklch(0.8 0.1 200); /* moonlit water */
+  --atl-ultraviolet: oklch(0.66 0.14 292); /* night sky: long break */
+  --atl-orchid: oklch(0.78 0.12 340); /* sakura */
+  --atl-solar: oklch(0.92 0.07 95); /* moon */
+  --atl-hot: var(--ln-cta);
+  --atl-save-glow: var(--ln-cta-glow);
+  --atl-on-hue: oklch(0.22 0.07 285);
+  --atl-serif: var(--font-lantern);
+}
+.atl-card[data-family='lantern'] .atl-header .modal-title {
+  font-family: var(--font-lantern) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+}
+.atl-card[data-family='lantern'] .atl-subtitle {
+  font-style: normal;
+}
+.atl-card[data-family='lantern'] .atl-stepper-input {
+  font-weight: 500 !important;
+}
+
+/* ---------- Komorebi: honey sun, moss, river slate, persimmon; soft light, no neon ---------- */
+.atl-card[data-family='komorebi'] {
+  --atl-dreamberry: var(--km-amber); /* honey sun: focus */
+  --atl-ember: oklch(0.66 0.13 45); /* persimmon */
+  --atl-mint: var(--km-sage); /* moss: short break */
+  --atl-lagoon: oklch(0.66 0.06 205); /* river */
+  --atl-ultraviolet: oklch(0.56 0.04 215); /* river slate: long break */
+  --atl-orchid: oklch(0.62 0.07 150); /* deep moss */
+  --atl-solar: oklch(0.86 0.09 92); /* dappled light */
+  --atl-hot: linear-gradient(in oklch 135deg, oklch(0.78 0.13 72), oklch(0.7 0.14 55));
+  --atl-save-glow: oklch(0.74 0.14 62 / 0.4);
+  --atl-on-hue: oklch(0.22 0.012 155);
+}
+.atl-card[data-family='komorebi'] .atl-header .modal-title {
+  font-family: 'Instrument Serif', serif !important;
+  font-weight: 400 !important;
+  font-size: clamp(2.2rem, 3.8vw, 2.9rem) !important;
+  letter-spacing: -0.01em !important;
+}
+.atl-card[data-family='komorebi'] .atl-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-style: normal;
+  font-size: 0.92rem;
+}
+/* light through leaves is soft: halos stay close, nothing glows like neon */
+.atl-card[data-family='komorebi'] .atl-rail-item.is-active .atl-rail-orb {
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--atl-h) 22%, transparent) !important;
+}
+.atl-card[data-family='komorebi'] .atl-stepper::before,
+.atl-card[data-family='komorebi'] .atl-cycle-seg {
+  box-shadow: none !important;
+}
+.atl-card[data-family='komorebi'] .atl-section-title svg {
+  filter: none;
+}
+
+/* Crisp Light's --bg-secondary is 88% white, which let the app show through the card:
+   lay it over the opaque page colour so the page reads as solid paper */
+.modal-card.atl-card:is([data-family='crisp'], [data-family='sketch']) {
+  background: linear-gradient(var(--bg-secondary), var(--bg-secondary)), var(--bg-primary);
+}
+
+/* The global primary-button red (.btn-action.primary, !important) outranks .atl-save;
+   Surreal and Lantern override it in their theme files, Komorebi does it here */
+.atl-card[data-family='komorebi'] .atl-save.btn-action.primary,
+.atl-card[data-family='komorebi'] .atl-save.btn-action.primary:hover {
+  background: var(--atl-hot) !important;
+  color: var(--atl-on-hue) !important;
+}
+
+/* Crisp keeps mono for numbers only; names are upright Inter, and nothing glows */
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) :is(.atl-world-name, .atl-about .about-creator-name) {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-monogram {
+  box-shadow: none !important;
+}
+:is(.atl-card[data-family='crisp'], .atl-card[data-family='sketch']) .atl-monogram span {
+  font-style: normal !important;
+}
+
+/* Glass cards (Surreal, Lantern): blur what's behind, so the app's own text never
+   sits under the chapter list */
+.atl-card:is([data-family='surreal'], [data-family='lantern']) {
+  -webkit-backdrop-filter: blur(22px) saturate(1.15);
+  backdrop-filter: blur(22px) saturate(1.15);
+}

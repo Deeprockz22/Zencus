@@ -15,6 +15,10 @@
   --atl-hot: linear-gradient(in oklch 120deg, var(--atl-dreamberry), var(--atl-ember) 55%, var(--atl-solar));
   --atl-tile: color-mix(in oklch, var(--bg-secondary) 70%, transparent);
   --atl-tile-edge: color-mix(in oklch, var(--text-primary) 10%, transparent);
+  /* skinnable per theme family (see settings-skins.css) */
+  --atl-serif: 'Instrument Serif', serif;
+  --atl-on-hue: oklch(0.2 0.09 290);
+  --atl-save-glow: oklch(0.66 0.27 355 / 0.7);
 
   max-width: 980px !important;
   width: min(980px, 100%);
@@ -49,7 +53,7 @@
 }
 .atl-subtitle {
   margin-top: 6px;
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--atl-serif);
   font-style: italic;
   font-size: 1.05rem;
   color: var(--text-tertiary);
@@ -117,7 +121,7 @@
 }
 .atl-rail-item.is-active .atl-rail-orb {
   background: var(--atl-h);
-  color: oklch(0.2 0.09 290);
+  color: var(--atl-on-hue);
   /* glow effect: saturated core beside a soft halo of the same hue */
   box-shadow: 0 0 0 4px color-mix(in oklch, var(--atl-h) 25%, transparent), 0 0 18px var(--atl-h);
 }
@@ -216,7 +220,7 @@
   background: transparent !important;
   box-shadow: none !important;
   text-align: center;
-  font-family: 'Instrument Serif', serif !important;
+  font-family: var(--atl-serif) !important;
   font-size: 2.6rem !important;
   line-height: 1 !important;
   color: var(--text-primary) !important;
@@ -238,7 +242,7 @@
   cursor: pointer;
   transition: background 0.2s, color 0.2s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.atl-step-btn:hover { background: var(--atl-h); color: oklch(0.2 0.09 290); border-color: transparent; transform: scale(1.1); }
+.atl-step-btn:hover { background: var(--atl-h); color: var(--atl-on-hue); border-color: transparent; transform: scale(1.1); }
 .atl-step-btn:active { transform: scale(0.92); }
 .atl-stepper-unit {
   font-size: 0.68rem;
@@ -289,7 +293,7 @@
 .atl-cycle-legend i.is-long { background: var(--atl-ultraviolet); }
 .atl-cycle-total {
   margin-left: auto;
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--atl-serif);
   font-style: italic;
   font-size: 0.98rem;
   color: var(--text-primary);
@@ -390,7 +394,7 @@
 @keyframes atl-sun-rise { to { transform: translate(-50%, 36%); } }
 .atl-world-name {
   padding: 0 8px;
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--atl-serif);
   font-style: italic;
   font-size: 1.35rem;
   color: var(--text-primary);
@@ -482,7 +486,7 @@
 .atl-pill.is-on {
   border-color: transparent;
   background: linear-gradient(in oklch 90deg, var(--atl-lagoon), var(--atl-mint));
-  color: oklch(0.2 0.09 290);
+  color: var(--atl-on-hue);
 }
 
 /* ---------- sound: records ---------- */
@@ -569,7 +573,7 @@
 .atl-volume-value {
   width: 3.2em;
   text-align: right;
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--atl-serif);
   font-size: 1.2rem;
   color: var(--text-primary);
 }
@@ -647,7 +651,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: oklch(0.2 0.09 290);
+  color: var(--atl-on-hue);
   background: var(--atl-mint);
 }
 
@@ -706,7 +710,7 @@
   color: var(--atl-ember);
 }
 .atl-about .about-creator-name {
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--atl-serif);
   font-style: italic;
   font-weight: 400;
   font-size: 1.5rem;
@@ -762,7 +766,7 @@
   color: #fff !important;
   border: none !important;
   font-weight: 700 !important;
-  box-shadow: 0 10px 26px -8px oklch(0.66 0.27 355 / 0.7) !important;
+  box-shadow: 0 10px 26px -8px var(--atl-save-glow) !important;
 }
 
 /* ---------- surreal themes: the card is sky-glass ---------- */
@@ -828,7 +832,7 @@ html.surreal .atl-footer { background: linear-gradient(180deg, transparent, colo
   animation: atl-bob 6s ease-in-out infinite;
 }
 .atl-monogram span {
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--atl-serif);
   font-style: italic;
   font-size: 2.6rem;
   color: #fff;
