@@ -3,8 +3,8 @@
   position: fixed;
   inset: 0;
   background: rgba(12, 17, 14, 0.58);
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;

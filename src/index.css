@@ -838,8 +838,8 @@ body {
   justify-content: space-between;
   padding: 14px 28px;
   background: var(--bg-glass);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
   z-index: 50;
 }
@@ -964,8 +964,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -1931,8 +1931,8 @@ body {
   gap: 6px;
   padding: 6px 8px;
   background: color-mix(in srgb, var(--bg-secondary) 82%, transparent);
-  backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--border-subtle);
   border-radius: 24px;
   box-shadow: 
@@ -2014,8 +2014,8 @@ body {
   padding: 5px;
   border-radius: var(--radius-full);
   border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   transition: all 0.2s ease;
 }
 
@@ -5754,8 +5754,8 @@ body {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6111,8 +6111,8 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-full);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   font-family: var(--font-mono);
   font-size: 0.76rem;
   color: var(--text-secondary);
@@ -6159,8 +6159,8 @@ body {
   font-style: italic;
   color: var(--text-secondary);
   text-align: center;
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
   line-height: 1.4;
   user-select: none;
@@ -6571,8 +6571,8 @@ body {
   bottom: 84px;
   right: 24px;
   background: var(--bg-glass);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   border: 1px solid var(--border-active);
   box-shadow: var(--shadow-md);
   border-radius: var(--radius-full);
@@ -6962,8 +6962,8 @@ body {
 
 .dynamic-island-island {
   background: var(--bg-glass);
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-md), var(--shadow-glow);
@@ -7256,8 +7256,8 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: 10px;
   padding: 6px 10px;
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
   width: fit-content;
   min-width: 80px;
@@ -7578,8 +7578,8 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);
   padding: 3px;
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   gap: 2px;
 }
@@ -7669,8 +7669,8 @@ body {
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   cursor: pointer;
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   transition: all 0.2s ease;
 }
 
@@ -10713,8 +10713,8 @@ html[data-sketch-anim] {
 .app-layout:has(.shader-atmosphere-root) .task-panel,
 .app-layout:has(.shader-atmosphere-root) .notes-hub-container,
 .app-layout:has(.shader-atmosphere-root) .quest-card {
-  backdrop-filter: blur(18px) saturate(150%);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
 }
 
 /* ══════════ ACETERNITY UI 3D CARD & BORDER BEAM ANIMATION ══════════ */
@@ -10830,8 +10830,8 @@ html[data-sketch-anim] {
   border-bottom: 1px solid var(--border-color);
   box-shadow: none;
   background: color-mix(in srgb, var(--bg-primary) 76%, transparent);
-  backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
 }
 
 .header-left,
@@ -10894,8 +10894,8 @@ html[data-sketch-anim] {
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.72);
   background: rgba(10, 10, 12, 0.46);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
 .visualizer-scene-control label {
@@ -11032,8 +11032,8 @@ html[data-sketch-anim] {
   border-radius: 18px;
   box-shadow: var(--shadow-md);
   background: var(--bg-glass);
-  backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
 }
 
 [data-theme='light'] .dock-item,

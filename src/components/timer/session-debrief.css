@@ -24,8 +24,8 @@
   border-radius: var(--radius-lg, 16px);
   background: var(--bg-secondary);
   /* Crisp's surfaces are slightly translucent; blur what's behind, like the header does */
-  backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
@@ -146,8 +146,8 @@ html.surreal .debrief-card {
   background: var(--sr-surface-strong);
   border-color: var(--sr-surface-edge);
   border-radius: var(--sr-organic-sm, 24px);
-  backdrop-filter: blur(22px) saturate(1.3);
   -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  backdrop-filter: blur(22px) saturate(1.3);
 }
 html.surreal .debrief-title { font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: 1.5rem; }
 /* art themes paint --bg-primary as sky (hot pink / lavender), so their fields are glass instead */
@@ -161,8 +161,8 @@ html.lantern .debrief-card {
   background: var(--ln-surface-strong);
   border-color: var(--ln-edge);
   border-radius: 24px;
-  backdrop-filter: blur(18px) saturate(1.3);
   -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
 }
 html.lantern .debrief-title { font-family: var(--font-lantern); }
 html.lantern .debrief-chip.is-on { background: var(--ln-cta); color: #2a1640; }

@@ -2156,3 +2156,33 @@ mark assembling itself. Say it once, and get out of the way.
 
 **Score: 9/10.** Keep it under the load time as the app gets faster, and never lengthen it for
 effect.
+
+---
+
+## Round 46 — A settings page for each theme (27 Sep 2026) — Claude + Steve
+
+**What:** every theme now opens the same settings page (the Atelier), dressed in its own look.
+Crisp used the old form page, and Lantern and Komorebi borrowed Surreal's colours and copy ("Tune
+the dream" in a washi room, with hot-pink accents).
+- **Crisp** (and **Sketch**, in black and white): Swiss and quiet. Solid paper, one red, grey
+  chapter marks, monospace numbers, no glow. "Everything in its place."
+- **Surreal:** unchanged. It was designed for this page.
+- **Lantern Garden:** lantern gold for focus, fireflies for short breaks, night sky for long ones, in
+  the garden's rounded Zen Maru type. "Tend the garden."
+- **Komorebi:** honey sun, moss and river slate, with a quiet serif title and halos that stay close.
+  "Arrange the room."
+- "Clear All Data" now asks in-app instead of with the browser's grey popup.
+
+**Found on the way:** the production build had been silently dropping the unprefixed
+`backdrop-filter` from 34 glass rules. The minifier keeps the *last* of a prefixed/unprefixed pair,
+and ours listed the prefixed one last. Chrome ignores `-webkit-backdrop-filter`, so no frosted glass
+anywhere in the built app: dock, panels, dialogs. It only looked right in dev. Every pair now lists
+the prefixed one first, and all 49 blur rules reach the build.
+
+### Steve
+This is what "one product" means: the same page, fluent in four languages. Komorebi finally
+feels like a room and not a rave. Crisp stopped shouting. And the glass bug is exactly the kind of
+craft nobody sees until it's gone. Every frosted surface in the app just started working.
+
+**Score: 9/10.** Next: make sure new rules always put the prefix first. A one-line lint rule
+would do it.
