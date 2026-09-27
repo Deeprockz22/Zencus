@@ -200,7 +200,7 @@ html.lantern body { background: var(--bg-primary); }
 .lw-pool {
   position: absolute;
   border-radius: 50%;
-  filter: blur(70px);
+  /* soft already (radial gradient); a blur(70px) here re-blurred every frame */
   opacity: 0.5;
   mix-blend-mode: screen;
   animation: lw-pool 22s ease-in-out infinite alternate;
@@ -446,6 +446,7 @@ html.lantern .atl-footer { background: linear-gradient(180deg, transparent, colo
   z-index: 1990;
   pointer-events: none;
   opacity: 0;
+  visibility: hidden; /* shown by AsciiButterfly only while it's near */
   -webkit-backdrop-filter: blur(10px) saturate(1.05) brightness(0.9);
   backdrop-filter: blur(10px) saturate(1.05) brightness(0.9);
   background: radial-gradient(circle at 50% 46%, transparent 18%, rgba(12, 6, 34, 0.32) 88%);

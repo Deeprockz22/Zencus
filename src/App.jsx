@@ -36,13 +36,19 @@ import { createCustomFolder } from './utils/noteFolders';
 import { encryptLegacyNote } from './utils/noteCrypto';
 import { hideSplash } from './utils/splash';
 import useSoftLanding from './hooks/useSoftLanding';
+import useFxMode from './hooks/useFxMode';
 
 export default function App() {
+  // Visual effects: Full, or Light for power-saving mode and slow devices (Auto picks)
+  const fx = useFxMode();
+
   // Ultra-Smooth Inertial Scroll (Lenis by darkroomengineering)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let lenis;
     let rafId;
+    let wake;
+    const WAKE_EVENTS = ['wheel', 'touchstart', 'touchmove', 'keydown', 'scroll', 'pointerdown'];
 
     try {
       lenis = new Lenis({
@@ -60,16 +66,43 @@ export default function App() {
           !!node.closest?.('.modal-backdrop, [role="dialog"], .fullscreen-zen-overlay, .green-dot-matrix-wall, [data-lenis-prevent]')
       });
 
+      // Lenis only needs frames while something is scrolling. An always-on loop
+      // woke the page 60 times a second forever, which costs battery (and frames
+      // in power-saving mode). It sleeps after ~half a second of stillness and
+      // wakes on anything that can scroll. Lenis measures time between frames,
+      // so the idle gap is taken out of its clock (else it would jump to the end).
+      let running = false;
+      let still = 0;
+      let last = 0;
+      let gap = 0;
       const raf = (time) => {
-        lenis.raf(time);
+        lenis.raf(time - gap);
+        last = time;
+        still = lenis.isScrolling ? 0 : still + 1;
+        if (still > 30) {
+          running = false;
+          rafId = 0;
+          return;
+        }
         rafId = requestAnimationFrame(raf);
       };
-      rafId = requestAnimationFrame(raf);
+      wake = () => {
+        if (running) return;
+        running = true;
+        still = 0;
+        rafId = requestAnimationFrame((time) => {
+          if (last) gap += Math.max(0, time - last - 1000 / 60);
+          raf(time);
+        });
+      };
+      WAKE_EVENTS.forEach((type) => window.addEventListener(type, wake, { passive: true }));
+      wake();
     } catch (err) {
       console.warn('Lenis smooth scrolling note:', err);
     }
 
     return () => {
+      if (wake) WAKE_EVENTS.forEach((type) => window.removeEventListener(type, wake));
       if (rafId) cancelAnimationFrame(rafId);
       if (lenis) {
         try {
@@ -817,7 +850,7 @@ export default function App() {
       {isSurrealTheme(theme) && <SurrealWorld theme={theme} />}
       {/* The anime night garden, and the ASCII butterfly that visits it */}
       {isLanternTheme(theme) && <LanternWorld theme={theme} />}
-      {isLanternTheme(theme) && <AsciiButterfly />}
+      {isLanternTheme(theme) && !fx.lite && <AsciiButterfly />}
       {/* The sunlit engawa: light follows the session, the calico follows the light */}
       {isKomorebiTheme(theme) && (
         <KomorebiWorld theme={theme} progress={totalDuration ? 1 - timeLeft / totalDuration : 0} mode={mode}
@@ -1039,6 +1072,9 @@ export default function App() {
         }}
         theme={theme}
         setTheme={setTheme}
+        fxMode={fx.mode}
+        setFxMode={fx.setMode}
+        fxAutoLite={fx.autoLite}
       />
 
       {/* Focus Pet Wardrobe Modal */}

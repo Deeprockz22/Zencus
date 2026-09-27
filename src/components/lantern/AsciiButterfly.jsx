@@ -242,7 +242,13 @@ export default function AsciiButterfly() {
 
     // the blur is tied to the butterfly: 0 = sharp, 1 = fully out of focus
     const setFocus = (amount) => {
-      if (focus) focus.style.opacity = String(Math.max(0, Math.min(1, amount)));
+      if (focus) {
+        const o = Math.max(0, Math.min(1, amount));
+        focus.style.opacity = String(o);
+        // a full-screen backdrop blur still costs a GPU pass at opacity 0, so it's
+        // only visible while the butterfly is actually near
+        focus.style.visibility = o > 0.001 ? 'visible' : 'hidden';
+      }
     };
 
     const begin = () => {

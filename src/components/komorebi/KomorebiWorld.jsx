@@ -37,34 +37,32 @@ const rng = (seed) => () => {
 };
 
 /** Clumps of maple leaves whose blurred shadows fall across the room. */
-function Canopy({ seed, count, spread }) {
-  const leaves = useMemo(() => {
+function Canopy({ seed, count, spread, blur }) {
+  // The leaves are drawn (and blurred) inside an SVG *image* used as a mask: the
+  // browser rasterises an image once and caches it, so the sway only moves a
+  // finished picture. As live SVG or with a CSS blur, the three full-screen
+  // layers were re-blurred on every frame and Komorebi ran at a few fps.
+  const mask = useMemo(() => {
     const r = rng(seed);
     const clumps = Array.from({ length: 7 }, () => ({ x: r() * 1600, y: r() * 900 * spread }));
-    return Array.from({ length: count }, () => {
+    const leaves = Array.from({ length: count }, () => {
       const c = clumps[Math.floor(r() * clumps.length)];
-      return {
-        x: c.x + (r() - 0.5) * 260,
-        y: c.y + (r() - 0.5) * 180,
-        s: 10 + r() * 22,
-        a: r() * 360,
-      };
-    });
-  }, [seed, count, spread]);
-  return (
-    <svg className="kw-canopy-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
-      {leaves.map((l, i) => (
-        // a five-lobed maple leaf, drawn as overlapping ellipses
-        <g key={i} transform={`translate(${l.x.toFixed(1)} ${l.y.toFixed(1)}) rotate(${l.a.toFixed(0)}) scale(${(l.s / 20).toFixed(2)})`}>
-          <ellipse rx="6" ry="16" />
-          <ellipse rx="5" ry="13" transform="rotate(58)" />
-          <ellipse rx="5" ry="13" transform="rotate(-58)" />
-          <ellipse rx="4" ry="9" transform="rotate(118)" />
-          <ellipse rx="4" ry="9" transform="rotate(-118)" />
-        </g>
-      ))}
-    </svg>
-  );
+      const x = c.x + (r() - 0.5) * 260;
+      const y = c.y + (r() - 0.5) * 180;
+      const sc = (10 + r() * 22) / 20;
+      const a = r() * 360;
+      // a five-lobed maple leaf, drawn as overlapping ellipses
+      return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${a.toFixed(0)}) scale(${sc.toFixed(2)})">`
+        + '<ellipse rx="6" ry="16"/><ellipse rx="5" ry="13" transform="rotate(58)"/>'
+        + '<ellipse rx="5" ry="13" transform="rotate(-58)"/><ellipse rx="4" ry="9" transform="rotate(118)"/>'
+        + '<ellipse rx="4" ry="9" transform="rotate(-118)"/></g>';
+    }).join('');
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">'
+      + `<filter id="b" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="${blur}"/></filter>`
+      + `<g filter="url(#b)" fill="#000">${leaves}</g></svg>`;
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+  }, [seed, count, spread, blur]);
+  return <div className="kw-canopy-leaves" style={{ WebkitMaskImage: mask, maskImage: mask }} />;
 }
 
 function Room() {
@@ -280,9 +278,9 @@ export default function KomorebiWorld({
       </div>
       <div className="kw-shaft" />
       {/* leaf shadows: far (soft), mid, near (sharper), each swaying on its own */}
-      <div className="kw-canopy kw-canopy-far"><Canopy seed={11} count={70} spread={0.9} /></div>
-      <div className="kw-canopy kw-canopy-mid"><Canopy seed={29} count={55} spread={0.7} /></div>
-      <div className="kw-canopy kw-canopy-near"><Canopy seed={47} count={30} spread={0.45} /></div>
+      <div className="kw-canopy kw-canopy-far"><Canopy seed={11} count={70} spread={0.9} blur={14} /></div>
+      <div className="kw-canopy kw-canopy-mid"><Canopy seed={29} count={55} spread={0.7} blur={8} /></div>
+      <div className="kw-canopy kw-canopy-near"><Canopy seed={47} count={30} spread={0.45} blur={4} /></div>
       <Basin drops={drops} stones={gardenProgress?.stones || 0} sparrow={sparrow} />
       <div className="kw-cat-track">
         <div className="kw-cat">

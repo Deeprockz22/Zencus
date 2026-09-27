@@ -67,6 +67,13 @@ const CHAPTERS = [
   { id: 'about', label: 'About', hue: 'ember', Icon: Info },
 ];
 
+// Visual effects: Light keeps each world still and flat for power-saving mode (see utils/fxMode.js)
+const FX_OPTIONS = [
+  { id: 'auto', name: 'Auto', desc: 'Full, until the device slows down' },
+  { id: 'full', name: 'Full', desc: 'Every world moves and glows' },
+  { id: 'lite', name: 'Light', desc: 'Still and smooth, even on battery saver' },
+];
+
 function Switch({ checked, onChange, label }) {
   return (
     <button
@@ -123,7 +130,10 @@ export default function AtelierSettingsModal({
   companionType = 'dino',
   onSelectCompanion,
   theme,
-  setTheme
+  setTheme,
+  fxMode = 'auto',
+  setFxMode,
+  fxAutoLite = false
 }) {
   const [focusSoundtrack, setFocusSoundtrack] = useState(() => Storage.get('focus_soundtrack', 'vinyl-lofi'));
   const [autoPlayAudio, setAutoPlayAudio] = useState(() => Storage.get('focus_autoplay_audio', false));
@@ -400,6 +410,33 @@ export default function AtelierSettingsModal({
                     </button>
                   );
                 })}
+              </div>
+
+              <div className="atl-packs-head atl-fx-head">
+                <span className="atl-row-title">Visual Effects</span>
+                <span className="atl-row-desc">
+                  {fxMode === 'auto'
+                    ? `Auto is using ${fxAutoLite ? 'Light: this device is saving power or running slow' : 'Full right now'}.`
+                    : 'For power-saving mode, choose Light or Auto.'}
+                </span>
+              </div>
+              <div className="atl-packs atl-fx" role="radiogroup" aria-label="Visual effects">
+                {FX_OPTIONS.map((o) => (
+                  <button
+                    key={o.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={fxMode === o.id}
+                    onClick={() => {
+                      setFxMode?.(o.id);
+                      sfx.play('select');
+                    }}
+                    className={`atl-pack ${fxMode === o.id ? 'is-active' : ''}`}
+                  >
+                    <span className="atl-pack-name">{o.name}</span>
+                    <span className="atl-pack-desc">{o.desc}</span>
+                  </button>
+                ))}
               </div>
             </section>
 

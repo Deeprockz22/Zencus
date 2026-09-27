@@ -18,7 +18,7 @@ export default function ClickSpark({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let animationId;
+    let animationId = 0;
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -41,6 +41,9 @@ export default function ClickSpark({
         };
       });
       sparksRef.current.push(...newSparks);
+      // draw only while there are sparks: an always-on loop redrew this
+      // full-screen canvas 60 times a second forever, even with nothing in it
+      if (!animationId) animationId = requestAnimationFrame(animate);
     };
 
     window.addEventListener('resize', handleResize);
@@ -68,10 +71,8 @@ export default function ClickSpark({
         return true;
       });
 
-      animationId = requestAnimationFrame(animate);
+      animationId = sparksRef.current.length ? requestAnimationFrame(animate) : 0;
     };
-
-    animationId = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('resize', handleResize);

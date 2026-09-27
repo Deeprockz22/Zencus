@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import FlipText from '../ui/FlipText';
 import { MODE_PALETTES } from '../surreal/spectrum';
+import { useFxLite } from '../../utils/fxMode';
 
 /*
  * DreamPortal — the timer as a piece of generative digital art.
@@ -32,6 +33,12 @@ export default function DreamPortal({
   const canvasRef = useRef(null);
   const stateRef = useRef({ isRunning, mode });
   stateRef.current = { isRunning, mode };
+  // Light mode and reduced motion paint one still frame instead of a 60 fps loop
+  // (and repaint it when the mode's colours change)
+  const lite = useFxLite();
+  const [reduced] = useState(() => !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+  const still = lite || reduced;
+  const stillMode = still ? mode : '';
 
   const palette = PALETTES[mode] || PALETTES.work;
   const progress = totalDuration > 0 ? Math.min(1, Math.max(0, (totalDuration - timeLeft) / totalDuration)) : 0;
@@ -46,7 +53,6 @@ export default function DreamPortal({
     // jsdom / mocked or partial canvas contexts: skip the art, keep the timer
     if (!ctx || typeof ctx.clip !== 'function' || typeof ctx.createRadialGradient !== 'function') return undefined;
 
-    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const size = 440;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = size * dpr;
@@ -121,12 +127,12 @@ export default function DreamPortal({
       ctx.fillRect(0, 0, size, size);
       ctx.restore();
 
-      if (!reduced) frame = requestAnimationFrame(draw);
+      if (!still) frame = requestAnimationFrame(draw);
     };
 
     frame = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [still, stillMode]);
 
   const toggle = () => (isRunning ? pauseTimer?.() : startTimer?.());
   const onKey = (e) => {

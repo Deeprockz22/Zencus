@@ -466,6 +466,29 @@ describe('Thelidhu Comprehensive Screen Test Suite', () => {
 
   // ═══════════════ 8. SCREEN: SETTINGS & AUDIO MODAL ═══════════════
   describe('Screen: Settings & Customization Modal', () => {
+    it('offers Auto, Full and Light visual effects and reports what Auto chose', async () => {
+      const user = userEvent.setup();
+      const setFxMode = vi.fn();
+      const props = {
+        isOpen: true, onClose: vi.fn(), saveTimerSettings: vi.fn(), onClearAllData: vi.fn(),
+        onExportAllData: vi.fn(), onImportAllData: vi.fn(), onSelectCompanion: vi.fn(), setTheme: vi.fn(),
+        timerSettings: { workDuration: 25, breakDuration: 5, longBreakDuration: 15, sessionsBeforeLong: 4 },
+        theme: 'surreal', setFxMode,
+      };
+      const { rerender } = render(<SettingsModal {...props} fxMode="auto" fxAutoLite />);
+      const group = screen.getByRole('radiogroup', { name: 'Visual effects' });
+      expect(group).toBeInTheDocument();
+      expect(screen.getByRole('radio', { name: /^Auto/ })).toHaveAttribute('aria-checked', 'true');
+      expect(screen.getByText(/Auto is using Light/)).toBeInTheDocument();
+
+      await user.click(screen.getByRole('radio', { name: /^Light/ }));
+      expect(setFxMode).toHaveBeenCalledWith('lite');
+
+      rerender(<SettingsModal {...props} fxMode="full" />);
+      expect(screen.getByRole('radio', { name: /^Full/ })).toHaveAttribute('aria-checked', 'true');
+      expect(screen.getByText(/For power-saving mode, choose Light or Auto/)).toBeInTheDocument();
+    });
+
     it('renders Session Duration inputs, Theme options, and Sound settings', () => {
       render(
         <SettingsModal
