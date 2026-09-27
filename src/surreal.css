@@ -460,8 +460,8 @@ html.surreal .app-header {
   background: transparent !important;
   border-bottom: none !important;
   box-shadow: none !important;
-  backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
 html.surreal .brand-wordmark {
   font-family: var(--font-serif) !important;
@@ -476,8 +476,8 @@ html.surreal .header-right {
   border-radius: 999px;
   background: var(--sr-surface);
   border: 1px solid var(--sr-surface-edge);
-  backdrop-filter: var(--sr-surface-blur);
   -webkit-backdrop-filter: var(--sr-surface-blur);
+  backdrop-filter: var(--sr-surface-blur);
   box-shadow: var(--shadow-sm);
 }
 html.surreal .app-header .icon-btn {
@@ -550,8 +550,8 @@ html.surreal .modal-card {
   background: var(--sr-surface) !important;
   border: 1px solid var(--sr-surface-edge) !important;
   border-radius: var(--sr-organic) !important;
-  backdrop-filter: var(--sr-surface-blur);
   -webkit-backdrop-filter: var(--sr-surface-blur);
+  backdrop-filter: var(--sr-surface-blur);
   box-shadow: var(--shadow-lg) !important;
 }
 
@@ -778,8 +778,8 @@ html.surreal .companion-speech-bubble {
 /* ---------- modals ---------- */
 html.surreal .modal-backdrop {
   background: color-mix(in srgb, var(--sw-sky-top) 28%, transparent) !important;
-  backdrop-filter: blur(8px) saturate(1.2);
   -webkit-backdrop-filter: blur(8px) saturate(1.2);
+  backdrop-filter: blur(8px) saturate(1.2);
 }
 html.surreal .modal-card {
   background: var(--sr-surface-strong) !important;
@@ -847,8 +847,8 @@ html.surreal .green-dot-matrix-wall .wall-left-panel {
   background: rgba(252, 250, 244, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.85);
   border-radius: var(--sr-organic);
-  backdrop-filter: blur(22px) saturate(1.25);
   -webkit-backdrop-filter: blur(22px) saturate(1.25);
+  backdrop-filter: blur(22px) saturate(1.25);
   box-shadow: 0 10px 30px rgba(40, 52, 80, 0.14), 0 60px 60px -44px rgba(40, 52, 80, 0.5);
 }
 html.surreal .green-dot-matrix-wall .giant-clock-svg-wrap .glyph-ndot-svg,
