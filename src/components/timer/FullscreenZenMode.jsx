@@ -8,7 +8,7 @@ import MinimalVisualizer from './MinimalVisualizer';
 import DreamPortal from './DreamPortal';
 import PrismRecord from './PrismRecord';
 import MeltingClock from './MeltingClock';
-import { isSurrealTheme, isLanternTheme, resolveScene } from '../../themeFamilies';
+import { themeFamily, resolveScene } from '../../themeFamilies';
 import PaperLantern from './PaperLantern';
 import {
   fetchDailyZenAdvice,
@@ -130,6 +130,9 @@ export default function FullscreenZenMode({
   if (!isOpen) return null;
 
   const isSketch = theme === 'sketch';
+  // the vinyl is Crisp's alone; every other world gets its own scene
+  const family = themeFamily(theme);
+  const scene = resolveScene(theme, visualizerType);
 
   const mins = Math.floor(timeLeft / 60);
   const secs = timeLeft % 60;
@@ -230,17 +233,17 @@ export default function FullscreenZenMode({
 
       {/* ══════════ 2. CENTER: ENLARGED VISUALIZER STAGE ══════════ */}
       <div className="zen-center-visualizer flex-1 flex items-center justify-center w-full relative overflow-hidden my-2">
-        {isSketch ? (
+        {isSketch || family === 'komorebi' || (scene === 'minimal' && family !== 'surreal') ? (
           <MinimalVisualizer {...vizProps} />
-        ) : isLanternTheme(theme) && resolveScene(theme, visualizerType) === 'lantern' ? (
+        ) : family === 'lantern' ? (
           <div className="zen-art-stage zen-lantern-stage">
             <PaperLantern {...vizProps} />
           </div>
-        ) : isSurrealTheme(theme) ? (
+        ) : family === 'surreal' ? (
           <div className="zen-art-stage">
-            {visualizerType === 'turntable' ? (
+            {scene === 'turntable' ? (
               <PrismRecord {...vizProps} />
-            ) : visualizerType === 'minimal' ? (
+            ) : scene === 'minimal' ? (
               <MeltingClock {...vizProps} />
             ) : (
               <DreamPortal {...vizProps} />

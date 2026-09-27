@@ -543,3 +543,5 @@ html.lantern .glyph-layout-desktop:has(.paper-lantern) .glyph-timer-left-console
   /* the stacked new-task bar is tall on phones: a soft card, not a pill */
   html.lantern .task-input-bar { border-radius: 24px !important; padding: 10px !important; }
 }
+/* fullscreen already says how to start and pause below, so the lantern's own hint steps aside */
+html.lantern .zen-lantern-stage .pl-hint { display: none; }

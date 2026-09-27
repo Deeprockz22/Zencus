@@ -153,6 +153,17 @@ describe('Thelidhu Comprehensive Screen Test Suite', () => {
       expect(screen.queryByRole('button', { name: /Dream Portal/i })).toBeNull();
     });
 
+    it('does not carry the Matrix Wall or the vinyl into Komorebi or Lantern', () => {
+      const { unmount } = render(<PomodoroTimer {...timerProps} theme="komorebi" visualizerType="wall" />);
+      expect(document.querySelector('.wall-vignette')).toBeNull();
+      expect(document.querySelector('.minimal-canvas-stage')).toBeInTheDocument();
+      unmount();
+      render(<PomodoroTimer {...timerProps} theme="lantern" visualizerType="turntable" />);
+      expect(screen.queryByRole('button', { name: /Vinyl Studio/i })).toBeNull();
+      expect(document.querySelector('.glyph-spinning-platter')).toBeNull();
+      expect(document.querySelector('.paper-lantern-stage')).toBeInTheDocument();
+    });
+
     it('triggers setVisualizerType when clicking a scene pill', async () => {
       const user = userEvent.setup();
       const setVisualizerType = vi.fn();
@@ -415,6 +426,41 @@ describe('Thelidhu Comprehensive Screen Test Suite', () => {
       );
       expect(document.querySelector('.prism-disc')).toBeInTheDocument();
       expect(document.querySelector('.glyph-spinning-platter')).toBeNull();
+    });
+
+    it('keeps the vinyl to Crisp: Komorebi and Lantern show their own scenes full screen', () => {
+      const zen = (theme, visualizerType) => render(
+        <FullscreenZenMode
+          isOpen={true}
+          onClose={vi.fn()}
+          timeLeft={25 * 60}
+          totalDuration={25 * 60}
+          isRunning={false}
+          startTimer={vi.fn()}
+          pauseTimer={vi.fn()}
+          resetTimer={vi.fn()}
+          mode="work"
+          theme={theme}
+          visualizerType={visualizerType}
+        />
+      );
+      for (const theme of ['komorebi', 'komorebi-night']) {
+        const { unmount } = zen(theme, 'turntable');
+        expect(document.querySelector('.minimal-canvas-stage')).toBeInTheDocument();
+        expect(document.querySelector('.glyph-spinning-platter')).toBeNull();
+        unmount();
+      }
+      for (const scene of ['turntable', 'wall', 'lantern']) {
+        const { unmount } = zen('lantern-night', scene);
+        expect(document.querySelector('.zen-lantern-stage')).toBeInTheDocument();
+        expect(document.querySelector('.glyph-spinning-platter')).toBeNull();
+        unmount();
+      }
+      const { unmount } = zen('lantern', 'minimal');
+      expect(document.querySelector('.minimal-canvas-stage')).toBeInTheDocument();
+      unmount();
+      zen('light', 'turntable');
+      expect(document.querySelector('.glyph-spinning-platter')).toBeInTheDocument();
     });
   });
 

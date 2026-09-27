@@ -2186,3 +2186,33 @@ craft nobody sees until it's gone. Every frosted surface in the app just started
 
 **Score: 9/10.** Next: make sure new rules always put the prefix first. A one-line lint rule
 would do it.
+
+---
+
+## Round 47 — The vinyl stays in Crisp (27 Sep 2026) — Claude + Steve
+
+**What:** the vinyl record is Crisp's alone (light and dark).
+- **Komorebi full screen** shows the Minimal Dial instead of the record. It sits on the room's own
+  washi (day) or river slate (night), not Crisp's grey and navy.
+- **Lantern** loses "Vinyl Studio" from its scenes. Full screen shows the Paper Lantern (or the
+  Minimal Dial, if that's the scene you picked). It used to show the vinyl for everything but the lantern.
+- **Crisp** keeps the vinyl. Full screen now follows your scene choice for the Minimal Dial too,
+  instead of always showing the record.
+- **Komorebi's timer is honey, not red**, on the page and full screen: Start, the active preset, the
+  dots and the dial. Its own CSS already asked for this, but that rule had stopped reaching the
+  buttons. Button text is sumi ink, since white on honey is too faint to read. On washi, text uses a
+  deeper honey.
+
+**Found on the way:**
+- A Matrix Wall picked in Crisp stayed on after switching to Komorebi, whose only scene is the dial.
+  The wall check now respects each theme's scenes.
+- In Lantern full screen, "tap to light the lantern" printed on top of "Space to pause · Esc to exit".
+- On phones, the full-screen top bar wrapped to two lines and pushed the exit button past the edge.
+  It now keeps to one line: the "Fullscreen" label and the weather city step aside under 480px.
+
+### Steve
+Good. A record player in a tatami room was a costume. Now each world has one object that belongs
+to it: the record, the portal, the lantern, the dial. And red was never Komorebi's colour. The
+honey finally reaches the button you press most.
+
+**Score: 9/10.** Next: Komorebi's Tasks and Notes still use Crisp's red. Give them the same honey.

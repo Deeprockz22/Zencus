@@ -9681,6 +9681,17 @@ select option,
   margin: 0;
 }
 
+/* Phones: the top bar keeps to one line, so the exit button never falls off the edge */
+@media (max-width: 480px) {
+  .fullscreen-zen-overlay .zen-brand-text > span:nth-child(2),
+  .fullscreen-zen-overlay .zen-weather-city {
+    display: none;
+  }
+  .fullscreen-zen-overlay .zen-brand-text > span {
+    white-space: nowrap;
+  }
+}
+
 /* Weather pill & close button */
 .fullscreen-zen-overlay .zen-weather-pill {
   color: var(--text-primary) !important;

@@ -55,7 +55,7 @@ export const pickFamily = (family, currentTheme) => {
  * Timer scenes per family. Each family shows its own set in the switcher;
  * a scene another family owns falls back to that family's signature scene
  * (e.g. the Dream Portal in Crisp → the vinyl; anything foreign in Lantern →
- * the Paper Lantern).
+ * the Paper Lantern). The vinyl belongs to Crisp alone.
  */
 const SCENES = {
   crisp: [
@@ -72,7 +72,6 @@ const SCENES = {
   lantern: [
     { value: 'lantern', label: 'Paper Lantern' },
     { value: 'wall', label: 'Matrix Wall' },
-    { value: 'turntable', label: 'Vinyl Studio' },
     { value: 'minimal', label: 'Minimal Dial' },
   ],
   // Komorebi keeps one quiet scene: the room is the visual
