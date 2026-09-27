@@ -2070,3 +2070,19 @@ know. The folder error is one quiet red line, not a dialog. The confirm only gua
 action that can't be undone.
 
 **Score: 9/10.**
+
+**Round 42 addendum — why it wasn't a 10, and what changed (27 Sep 2026):** the 9 above was
+given without saying what was missing. Written down, the gaps were: the browser's grey
+`confirm()` popup in the middle of a designed app; a one-entry PIN that a typo could turn into
+a permanent lockout; a "lock" that stored the note and its PIN in plain text; no Empty Trash;
+and folders hidden on phones. All are fixed (`NOTES_TEST_CASES.md`, round 2).
+
+### Steve
+Now the lock is a lock. The confirm looks like it belongs here. Your phone can reach its own
+trash. The PIN asks twice, the way anything permanent should.
+
+One thing stands between this and a 10, and it isn't a bug: four digits is a small key. It's
+fine for "keep my roommate out". It isn't fine for "keep a determined attacker out". If that
+matters, offer a longer passcode. That's a product decision for the owner.
+
+**Score: 9.5/10.**

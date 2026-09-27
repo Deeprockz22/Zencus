@@ -34,6 +34,7 @@ import { canUseDocumentPiP, openDocumentPiP, closeDocumentPiP, isPiPOpen } from 
 import ShortcutSheetModal from './components/ui/ShortcutSheetModal';
 import { recordFocusSession } from './utils/focusSessionHistory';
 import { createCustomFolder } from './utils/noteFolders';
+import { encryptLegacyNote } from './utils/noteCrypto';
 import useSoftLanding from './hooks/useSoftLanding';
 
 export default function App() {
@@ -632,28 +633,56 @@ export default function App() {
     return savedNote;
   };
 
+  // Note updates always build on the latest list, so back-to-back changes
+  // (and saves that finish late, like encrypted ones) never overwrite each other.
+  const updateNotes = (change) => {
+    setNotes((prevNotes) => {
+      const updated = change(prevNotes);
+      Storage.set('notes', updated);
+      return updated;
+    });
+  };
+
   const deleteNote = (noteId, permanent = false) => {
-    let updated;
-    if (permanent) {
-      updated = notes.filter((n) => n.id !== noteId);
-    } else {
-      updated = notes.map((n) => (n.id === noteId ? { ...n, trash: true } : n));
-    }
-    setNotes(updated);
-    Storage.set('notes', updated);
+    updateNotes((prev) =>
+      permanent ? prev.filter((n) => n.id !== noteId) : prev.map((n) => (n.id === noteId ? { ...n, trash: true } : n))
+    );
   };
 
   const restoreNote = (noteId) => {
-    const updated = notes.map((n) => (n.id === noteId ? { ...n, trash: false } : n));
-    setNotes(updated);
-    Storage.set('notes', updated);
+    updateNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, trash: false } : n)));
+  };
+
+  const emptyTrash = () => {
+    updateNotes((prev) => prev.filter((n) => !n.trash));
   };
 
   const togglePin = (noteId) => {
-    const updated = notes.map((n) => (n.id === noteId ? { ...n, pinned: !n.pinned } : n));
-    setNotes(updated);
-    Storage.set('notes', updated);
+    updateNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, pinned: !n.pinned } : n)));
   };
+
+  // Notes locked in the old format kept their PIN and text in plain sight: encrypt them.
+  useEffect(() => {
+    const legacy = notes.filter((n) => n.pin && !n.cipher);
+    if (legacy.length === 0) return;
+    let cancelled = false;
+    Promise.all(legacy.map(encryptLegacyNote)).then((upgraded) => {
+      if (cancelled) return;
+      const byId = new Map(upgraded.map((n, i) => [n.id, { upgraded: n, source: legacy[i] }]));
+      updateNotes((prev) =>
+        prev.map((n) => {
+          const entry = byId.get(n.id);
+          // Only replace a note that hasn't changed since it was encrypted
+          return entry && n.pin && !n.cipher && n.updatedAt === entry.source.updatedAt && n.content === entry.source.content
+            ? { ...n, ...entry.upgraded, pin: undefined }
+            : n;
+        })
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [notes]);
 
   // Returns an error message when the name can't be used, otherwise null.
   const addCustomFolder = (folderName) => {
@@ -917,6 +946,7 @@ export default function App() {
             saveNote={saveNote}
             deleteNote={deleteNote}
             restoreNote={restoreNote}
+            emptyTrash={emptyTrash}
             togglePin={togglePin}
             customFolders={customFolders}
             addCustomFolder={addCustomFolder}

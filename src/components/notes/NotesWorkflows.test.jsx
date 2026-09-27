@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { createLock, sealText, unlockNote } from '../../utils/noteCrypto';
 import React from 'react';
 import NotesHub from './NotesHub';
 
@@ -126,15 +127,91 @@ describe('NotesWorkflows: Multi-Agent Edge & Unit Tests for Notes Vault', () => 
       expect(document.querySelector('.pin-modal-card')).toBeInTheDocument();
     });
 
-    it('D6: Delete Forever asks first and does nothing if cancelled', () => {
-      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    it('D6: Delete Forever asks in-app first; Cancel keeps the note, confirming deletes it', () => {
+      const confirmSpy = vi.spyOn(window, 'confirm');
       render(<NotesHub {...defaultProps} />);
       fireEvent.click(screen.getByText('Recently Deleted'));
       fireEvent.click(screen.getByRole('button', { name: 'Delete Forever' }));
-      expect(confirmSpy).toHaveBeenCalled();
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
       expect(defaultProps.deleteNote).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole('button', { name: 'Delete Forever' }));
+      fireEvent.click(document.querySelector('.confirm-dialog-confirm'));
+      expect(defaultProps.deleteNote).toHaveBeenCalledWith('n3', true);
+      expect(confirmSpy).not.toHaveBeenCalled(); // no browser popup
       confirmSpy.mockRestore();
     });
+
+    it('Empty Trash asks, then empties', () => {
+      const emptyTrash = vi.fn();
+      render(<NotesHub {...defaultProps} emptyTrash={emptyTrash} />);
+      fireEvent.click(screen.getByText('Recently Deleted'));
+      fireEvent.click(screen.getByRole('button', { name: /Empty Trash/i }));
+      expect(emptyTrash).not.toHaveBeenCalled();
+      fireEvent.click(document.querySelector('.confirm-dialog-confirm'));
+      expect(emptyTrash).toHaveBeenCalled();
+    });
+
+    it('deleting a custom folder asks in-app first', () => {
+      render(<NotesHub {...defaultProps} customFolders={[{ id: 'thesis', name: 'Thesis' }]} />);
+      fireEvent.click(screen.getByTitle('Delete Folder'));
+      expect(defaultProps.deleteCustomFolder).not.toHaveBeenCalled();
+      fireEvent.click(document.querySelector('.confirm-dialog-confirm'));
+      expect(defaultProps.deleteCustomFolder).toHaveBeenCalledWith('thesis');
+    });
+
+    it('deleting a note that is already in the trash, from the editor, means delete forever', () => {
+      render(<NotesHub {...defaultProps} />);
+      fireEvent.click(screen.getByText('Recently Deleted'));
+      fireEvent.click(screen.getByText('Archived Brainstorming'));
+      fireEvent.click(screen.getByTitle('Delete this note'));
+      fireEvent.click(document.querySelector('.confirm-dialog-confirm'));
+      expect(defaultProps.deleteNote).toHaveBeenCalledWith('n3', true);
+    });
+
+    // All four digits in one synchronous burst: faster than any person can type
+    const typePin = (digits) => {
+      act(() => {
+        for (const d of digits) window.dispatchEvent(new KeyboardEvent('keydown', { key: d, bubbles: true, cancelable: true }));
+      });
+    };
+
+    it('setting a PIN asks for it twice; a mismatch starts over', () => {
+      render(<NotesHub {...defaultProps} />);
+      fireEvent.click(screen.getByText('Architecture Blueprint'));
+      fireEvent.click(screen.getByTitle('Lock note with 4-digit PIN'));
+      typePin('1234');
+      expect(screen.getByText('Confirm your PIN')).toBeInTheDocument();
+      typePin('9999');
+      expect(screen.getByText(/didn't match/i)).toBeInTheDocument();
+      expect(screen.getByTitle('Lock note with 4-digit PIN')).toBeInTheDocument(); // still unlocked
+    });
+
+    it('a locked note is saved as ciphertext only', async () => {
+      render(<NotesHub {...defaultProps} />);
+      fireEvent.click(screen.getByText('Architecture Blueprint'));
+      fireEvent.click(screen.getByTitle('Lock note with 4-digit PIN'));
+      typePin('1234');
+      typePin('1234');
+      fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+      await waitFor(() => expect(defaultProps.saveNote).toHaveBeenCalled(), { timeout: 10000 });
+      const saved = defaultProps.saveNote.mock.calls.at(-1)[0];
+      expect(saved.content).toBe('');
+      expect(saved.pin).toBeNull();
+      expect(JSON.stringify(saved)).not.toContain('WebGL');
+      expect((await unlockNote(saved, '1234')).text).toContain('WebGL shaders');
+    }, 30000);
+
+    it('an encrypted note opens with the right PIN and refuses a wrong one', async () => {
+      const cipher = await sealText(await createLock('2468'), '<p>decrypted body</p>');
+      const note = { id: 'e1', title: 'Encrypted', content: '', cipher, folder: 'quick', updatedAt: new Date().toISOString() };
+      render(<NotesHub {...defaultProps} notes={[note]} />);
+      fireEvent.click(screen.getByText('Encrypted'));
+      typePin('1111');
+      await waitFor(() => expect(screen.getByText(/Incorrect PIN/)).toBeInTheDocument(), { timeout: 10000 });
+      typePin('2468');
+      await waitFor(() => expect(document.querySelector('.rich-note-editor[contenteditable]').innerHTML).toContain('decrypted body'), { timeout: 10000 });
+    }, 30000);
 
     it('C2: the editor folder menu lists custom folders', () => {
       render(<NotesHub {...defaultProps} customFolders={[{ id: 'thesis', name: 'Thesis' }]} />);

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   Plus,
   Search,
@@ -25,12 +25,15 @@ import MagnetButton from '../react-bits/MagnetButton';
 import DecryptedText from '../react-bits/DecryptedText';
 import LottieAnimation from '../ui/LottieAnimation';
 import { extractTags } from '../../utils/noteTags';
+import { isLockedNote, unlockNote } from '../../utils/noteCrypto';
+import ConfirmDialog from '../ui/ConfirmDialog';
 
 export default function NotesHub({
   notes = [],
   saveNote,
   deleteNote,
   restoreNote,
+  emptyTrash,
   togglePin,
   customFolders = [],
   addCustomFolder,
@@ -54,13 +57,19 @@ export default function NotesHub({
   // Unlock prompt modal for password protected notes, and what to do once unlocked
   const [unlockingNote, setUnlockingNote] = useState(null);
   const [unlockAction, setUnlockAction] = useState('open'); // 'open' | 'export'
+  const unlockedRef = useRef(null); // { lock, text } from the last correct PIN
+  const [activeLock, setActiveLock] = useState(null);
+
+  // In-app confirmation for anything that can't be undone
+  const [confirmState, setConfirmState] = useState(null);
+  const askConfirm = (options) => setConfirmState(options);
 
   // Real #hashtags per note (title + visible text, never markup).
   // A locked note only shows what its title already shows.
   const tagsById = useMemo(() => {
     const map = {};
     notes.forEach((n) => {
-      map[n.id] = extractTags(n.title, n.pin ? '' : n.content);
+      map[n.id] = extractTags(n.title, isLockedNote(n) ? '' : n.content);
     });
     return map;
   }, [notes]);
@@ -100,7 +109,7 @@ export default function NotesHub({
   };
 
   const handleOpenNote = (note) => {
-    if (note.pin) {
+    if (isLockedNote(note)) {
       setUnlockAction('open');
       setUnlockingNote(note);
     } else {
@@ -109,21 +118,46 @@ export default function NotesHub({
     }
   };
 
+  const verifyUnlockPin = async (pin) => {
+    const result = unlockingNote ? await unlockNote(unlockingNote, pin) : null;
+    unlockedRef.current = result;
+    return Boolean(result);
+  };
+
+  // The decrypted text only lives in the editor (or the export file), never in app state
   const handleUnlockSuccess = () => {
-    if (unlockingNote) {
+    const result = unlockedRef.current;
+    if (unlockingNote && result) {
+      const opened = { ...unlockingNote, content: result.text };
       if (unlockAction === 'export') {
-        handleExportNote(unlockingNote);
+        handleExportNote(opened);
       } else {
-        setActiveNote(unlockingNote);
+        setActiveNote(opened);
+        setActiveLock(result.lock);
         setIsEditorOpen(true);
       }
-      setUnlockingNote(null);
     }
+    unlockedRef.current = null;
+    setUnlockingNote(null);
+  };
+
+  const askDeleteForever = (note) => {
+    askConfirm({
+      title: 'Delete forever?',
+      message: `"${note?.title || 'Untitled Note'}" will be gone for good. This can't be undone.`,
+      confirmLabel: 'Delete Forever',
+      onConfirm: () => deleteNote(note.id, true)
+    });
+  };
+
+  const handleCardDelete = (noteId, permanent) => {
+    if (permanent) askDeleteForever(notes.find((n) => n.id === noteId));
+    else deleteNote(noteId, false);
   };
 
   // A locked note's text only leaves the vault after its PIN is entered
   const requestExport = (note) => {
-    if (note.pin) {
+    if (isLockedNote(note)) {
       setUnlockAction('export');
       setUnlockingNote(note);
     } else {
@@ -176,7 +210,7 @@ export default function NotesHub({
         const q = searchQuery.toLowerCase().trim();
         const matchTitle = (n.title || '').toLowerCase().includes(q);
         // Locked notes are searchable by title only, so a search can't reveal their text
-        const textContent = n.pin ? '' : (n.content || '').replace(/<[^>]+>/g, ' ').toLowerCase();
+        const textContent = isLockedNote(n) ? '' : (n.content || '').replace(/<[^>]+>/g, ' ').toLowerCase();
         const matchContent = textContent.includes(q);
         return matchTitle || matchContent;
       }
@@ -207,10 +241,17 @@ export default function NotesHub({
         }}
         customFolders={customFolders}
         onAddFolder={addCustomFolder}
-        onDeleteFolder={(folderId) => {
-          deleteCustomFolder(folderId);
-          if (currentFolder === folderId) setCurrentFolder('all');
-        }}
+        onDeleteFolder={(folderId, folderName) =>
+          askConfirm({
+            title: `Delete folder "${folderName}"?`,
+            message: 'Its notes move to Quick Notes.',
+            confirmLabel: 'Delete Folder',
+            onConfirm: () => {
+              deleteCustomFolder(folderId);
+              if (currentFolder === folderId) setCurrentFolder('all');
+            }
+          })
+        }
         notesCountByFolder={notesCountByFolder}
       />
 
@@ -280,6 +321,24 @@ export default function NotesHub({
                 <option value="title">Title (A-Z)</option>
               </select>
             </div>
+
+            {currentFolder === 'trash' && notesCountByFolder.trash > 0 && emptyTrash && (
+              <button
+                type="button"
+                className="btn-action secondary empty-trash-btn px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5"
+                onClick={() =>
+                  askConfirm({
+                    title: 'Empty Recently Deleted?',
+                    message: `${notesCountByFolder.trash} note${notesCountByFolder.trash === 1 ? '' : 's'} will be deleted for good. This can't be undone.`,
+                    confirmLabel: 'Empty Trash',
+                    onConfirm: emptyTrash
+                  })
+                }
+              >
+                <Trash2 size={14} />
+                <span>Empty Trash</span>
+              </button>
+            )}
 
             {currentFolder !== 'trash' && (
               <MagnetButton className="btn-action primary new-note-btn px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5" onClick={handleCreateNew}>
@@ -366,7 +425,7 @@ export default function NotesHub({
                   note={note}
                   onOpen={handleOpenNote}
                   onPin={togglePin}
-                  onDelete={deleteNote}
+                  onDelete={handleCardDelete}
                   onRestore={restoreNote}
                   onExport={requestExport}
                   tags={tagsById[note.id]}
@@ -396,7 +455,7 @@ export default function NotesHub({
                   note={note}
                   onOpen={handleOpenNote}
                   onPin={togglePin}
-                  onDelete={deleteNote}
+                  onDelete={handleCardDelete}
                   onRestore={restoreNote}
                   onExport={requestExport}
                   tags={tagsById[note.id]}
@@ -445,9 +504,16 @@ export default function NotesHub({
         onClose={() => {
           setIsEditorOpen(false);
           setActiveNote(null);
+          setActiveLock(null);
         }}
         onSave={saveNote}
-        onDelete={deleteNote}
+        onDelete={(noteId) => {
+          // A note already in Recently Deleted can only be deleted forever
+          const target = notes.find((n) => n.id === noteId);
+          if (target?.trash) askDeleteForever(target);
+          else deleteNote(noteId);
+        }}
+        lock={activeLock}
         onExport={handleExportNote}
         onConvertToTask={onConvertToTask}
         customFolders={customFolders}
@@ -457,9 +523,22 @@ export default function NotesHub({
       <NoteLockModal
         isOpen={Boolean(unlockingNote)}
         mode="unlock"
-        correctPin={unlockingNote?.pin || ''}
+        verifyPin={verifyUnlockPin}
         onClose={() => setUnlockingNote(null)}
         onSuccess={handleUnlockSuccess}
+      />
+
+      <ConfirmDialog
+        isOpen={Boolean(confirmState)}
+        title={confirmState?.title}
+        message={confirmState?.message}
+        confirmLabel={confirmState?.confirmLabel}
+        onCancel={() => setConfirmState(null)}
+        onConfirm={() => {
+          const action = confirmState?.onConfirm;
+          setConfirmState(null);
+          action?.();
+        }}
       />
     </div>
   );

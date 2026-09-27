@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { isLockedNote } from '../../utils/noteCrypto';
 import {
   Pin,
   Trash2,
@@ -24,7 +25,7 @@ export default function NoteCard({
   isTrashView = false,
   viewMode = 'grid'
 }) {
-  const isLocked = Boolean(note.pin);
+  const isLocked = isLockedNote(note);
 
   // Extract drawing / image thumbnail if present
   const hasImage = note.content && note.content.includes('<img');
@@ -158,9 +159,7 @@ export default function NoteCard({
                   className="note-icon-action delete p-1 text-[var(--text-secondary)] hover:text-[#ff3b30] transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm(`Delete "${note.title || 'Untitled Note'}" forever? This can't be undone.`)) {
-                      onDelete(note.id, true); // permanent
-                    }
+                    onDelete(note.id, true); // permanent (the hub asks to confirm)
                   }}
                   title="Delete Forever"
                   aria-label="Delete Forever"

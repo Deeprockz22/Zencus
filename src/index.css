@@ -4433,6 +4433,17 @@ body {
   gap: 10px;
 }
 
+.custom-folder-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.custom-folder-row .custom-folder-item {
+  flex: 1;
+  min-width: 0;
+}
+
 .folder-sidebar-header {
   display: flex;
   align-items: center;
@@ -6830,8 +6841,42 @@ body {
     grid-template-columns: 1fr;
   }
 
+  /* Phones: folders become a scrollable chip row (hiding them left Recently
+     Deleted, custom folders and the folder filter out of reach). */
   .folder-sidebar {
+    display: block;
+    min-width: 0;
+  }
+
+  .folder-sidebar .folder-list {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .folder-sidebar .folder-list::-webkit-scrollbar {
     display: none;
+  }
+
+  .folder-sidebar .folder-item,
+  .folder-sidebar .folder-item.trash-item {
+    flex: 0 0 auto;
+    gap: 8px;
+    margin: 0;
+    padding: 6px 10px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .folder-sidebar .folder-divider {
+    display: none;
+  }
+
+  .folder-sidebar .custom-folder-row {
+    flex: 0 0 auto;
   }
 
   .app-header {
@@ -11038,6 +11083,14 @@ html[data-sketch-anim] {
   border-radius: 0;
   box-shadow: none;
   background: transparent;
+}
+
+/* Phones: the folder chip row sits above the notes, so no side divider */
+@media (max-width: 768px) {
+  [data-theme='light'] .folder-sidebar,
+  [data-theme='dark'] .folder-sidebar {
+    border-right: 0;
+  }
 }
 
 [data-theme='light'] .note-card,

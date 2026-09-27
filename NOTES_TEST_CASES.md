@@ -148,3 +148,38 @@ bug (`NotesWorkflows.test.jsx`, `utils/noteUtils.test.js`).
 | 11 | Delete Forever asks for confirmation. |
 | 12 | App shortcuts (`F`, `P`, `D`, `?`) don't fire from inside a dialog. |
 | 13 | *Found during the re-run:* a locked note's `#tags` appeared in the tag bar, and search matched its hidden text. Locked notes now expose only their title. |
+
+## Round 2 — "no bugs, big or small" (27 Sep 2026)
+
+A second pass for everything round 1 left open, plus what the new checks found.
+**72 / 72 browser checks pass** (new: G3, H1–H5). **152 unit tests pass.**
+
+| # | Bug | Fix |
+|---|---|---|
+| 14 | Locked notes were stored in plain text, and so was their PIN. Anyone opening devtools could read both. | Locked notes are encrypted (AES-GCM, key from the PIN via PBKDF2-SHA-256, 250k rounds). Only ciphertext is stored, and the PIN is never saved. Notes locked the old way are encrypted automatically on load. |
+| 15 | Setting a PIN took one entry, so a typo locked you out for good. | Setting a PIN asks twice. A mismatch starts over. |
+| 16 | Delete Forever and Delete Folder used the browser's grey `confirm()` popup. | In-app confirm dialog. Focus starts on Cancel, and Esc cancels. |
+| 17 | No way to empty Recently Deleted. | **Empty Trash** button (with confirm). |
+| 18 | On phones (≤ 768 px) the folder sidebar was hidden, so notes trashed on a phone couldn't be restored or deleted there. | On phones, folders show as a scrollable chip row. |
+| 19 | Deleting a note from the editor while it was already in the trash did nothing. | It now means Delete Forever (with confirm). |
+| 20 | Digits typed faster than React re-renders could be dropped by the PIN prompt. Found by the new unit tests. | The prompt tracks digits in refs. |
+| 21 | Note actions (delete, restore, pin) read a possibly stale notes list, so back-to-back changes could overwrite each other. | All note updates build on the latest list. |
+| 22 | The "delete folder" ✕ was a span inside the folder button: not keyboard-reachable, and invalid nested interactive markup. | It's a real button beside the folder. |
+| 23 | The "remove lock" prompt said "Enter your PIN to view and edit this note". | Wording fixed. |
+
+### New checks
+
+| ID | Check | Result |
+|---|---|---|
+| H1 | Old-format locked note is encrypted on load; its text and PIN leave storage | PASS |
+| H2 | Encrypted note opens with its PIN; edits are stored encrypted and are there on reopen | PASS |
+| H3 | PIN mismatch while setting keeps the note unlocked | PASS |
+| H4 | Closing the instant a PIN is set never stores plain text or a duplicate | PASS |
+| H5 | Empty Trash removes only trashed notes | PASS |
+| G3 | On a 390 px phone, Recently Deleted is reachable and restore works | PASS |
+
+### Known limit (a design decision, not a bug)
+
+A 4-digit PIN has only 10,000 combinations. Encryption stops anyone reading a locked note out
+of storage, and makes each guess slow (a full key derivation). But someone who copies the
+stored data could still try every PIN offline. Only a longer passcode fixes that.
