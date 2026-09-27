@@ -11,6 +11,10 @@ describe('extractTags', () => {
     expect(extractTags('', '<p><span style="color: #ff3b30">red</span> it&#39;s fine</p>')).toEqual([]);
   });
 
+  it('keeps a tag at the end of a block separate from the next block', () => {
+    expect(extractTags('', '<p>compare models #thesis</p><ul><li>Rerun baseline</li></ul>')).toEqual(['#thesis']);
+  });
+
   it('ignores number-only hashes', () => {
     expect(extractTags('', '<p>#1 priority</p>')).toEqual([]);
   });

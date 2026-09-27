@@ -1,8 +1,10 @@
 // Plain text of a note's HTML body: tags, attributes and entities never count as words.
+// Every tag becomes a space first, so words in neighbouring blocks (</p><li>) never merge.
 export function htmlToText(html = '') {
   if (!html) return '';
-  if (typeof DOMParser === 'undefined') return String(html).replace(/<[^>]+>/g, ' ');
-  return new DOMParser().parseFromString(String(html), 'text/html').body.textContent || '';
+  const spaced = String(html).replace(/<[^>]*>/g, ' ');
+  if (typeof DOMParser === 'undefined') return spaced;
+  return new DOMParser().parseFromString(spaced, 'text/html').body.textContent || '';
 }
 
 // #tags in a note's title and visible text. A tag starts with a letter, so colour codes in
