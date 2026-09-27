@@ -2100,3 +2100,25 @@ and its theme styles. Per-note PINs are unchanged.
 Good riddance. A lock whose combination is printed in the settings isn't a lock. It's an extra
 tap on the way to your own timer. The header has one icon fewer, and the real protection lives
 where it belongs, on the notes that need it.
+
+---
+
+## Round 44 — Landing page (27 Sep 2026) — Claude + Steve
+
+**What:** `landing.html`, a second Vite page next to the app (the app keeps `/`). Hero, the
+focus → reflect → next loop, five features, the four themes with real screenshots, privacy, and a
+final call to action. Light and dark follow the system. Details on which design resources it uses
+are in `DESIGN_RESOURCES.md` §7.
+
+### Steve
+The hero *is* the product. A real timer you can start, not a video of one. That's the right
+instinct, and most landing pages never have it. One accent and one typeface pairing, with five
+features instead of fifteen. The screenshots are the actual app, not mockups. The privacy
+section says what's true, including the part about the web extras. Honesty is a feature.
+
+| # | Priority | Problem | Change |
+|---|---|---|---|
+| R44-D1 | SHOULD | The product shot shows the app's bracketed presets `( 25 )` and the `AIM:` label, the same pseudo-technical noise Round 1 killed. The landing page is only as clean as the app it shows. | Drop the brackets and `AIM:` in the app, then retake the screenshots. |
+| R44-D2 | COULD | The page lives at `/landing.html`. | When it's ready to be the front door, serve it at `/` and move the app to `/app`. |
+
+**Score: 9/10.**

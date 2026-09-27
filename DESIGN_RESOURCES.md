@@ -114,3 +114,21 @@ Foundational codebases and repositories referenced for structure and micro-compo
 ---
 
 *Catalog compiled automatically from conversation trajectory and verified against active workspace components.*
+
+---
+
+## 7. Applied in the landing page (`landing.html`, Sep 2026)
+
+| Resource | How the landing page uses it |
+| :--- | :--- |
+| **Collected** | Editorial display type (Instrument Serif), one idea per section, generous spacing. |
+| **Godly** | A soft, slowly drifting red aura behind the hero, and a dark-mode palette built on the same tokens. |
+| **Aceternity UI / Site of Sites** | The feature bento: one large card with a real screenshot, four small ones. |
+| **Design Spells / React Bits** | `MagnetButton` on the main call to action. |
+| **Skiper UI (skiper40)** | The underline-sweep-and-arrow nav links (`Link001`), rebuilt in plain CSS so the page doesn't load Tailwind. |
+| **Animaster (rolling digits)** | The hero's working timer uses `FlipText`, so only the changed digit rolls. |
+| **Lenis** | Smooth, inertial scrolling and anchor links. Off for people who ask for reduced motion. |
+
+**Left out on purpose:** ShaderGradient, React Three Fiber and Vanta (WebGL would add hundreds of KB
+to a page whose job is to load instantly), and GSAP (an IntersectionObserver plus CSS covers the scroll
+reveals). The page's own code is about 14 KB of JavaScript and 13 KB of CSS.

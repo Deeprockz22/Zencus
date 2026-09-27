@@ -11,10 +11,10 @@ export default function FlipText({ text = '', className = '', still = 0 }) {
   const firstStill = chars.length - still;
   return (
     <span className={`flip-text ${className}`}>
-      <span className="sr-only">{text}</span>
+      <span className="flip-text-sr">{text}</span>
       <span className="flip-text-chars" aria-hidden="true">
         {chars.map((ch, i) => (
-          <span key={i >= firstStill ? i : `${i}-${ch}`} className="flip-text-char">{ch}</span>
+          <span key={i >= firstStill ? i : `${i}-${ch}`} className={/\d/.test(ch) ? 'flip-text-char is-digit' : 'flip-text-char'}>{ch}</span>
         ))}
       </span>
     </span>

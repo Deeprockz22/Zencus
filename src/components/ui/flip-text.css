@@ -12,3 +12,15 @@
 @media (prefers-reduced-motion: reduce) {
   .flip-text-char { animation: none; }
 }
+/* Screen-reader copy; self-contained so FlipText works on pages without Tailwind */
+.flip-text-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
