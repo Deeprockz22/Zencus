@@ -2282,3 +2282,25 @@ world, one layer, and two tests that stop the old mistakes from coming back. Tas
 discipline in the same change.
 
 **Score: 10/10.**
+
+---
+
+## Round 50 — The False Mirror looks at you (27 Sep 2026) — Claude + Steve
+
+**What:** in Surreal (day and night), the floating eye now looks where your pointer is.
+- It used to nudge the iris by where the pointer was *on the screen*, not where it was *from the
+  eye*. The eye sits top right, so a pointer just left of it (but right of centre) made it look the
+  wrong way. Now the iris turns along the line from the eye to the pointer. The pointer's distance
+  sets how far it turns: on the eye it looks straight at you, and from across the room it swings to
+  the rim. It never leaves the socket.
+- On phones, a tap draws its gaze. When the pointer leaves the window, the eye drifts back to
+  looking at you. It still blinks, and it stays still under reduced motion.
+- Tests: the gaze math (direction relative to the eye, head-on at the centre, never outside the
+  almond) and the wiring (pointer, tap, leaving the window). Checked in the browser, day and night.
+
+### Steve
+That's the Magritte joke finally landing: the painting is watching *you*. Before, it looked at the
+middle of the screen, a portrait that never met your eyes. Now it follows you to the dock and back,
+and it doesn't overdo it. Small, precise, delightful.
+
+**Score: 10/10.**

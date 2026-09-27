@@ -287,10 +287,12 @@ html.surreal body {
   transform-origin: 50% 50%;
   animation: sw-blink 9s ease-in-out infinite;
 }
+/* the iris looks at the pointer: --sw-gx/--sw-gy are set by SurrealWorld (gazeOffset)
+   in the eye's own SVG units */
 .sw-eye-iris {
   transform-box: view-box;
-  transform: translate(calc(var(--sw-px) * 26px), calc(var(--sw-py) * 14px));
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transform: translate(calc(var(--sw-gx, 0) * 1px), calc(var(--sw-gy, 0) * 1px));
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 @keyframes sw-blink {
   0%, 94%, 100% { transform: scaleY(1); }
