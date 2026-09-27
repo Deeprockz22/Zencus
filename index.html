@@ -4,6 +4,43 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Splash: the logo paints straight from this file, before the app's code has loaded -->
+    <style>
+      #splash {
+        position: fixed; inset: 0; z-index: 9999;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+        background: #f5f5f7; color: #121212;
+        transition: opacity 0.35s ease;
+        cursor: default;
+      }
+      html.splash-dark #splash { background: #0d0d0e; color: #f2f1ee; }
+      #splash.is-leaving { opacity: 0; pointer-events: none; }
+      #splash svg { width: 72px; height: 72px; overflow: visible; }
+      #splash .splash-blade {
+        transform-box: view-box; transform-origin: 24px 24px;
+        animation: splash-blade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+      #splash .splash-blade:nth-child(2) { animation-delay: 0.06s; }
+      #splash .splash-blade:nth-child(3) { animation-delay: 0.12s; }
+      #splash .splash-blade:nth-child(4) { animation-delay: 0.18s; }
+      #splash .splash-word {
+        font: 600 1.35rem/1 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        letter-spacing: -0.01em;
+        animation: splash-word 0.5s 0.25s ease-out both;
+      }
+      @keyframes splash-blade { from { transform: scale(0) rotate(-90deg); opacity: 0; } to { transform: none; opacity: 1; } }
+      @keyframes splash-word { from { transform: translateY(6px); opacity: 0; } to { transform: none; opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) {
+        #splash .splash-blade, #splash .splash-word { animation: none; }
+      }
+    </style>
+    <script>
+      // Match the splash to the saved theme before the first paint (night themes get a dark splash)
+      try {
+        var t = JSON.parse(localStorage.getItem('theme') || '"light"');
+        if (t === 'dark' || /-night$/.test(t)) document.documentElement.classList.add('splash-dark');
+      } catch (e) {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!--
@@ -14,11 +51,38 @@
       a deliberately fake font name: they matched exactly. All 12 families
       now load from one request, same as Inter/JetBrains Mono already did.
     -->
-    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Creepster&family=Fira+Code:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Zen+Maru+Gothic:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=Urbanist:wght@400;500;600;700;800&family=VT323&display=swap" rel="stylesheet">
+    <!-- Fonts load without blocking the first paint, so the splash shows at once; any font swap happens behind it -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Creepster&family=Fira+Code:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Zen+Maru+Gothic:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=Urbanist:wght@400;500;600;700;800&family=VT323&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Creepster&family=Fira+Code:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Zen+Maru+Gothic:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=Urbanist:wght@400;500;600;700;800&family=VT323&display=swap"></noscript>
     <title>Zencus — Focused Productivity & Flow</title>
     <meta name="description" content="A minimalist, distraction-free productivity sanctuary for deep work, task focus, and private notes." />
   </head>
   <body>
+    <div id="splash" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(24, 24)">
+          <path class="splash-blade" d="M0,0 L10,-10 L20,0 L10,10 Z" fill="#ff3b30" />
+          <path class="splash-blade" d="M0,0 L10,10 L0,20 L-10,10 Z" fill="currentColor" />
+          <path class="splash-blade" d="M0,0 L-10,10 L-20,0 L-10,-10 Z" fill="#ff3b30" />
+          <path class="splash-blade" d="M0,0 L-10,-10 L0,-20 L10,-10 Z" fill="currentColor" />
+        </g>
+      </svg>
+      <span class="splash-word">Zencus</span>
+    </div>
+    <script>
+      // When the splash went up (the app times its exit from here), and a tap or key skips it
+      window.__splashAt = performance.now();
+      (function () {
+        var el = document.getElementById('splash');
+        function skip() {
+          if (!el.isConnected || el.classList.contains('is-leaving')) return;
+          el.classList.add('is-leaving');
+          setTimeout(function () { el.remove(); }, 400);
+        }
+        el.addEventListener('pointerdown', skip);
+        window.addEventListener('keydown', skip, { once: true });
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

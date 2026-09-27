@@ -2137,3 +2137,22 @@ else. The landing page and the app finally say the same thing. **9.5/10.**
 **R44-D2 closed by the owner (27 Sep 2026):** the site keeps opening straight into the app, on the
 timer. No landing page in front, no extra click. The landing page stays at `/landing.html` for
 sharing, and its buttons open the app, which always starts on the Timer tab.
+
+---
+
+## Round 45 — A logo before the timer (27 Sep 2026) — Claude + Steve
+
+**What:** at the owner's request, the app opens on its mark. The four blades fold in, "Zencus" rises
+beneath them, and then the splash fades to the timer. No click needed; a tap or key skips it. It's
+drawn by `index.html` itself, so it appears before the app's code has loaded (first paint went from
+~780 ms to ~200–300 ms once the font stylesheet stopped blocking it). It stays 1.1 s from when it
+appears, or until the app is ready if that's later. It follows the saved theme (dark for night
+themes), and there's no motion for people who ask for less.
+
+### Steve
+A splash screen is usually vanity: a logo making you wait. This one isn't. It covers time the app
+needed anyway, it's gone in about a second, and it never asks for anything. The fold-in is the
+mark assembling itself. Say it once, and get out of the way.
+
+**Score: 9/10.** Keep it under the load time as the app gets faster, and never lengthen it for
+effect.
