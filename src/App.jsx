@@ -34,6 +34,7 @@ import ShortcutSheetModal from './components/ui/ShortcutSheetModal';
 import { recordFocusSession } from './utils/focusSessionHistory';
 import { createCustomFolder } from './utils/noteFolders';
 import { encryptLegacyNote } from './utils/noteCrypto';
+import { hideSplash } from './utils/splash';
 import useSoftLanding from './hooks/useSoftLanding';
 
 export default function App() {
@@ -91,6 +92,11 @@ export default function App() {
   // Navigation
   const miniPip = useDocumentPiP(); // floating mini timer (#33)
   const [activeTab, setActiveTab] = useState('timer'); // 'timer' | 'tasks' | 'notes'
+
+  // The app is on screen: let the logo splash from index.html fade away
+  useEffect(() => {
+    hideSplash();
+  }, []);
 
   // Settings & Fullscreen Modals & Privacy Lock
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
