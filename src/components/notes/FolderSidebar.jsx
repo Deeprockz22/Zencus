@@ -33,12 +33,18 @@ export default function FolderSidebar({
 }) {
   const [newFolderName, setNewFolderName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [folderError, setFolderError] = useState('');
 
   const handleCreateFolder = (e) => {
     e.preventDefault();
     if (newFolderName.trim()) {
-      onAddFolder(newFolderName.trim());
+      const error = onAddFolder(newFolderName.trim());
+      if (error) {
+        setFolderError(error);
+        return;
+      }
       setNewFolderName('');
+      setFolderError('');
       setIsCreating(false);
     }
   };
@@ -51,12 +57,15 @@ export default function FolderSidebar({
             Folders
           </span>
           <span className="sidebar-badge text-[11px] text-[var(--text-tertiary)] opacity-60">
-            {Object.values(notesCountByFolder).reduce((a, b) => a + b, 0)}
+            {notesCountByFolder.all || 0}
           </span>
         </div>
         <button
           className={`folder-add-btn p-1 text-[var(--text-secondary)] hover:text-[#ff3b30] transition-colors rounded-full ${isCreating ? 'active text-[#ff3b30]' : ''}`}
-          onClick={() => setIsCreating(!isCreating)}
+          onClick={() => {
+            setIsCreating(!isCreating);
+            setFolderError('');
+          }}
           title={isCreating ? 'Cancel' : 'Create Custom Folder'}
         >
           {isCreating ? <X size={14} /> : <FolderPlus size={14} />}
@@ -68,8 +77,13 @@ export default function FolderSidebar({
           <input
             type="text"
             value={newFolderName}
-            onChange={(e) => setNewFolderName(e.target.value)}
+            onChange={(e) => {
+              setNewFolderName(e.target.value);
+              setFolderError('');
+            }}
             placeholder="Folder name..."
+            aria-label="New folder name"
+            aria-invalid={Boolean(folderError)}
             className="new-folder-input flex-1 bg-transparent border-none text-xs text-[var(--text-primary)] outline-none"
             autoFocus
           />
@@ -77,6 +91,11 @@ export default function FolderSidebar({
             Add
           </button>
         </form>
+      )}
+      {isCreating && folderError && (
+        <p className="new-folder-error text-[11px] text-[#ff3b30] mb-2" role="alert">
+          {folderError}
+        </p>
       )}
 
       <div className="folder-list flex flex-col gap-1">

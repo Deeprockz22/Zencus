@@ -24,6 +24,13 @@ export default function NoteLockModal({
     }
   };
 
+  // Every way out clears the digits, so the next prompt starts empty
+  const close = () => {
+    setPin('');
+    setErrorMsg('');
+    onClose();
+  };
+
   const handleBackspace = () => {
     setPin((prev) => prev.slice(0, -1));
     setErrorMsg('');
@@ -32,11 +39,11 @@ export default function NoteLockModal({
   const verifyPin = (enteredPin) => {
     if (mode === 'set') {
       onSuccess(enteredPin);
-      onClose();
+      close();
     } else if (mode === 'unlock' || mode === 'remove') {
       if (enteredPin === correctPin) {
         onSuccess();
-        onClose();
+        close();
       } else {
         setErrorMsg('Incorrect PIN. Try again.');
         setPin('');
@@ -44,15 +51,19 @@ export default function NoteLockModal({
     }
   };
 
-  // Keyboard navigation & numeric entry
+  // Keyboard navigation & numeric entry. preventDefault keeps the keystroke from also
+  // being typed into whatever takes focus once the PIN is accepted (e.g. the note title).
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        onClose();
+        e.preventDefault();
+        close();
       } else if (/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
         handleDigit(e.key);
       } else if (e.key === 'Backspace') {
+        e.preventDefault();
         handleBackspace();
       }
     };
@@ -64,13 +75,13 @@ export default function NoteLockModal({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={close}>
       <div className="modal-card pin-modal-card" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="pin-header-icon">
             <Lock size={20} className="lock-icon-glow" />
           </div>
-          <button className="icon-btn close-modal-btn" onClick={onClose} aria-label="Close">
+          <button className="icon-btn close-modal-btn" onClick={close} aria-label="Close">
             <X size={18} />
           </button>
         </div>

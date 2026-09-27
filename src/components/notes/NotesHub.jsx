@@ -24,6 +24,7 @@ import FocusCompanion from '../companion/FocusCompanion';
 import MagnetButton from '../react-bits/MagnetButton';
 import DecryptedText from '../react-bits/DecryptedText';
 import LottieAnimation from '../ui/LottieAnimation';
+import { extractTags } from '../../utils/noteTags';
 
 export default function NotesHub({
   notes = [],
@@ -50,22 +51,28 @@ export default function NotesHub({
   const [activeNote, setActiveNote] = useState(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
-  // Unlock prompt modal for password protected notes
+  // Unlock prompt modal for password protected notes, and what to do once unlocked
   const [unlockingNote, setUnlockingNote] = useState(null);
+  const [unlockAction, setUnlockAction] = useState('open'); // 'open' | 'export'
 
-  // Extract all smart #hashtags across all non-deleted notes
+  // Real #hashtags per note (title + visible text, never markup).
+  // A locked note only shows what its title already shows.
+  const tagsById = useMemo(() => {
+    const map = {};
+    notes.forEach((n) => {
+      map[n.id] = extractTags(n.title, n.pin ? '' : n.content);
+    });
+    return map;
+  }, [notes]);
+
+  // Smart #hashtags across all non-deleted notes
   const availableTags = useMemo(() => {
     const tags = new Set();
     notes.forEach((n) => {
-      if (n.trash) return;
-      const combined = `${n.title || ''} ${n.content || ''}`;
-      const matches = combined.match(/#[a-zA-Z0-9_\-]+/g);
-      if (matches) {
-        matches.forEach((t) => tags.add(t));
-      }
+      if (!n.trash) (tagsById[n.id] || []).forEach((t) => tags.add(t));
     });
     return Array.from(tags);
-  }, [notes]);
+  }, [notes, tagsById]);
 
   // Compute note counts per folder
   const notesCountByFolder = useMemo(() => {
@@ -94,6 +101,7 @@ export default function NotesHub({
 
   const handleOpenNote = (note) => {
     if (note.pin) {
+      setUnlockAction('open');
       setUnlockingNote(note);
     } else {
       setActiveNote(note);
@@ -103,9 +111,23 @@ export default function NotesHub({
 
   const handleUnlockSuccess = () => {
     if (unlockingNote) {
-      setActiveNote(unlockingNote);
-      setIsEditorOpen(true);
+      if (unlockAction === 'export') {
+        handleExportNote(unlockingNote);
+      } else {
+        setActiveNote(unlockingNote);
+        setIsEditorOpen(true);
+      }
       setUnlockingNote(null);
+    }
+  };
+
+  // A locked note's text only leaves the vault after its PIN is entered
+  const requestExport = (note) => {
+    if (note.pin) {
+      setUnlockAction('export');
+      setUnlockingNote(note);
+    } else {
+      handleExportNote(note);
     }
   };
 
@@ -148,15 +170,13 @@ export default function NotesHub({
         if (currentFolder !== 'all' && (n.folder || 'quick') !== currentFolder) return false;
       }
 
-      if (selectedTag) {
-        const combined = `${n.title || ''} ${n.content || ''}`;
-        if (!combined.includes(selectedTag)) return false;
-      }
+      if (selectedTag && !(tagsById[n.id] || []).includes(selectedTag)) return false;
 
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
         const matchTitle = (n.title || '').toLowerCase().includes(q);
-        const textContent = (n.content || '').replace(/<[^>]+>/g, ' ').toLowerCase();
+        // Locked notes are searchable by title only, so a search can't reveal their text
+        const textContent = n.pin ? '' : (n.content || '').replace(/<[^>]+>/g, ' ').toLowerCase();
         const matchContent = textContent.includes(q);
         return matchTitle || matchContent;
       }
@@ -171,7 +191,7 @@ export default function NotesHub({
       }
       return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
     });
-  }, [notes, currentFolder, selectedTag, searchQuery, sortBy]);
+  }, [notes, tagsById, currentFolder, selectedTag, searchQuery, sortBy]);
 
   const pinnedNotes = useMemo(() => filteredNotes.filter((n) => n.pinned && !n.trash), [filteredNotes]);
   const otherNotes = useMemo(() => filteredNotes.filter((n) => !n.pinned || n.trash), [filteredNotes]);
@@ -187,7 +207,10 @@ export default function NotesHub({
         }}
         customFolders={customFolders}
         onAddFolder={addCustomFolder}
-        onDeleteFolder={deleteCustomFolder}
+        onDeleteFolder={(folderId) => {
+          deleteCustomFolder(folderId);
+          if (currentFolder === folderId) setCurrentFolder('all');
+        }}
         notesCountByFolder={notesCountByFolder}
       />
 
@@ -345,7 +368,8 @@ export default function NotesHub({
                   onPin={togglePin}
                   onDelete={deleteNote}
                   onRestore={restoreNote}
-                  onExport={handleExportNote}
+                  onExport={requestExport}
+                  tags={tagsById[note.id]}
                   onTagClick={(t) => setSelectedTag(t)}
                   isTrashView={false}
                   viewMode={viewMode}
@@ -374,7 +398,8 @@ export default function NotesHub({
                   onPin={togglePin}
                   onDelete={deleteNote}
                   onRestore={restoreNote}
-                  onExport={handleExportNote}
+                  onExport={requestExport}
+                  tags={tagsById[note.id]}
                   onTagClick={(t) => setSelectedTag(t)}
                   isTrashView={currentFolder === 'trash'}
                   viewMode={viewMode}
@@ -425,6 +450,7 @@ export default function NotesHub({
         onDelete={deleteNote}
         onExport={handleExportNote}
         onConvertToTask={onConvertToTask}
+        customFolders={customFolders}
       />
 
       {/* Unlock Password Modal */}

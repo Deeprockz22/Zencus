@@ -52,7 +52,7 @@ export default function NoteEditorModal({
   onDelete,
   onExport,
   onConvertToTask,
-  folders = ['quick', 'work', 'personal', 'ideas', 'archive']
+  customFolders = []
 }) {
   const [currentNoteId, setCurrentNoteId] = useState(note?.id || null);
   const [title, setTitle] = useState('');
@@ -75,6 +75,8 @@ export default function NoteEditorModal({
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const currentNoteIdRef = useRef(note?.id || null);
+  // True once the person changes something; opening and closing a note never rewrites it
+  const isDirtyRef = useRef(false);
 
   useEffect(() => {
     if (note) {
@@ -105,18 +107,28 @@ export default function NoteEditorModal({
       setPreviewHtml('');
     }
     setPreviewMode(false);
+    isDirtyRef.current = false;
     setAutoSaveStatus('Saved to Local Vault');
-    updateStats();
+    computeStats();
   }, [note, isOpen]);
 
-  const updateStats = () => {
+  const computeStats = () => {
     if (!editorRef.current) return;
     const text = editorRef.current.innerText || '';
     const words = text.trim() ? text.trim().split(/\s+/).length : 0;
     const chars = text.length;
     const readingTime = Math.max(1, Math.ceil(words / 180));
     setStats({ words, chars, readingTime });
+  };
+
+  const markDirty = () => {
+    isDirtyRef.current = true;
     setAutoSaveStatus('Editing...');
+  };
+
+  const updateStats = () => {
+    computeStats();
+    markDirty();
   };
 
   const handleSave = (shouldClose = false) => {
@@ -124,8 +136,9 @@ export default function NoteEditorModal({
     const noteTitle = title.trim();
     const existingNoteId = currentNoteIdRef.current || note?.id || null;
 
-    // Only save if there is content/title or it's an existing note being edited
-    if (noteTitle || currentHtml.trim() || existingNoteId) {
+    // Save only real changes: new notes need a title or content, existing ones an edit
+    const shouldSave = existingNoteId ? isDirtyRef.current : Boolean(noteTitle || currentHtml.trim());
+    if (shouldSave) {
       const saved = onSave({
         id: existingNoteId,
         title: noteTitle || 'Untitled Note',
@@ -140,6 +153,7 @@ export default function NoteEditorModal({
         currentNoteIdRef.current = saved.id;
         setCurrentNoteId(saved.id);
       }
+      isDirtyRef.current = false;
       setAutoSaveStatus('Saved to Local Vault');
     }
     if (shouldClose) {
@@ -189,17 +203,48 @@ export default function NoteEditorModal({
     }
   };
 
+  // Toolbar actions always land in the note body: if the caret is elsewhere
+  // (e.g. still in the title), put it at the end of the body first.
+  const ensureEditorSelection = () => {
+    const el = editorRef.current;
+    if (!el) return null;
+    const selection = window.getSelection();
+    const inEditor = selection.rangeCount > 0 && el.contains(selection.getRangeAt(0).commonAncestorContainer);
+    if (!inEditor) {
+      el.focus();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else if (document.activeElement !== el) {
+      el.focus();
+    }
+    return selection;
+  };
+
   const executeCommand = (command, value = null) => {
+    ensureEditorSelection();
     document.execCommand(command, false, value);
     if (editorRef.current) {
-      editorRef.current.focus();
       updateStats();
     }
   };
 
+  // A checkbox's ticked state is a property, not markup; mirror it into the
+  // `checked` attribute so it's kept when the note is saved.
+  const handleEditorClick = (e) => {
+    const target = e.target;
+    if (target instanceof HTMLInputElement && target.type === 'checkbox') {
+      if (target.checked) target.setAttribute('checked', '');
+      else target.removeAttribute('checked');
+      markDirty();
+    }
+  };
+
   const insertChecklist = () => {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;
+    const selection = ensureEditorSelection();
+    if (!selection || !selection.rangeCount) return;
     const range = selection.getRangeAt(0);
     const checkHtml = '<div class="checklist-row"><input type="checkbox" /> <span>&nbsp;</span></div>';
     const fragment = range.createContextualFragment(checkHtml);
@@ -270,7 +315,7 @@ export default function NoteEditorModal({
                 value={title}
                 onChange={(e) => {
                   setTitle(e.target.value);
-                  setAutoSaveStatus('Editing...');
+                  markDirty();
                 }}
                 placeholder="Note Title (e.g. #Project Planning)..."
                 aria-label="Note title"
@@ -287,7 +332,7 @@ export default function NoteEditorModal({
                   value={folder}
                   onChange={(e) => {
                     setFolder(e.target.value);
-                    setAutoSaveStatus('Editing...');
+                    markDirty();
                   }}
                   className="note-folder-select"
                 >
@@ -296,6 +341,13 @@ export default function NoteEditorModal({
                   <option value="personal">Personal</option>
                   <option value="ideas">Ideas</option>
                   <option value="archive">Archive</option>
+                  {customFolders
+                    .filter((f) => typeof f === 'object' && f.id)
+                    .map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -308,7 +360,10 @@ export default function NoteEditorModal({
                     className={`color-dot-btn ${noteColor === c.id ? 'active' : ''}`}
                     style={{ backgroundColor: c.color }}
                     title={c.label}
-                    onClick={() => setNoteColor(c.id)}
+                    onClick={() => {
+                      setNoteColor(c.id);
+                      markDirty();
+                    }}
                   >
                     {noteColor === c.id && (
                       <Check
@@ -527,7 +582,7 @@ export default function NoteEditorModal({
             contentEditable="true"
             data-placeholder="Start typing your thoughts, markdown notes (#tags), sketch ideas, or organize tasks..."
             onInput={updateStats}
-            onKeyUp={updateStats}
+            onClick={handleEditorClick}
             suppressContentEditableWarning
           />
 
@@ -609,6 +664,7 @@ export default function NoteEditorModal({
           } else if (lockMode === 'remove') {
             setPin(null);
           }
+          markDirty();
         }}
       />
     </>

@@ -100,4 +100,87 @@ describe('NotesWorkflows: Multi-Agent Edge & Unit Tests for Notes Vault', () => 
     expect(screen.getByText('Archived Brainstorming')).toBeInTheDocument();
     expect(screen.queryByText('Quantum Computing Notes')).not.toBeInTheDocument();
   });
+
+  describe('regressions from the Notes page test run (NOTES_TEST_CASES.md)', () => {
+    const locked = { id: 'l1', title: 'Locked plan', content: '<p>TOP SECRET</p>', folder: 'quick', pin: '1234', updatedAt: new Date().toISOString() };
+
+    it('F3: the Folders total counts each note once', () => {
+      const { container } = render(<NotesHub {...defaultProps} />);
+      expect(container.querySelector('.sidebar-badge').textContent).toBe('2');
+    });
+
+    it('E6: colour codes and entities in markup are not tags', () => {
+      const notes = [{ id: 'c1', title: 'Styled', content: '<p><span style="color: #ff3b30">red</span> it&#39;s #real</p>', folder: 'quick', updatedAt: new Date().toISOString() }];
+      render(<NotesHub {...defaultProps} notes={notes} />);
+      expect(screen.queryByText('#ff3b30')).not.toBeInTheDocument();
+      expect(screen.queryByText('#39')).not.toBeInTheDocument();
+      expect(screen.getAllByText('#real').length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('D3: exporting a locked note asks for its PIN instead of downloading', () => {
+      const createUrl = vi.fn(() => 'blob:x');
+      global.URL.createObjectURL = createUrl;
+      render(<NotesHub {...defaultProps} notes={[locked]} />);
+      fireEvent.click(screen.getByRole('button', { name: 'Export Markdown' }));
+      expect(createUrl).not.toHaveBeenCalled();
+      expect(document.querySelector('.pin-modal-card')).toBeInTheDocument();
+    });
+
+    it('D6: Delete Forever asks first and does nothing if cancelled', () => {
+      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+      render(<NotesHub {...defaultProps} />);
+      fireEvent.click(screen.getByText('Recently Deleted'));
+      fireEvent.click(screen.getByRole('button', { name: 'Delete Forever' }));
+      expect(confirmSpy).toHaveBeenCalled();
+      expect(defaultProps.deleteNote).not.toHaveBeenCalled();
+      confirmSpy.mockRestore();
+    });
+
+    it('C2: the editor folder menu lists custom folders', () => {
+      render(<NotesHub {...defaultProps} customFolders={[{ id: 'thesis', name: 'Thesis' }]} />);
+      fireEvent.click(screen.getByRole('button', { name: /New Note/i }));
+      expect(screen.getByRole('option', { name: 'Thesis' })).toBeInTheDocument();
+    });
+
+    it('A9: opening and closing a note without changes does not re-save it', () => {
+      render(<NotesHub {...defaultProps} />);
+      fireEvent.click(screen.getByText('Architecture Blueprint'));
+      fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+      expect(defaultProps.saveNote).not.toHaveBeenCalled();
+    });
+
+    it('renaming or re-filing an existing note is saved', () => {
+      render(<NotesHub {...defaultProps} />);
+      fireEvent.click(screen.getByText('Architecture Blueprint'));
+      fireEvent.change(screen.getByLabelText('Note title'), { target: { value: 'Renamed' } });
+      fireEvent.change(document.querySelector('.note-folder-select'), { target: { value: 'ideas' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+      expect(defaultProps.saveNote).toHaveBeenCalledWith(expect.objectContaining({ id: 'n2', title: 'Renamed', folder: 'ideas' }));
+    });
+
+    it('B11: ticking a checklist box is saved with the note', () => {
+      const notes = [{ id: 'k1', title: 'Todo', content: '<div class="checklist-row"><input type="checkbox"> <span>milk</span></div>', folder: 'quick', updatedAt: new Date().toISOString() }];
+      render(<NotesHub {...defaultProps} notes={notes} />);
+      fireEvent.click(screen.getByText('Todo'));
+      fireEvent.click(document.querySelector('.rich-note-editor[contenteditable] input[type=checkbox]'));
+      fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+      expect(defaultProps.saveNote).toHaveBeenCalledWith(expect.objectContaining({ content: expect.stringContaining('checked') }));
+    });
+
+    it('locked notes reveal neither their tags nor their text through tags or search', () => {
+      const secret = { ...locked, content: '<p>salary #private</p>' };
+      render(<NotesHub {...defaultProps} notes={[secret]} />);
+      expect(screen.queryByText('#private')).not.toBeInTheDocument();
+      fireEvent.change(screen.getByPlaceholderText(/Search notes/i), { target: { value: 'salary' } });
+      expect(screen.queryByText('Locked plan')).not.toBeInTheDocument();
+    });
+
+    it('C7: PIN digits typed on the keyboard are not also typed into the page', () => {
+      render(<NotesHub {...defaultProps} notes={[locked]} />);
+      fireEvent.click(screen.getByText('Locked plan'));
+      const event = new KeyboardEvent('keydown', { key: '1', bubbles: true, cancelable: true });
+      window.dispatchEvent(event);
+      expect(event.defaultPrevented).toBe(true);
+    });
+  });
 });

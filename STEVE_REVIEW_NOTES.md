@@ -2051,3 +2051,22 @@ so in Prism, Melting Clock and Dream Portal the seconds change in place and only
 Two new tests (`ui/FlipText.test.jsx`). 126/126, build ok.
 
 **Steve:** That's the one. The clock breathes once a minute instead of ticking at you. **9/10.**
+
+---
+
+## Round 42 — Notes page bug sweep (27 Sep 2026) — Claude + Steve
+
+**What:** tested every control on the Notes page end-to-end (`NOTES_TEST_CASES.md`). There were
+13 bugs, and all are fixed: 66/66 browser checks and 141 unit tests pass. Three fixes change what
+people see: a PIN prompt before exporting a locked note, a one-line inline error for a duplicate
+folder name, and a confirm before Delete Forever.
+
+### Steve
+This is the work nobody applauds and everybody feels. A lock that leaked its note through the
+download button wasn't a lock. A checkbox that forgot being ticked was a lie. Both are fixed.
+
+The three visible additions are the right size. The export PIN reuses the prompt people already
+know. The folder error is one quiet red line, not a dialog. The confirm only guards the one
+action that can't be undone.
+
+**Score: 9/10.**

@@ -33,6 +33,7 @@ import { updateTabProgressRing, restoreTabFavicon } from './utils/tabProgress';
 import { canUseDocumentPiP, openDocumentPiP, closeDocumentPiP, isPiPOpen } from './utils/pipManager';
 import ShortcutSheetModal from './components/ui/ShortcutSheetModal';
 import { recordFocusSession } from './utils/focusSessionHistory';
+import { createCustomFolder } from './utils/noteFolders';
 import useSoftLanding from './hooks/useSoftLanding';
 
 export default function App() {
@@ -398,7 +399,8 @@ export default function App() {
   useEffect(() => {
     const handleGlobalKeyDown = (e) => {
       const tag = e.target?.tagName?.toLowerCase();
-      if (tag === 'input' || tag === 'textarea' || e.target?.isContentEditable) {
+      // Never fire while typing, or from inside an open dialog (e.g. the note editor).
+      if (tag === 'input' || tag === 'textarea' || e.target?.isContentEditable || e.target?.closest?.('.modal-card')) {
         return;
       }
       if (e.key === 'f' || e.key === 'F') {
@@ -653,20 +655,26 @@ export default function App() {
     Storage.set('notes', updated);
   };
 
+  // Returns an error message when the name can't be used, otherwise null.
   const addCustomFolder = (folderName) => {
-    const newF = {
-      id: folderName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      name: folderName
-    };
-    const updated = [...customFolders, newF];
+    const { folder, error } = createCustomFolder(folderName, customFolders);
+    if (error) return error;
+    const updated = [...customFolders, folder];
     setCustomFolders(updated);
     Storage.set('custom_folders', updated);
+    return null;
   };
 
+  // Notes in a deleted folder move to Quick Notes, as the confirm dialog promises.
   const deleteCustomFolder = (folderId) => {
     const updated = customFolders.filter((f) => f.id !== folderId);
     setCustomFolders(updated);
     Storage.set('custom_folders', updated);
+    setNotes((prevNotes) => {
+      const moved = prevNotes.map((n) => (n.folder === folderId ? { ...n, folder: 'quick' } : n));
+      Storage.set('notes', moved);
+      return moved;
+    });
   };
 
   // Settings & Data Backup Operations

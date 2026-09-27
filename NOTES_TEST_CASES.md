@@ -100,7 +100,7 @@ production build (`vite build` + `vite preview`), starting from empty storage un
 
 ---
 
-## Results — run 27 Sep 2026 (Chromium, production build)
+## First run — 27 Sep 2026 (Chromium, production build)
 
 **52 checks passed, 14 failed.** Failures were each re-run on their own to rule out test timing:
 C4 turned out to be a test timing issue and passes; D3 looked like a pass at first but is a real
@@ -127,3 +127,24 @@ leak.
 
 A1–A8, A10 · B1–B10, B12–B15 · C1, C3–C7, C9, C10 · D1, D2, D4, D5, D7 · E1–E5, E7, E8 ·
 F1, F2, F4–F6, F9 · G1 (a right-to-left sketch stroke on a phone doesn't switch tabs).
+
+## After fixes — re-run 27 Sep 2026
+
+**66 / 66 browser checks pass.** Unit tests: 141 pass, including a regression test for each
+bug (`NotesWorkflows.test.jsx`, `utils/noteUtils.test.js`).
+
+| # | Fix |
+|---|---|
+| 1 | The PIN prompt now swallows the digits it reads, so they are never typed into the title. It also starts empty every time it opens. |
+| 2 | Export on a locked card asks for the PIN first, then downloads. |
+| 3 | Deleting a custom folder moves its notes to Quick Notes. If that folder was open, the view goes back to All Notes. |
+| 4 | Ticking a checklist box is written into the note, so it survives saving. |
+| 5 | Toolbar actions always land in the note body. If the cursor is elsewhere, it moves to the end of the body first. |
+| 6 | Notes are saved only when something actually changed. Opening a note no longer re-orders "Recent". |
+| 7 | The editor's folder menu includes custom folders. |
+| 8 | New folder names must be unique (built-ins included), and ids never collide. Duplicates get an inline message. |
+| 9 | Tags are read from visible text only, and must start with a letter. |
+| 10 | The Folders total shows the number of notes. |
+| 11 | Delete Forever asks for confirmation. |
+| 12 | App shortcuts (`F`, `P`, `D`, `?`) don't fire from inside a dialog. |
+| 13 | *Found during the re-run:* a locked note's `#tags` appeared in the tag bar, and search matched its hidden text. Locked notes now expose only their title. |
