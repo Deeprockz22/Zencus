@@ -1,4 +1,5 @@
 import React from 'react';
+import FlipText from '../ui/FlipText';
 import { SPECTRUM as S } from '../surreal/spectrum';
 
 /*
@@ -24,6 +25,7 @@ export default function PrismRecord({
   formatTime,
   startTimer,
   pauseTimer,
+  calmDigits = false,
 }) {
   const progress = totalDuration > 0 ? Math.min(1, Math.max(0, (totalDuration - timeLeft) / totalDuration)) : 0;
   const engaged = isRunning || progress > 0;
@@ -71,7 +73,7 @@ export default function PrismRecord({
           <div className="prism-sheen" aria-hidden="true" />
           <div className="prism-readout" aria-hidden="true">
             <span className="prism-readout-mode">{title}</span>
-            <span className="prism-readout-time">{time}</span>
+            <FlipText className="prism-readout-time" text={time} still={calmDigits ? 2 : 0} />
           </div>
         </div>
 

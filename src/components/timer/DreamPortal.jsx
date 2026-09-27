@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import FlipText from '../ui/FlipText';
 import { MODE_PALETTES } from '../surreal/spectrum';
 
 /*
@@ -26,6 +27,7 @@ export default function DreamPortal({
   formatTime,
   startTimer,
   pauseTimer,
+  calmDigits = false,
 }) {
   const canvasRef = useRef(null);
   const stateRef = useRef({ isRunning, mode });
@@ -202,7 +204,7 @@ export default function DreamPortal({
 
         <div className="dream-portal-readout">
           <span className="dream-portal-mode">{title}</span>
-          <span className="dream-portal-time">{time}</span>
+          <FlipText className="dream-portal-time" text={time} still={calmDigits ? 2 : 0} />
           <span className="dream-portal-hint">{isRunning ? 'tap to pause' : 'tap to begin'}</span>
         </div>
       </div>
