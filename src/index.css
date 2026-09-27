@@ -4478,6 +4478,7 @@ body {
 
 .new-folder-input {
   flex: 1;
+  min-width: 0; /* let the field shrink, so "Add" stays inside the sidebar */
   background: var(--bg-tertiary);
   border: 1px solid var(--border-active);
   color: var(--text-primary);
@@ -4488,6 +4489,7 @@ body {
 }
 
 .new-folder-submit {
+  flex-shrink: 0;
   background: var(--accent-primary);
   color: var(--accent-text);
   border: none;

@@ -2216,3 +2216,30 @@ to it: the record, the portal, the lantern, the dial. And red was never Komorebi
 honey finally reaches the button you press most.
 
 **Score: 9/10.** Next: Komorebi's Tasks and Notes still use Crisp's red. Give them the same honey.
+
+---
+
+## Round 48 — Honey all the way through (27 Sep 2026) — Claude + Steve
+
+**What:** Steve's two open asks.
+- **Komorebi is honey everywhere, not just the timer.** Tasks and Notes used Crisp's red for
+  Add Task, New Note, the prompt, filter and folder dots, pins, locks and the dock dot. They now
+  use honey. The task progress bar grows from moss into sunlight, where it was Crisp's teal-to-blue.
+  Warnings use persimmon, the room's own alarm: "High" priority, delete hovers, the folder-name
+  error and every "Delete forever / Empty trash / Clear all data" button. Honey buttons carry ink
+  text, never honey on honey. The brand logo keeps its red. A scan of every visible element on the
+  Timer, Tasks, Notes, folder form and note editor, day and night, finds no red left.
+- **The blur-order guard.** A new test reads every stylesheet and fails if any rule lists
+  `backdrop-filter` before `-webkit-backdrop-filter`, so the silent no-blur build bug can't come
+  back. Checked that it catches a bad rule and passes a good one.
+
+**Found on the way:** the "New folder" field was wider than its form in every theme, pushing
+"Add" outside the sidebar. The field can shrink now, so "Add" sits inside.
+
+### Steve
+Now it's one room. You can walk from the timer to your notes and never trip over a colour
+from another house. Persimmon for danger is the right call: it's warm and still says stop. And
+the guard is the kind of thing I like best, a mistake we made once and can't make twice.
+
+**Score: 9.5/10.** The half point is the last mile: the Surreal and Lantern Tasks and Notes pages
+deserve the same audit.

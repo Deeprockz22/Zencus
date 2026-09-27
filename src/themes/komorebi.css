@@ -46,6 +46,8 @@ html.komorebi[data-theme='light'] {
   --km-sage: oklch(0.78 0.08 158);
   --km-amber: oklch(0.74 0.14 62);
   --km-amber-ink: oklch(0.52 0.12 55); /* honey deep enough to read as text on washi */
+  --km-persimmon: oklch(0.52 0.15 38); /* the room's warning colour: delete, errors, high priority */
+  --km-on-persimmon: oklch(0.98 0.01 90);
   --km-slate: oklch(0.35 0.02 155);
   --km-surface: oklch(0.945 0.014 105 / 0.85);
 
@@ -83,6 +85,8 @@ html.komorebi[data-theme='dark'] {
   --km-sage: oklch(0.80 0.08 158);
   --km-amber: oklch(0.76 0.145 65);
   --km-amber-ink: oklch(0.76 0.145 65);
+  --km-persimmon: oklch(0.72 0.14 42);
+  --km-on-persimmon: oklch(0.2 0.02 40);
   --km-slate: oklch(0.88 0.01 105);
   --km-surface: oklch(0.24 0.02 155 / 0.85);
 
@@ -256,16 +260,62 @@ html.komorebi .fullscreen-zen-overlay:not(#_) {
 html.komorebi .fullscreen-zen-overlay .fullscreen-top-bar {
   border-color: var(--border-subtle) !important;
 }
-/* The timer in honey, on the page and full screen: the CTA rule above was
-   written for older buttons and no longer reached Start, the presets or the
-   red dots, so the timer was red here while the settings page was honey. */
-html.komorebi :is(.glyph-timer-left-console, .fullscreen-zen-overlay) .bg-\[\#ff3b30\],
-html.komorebi .fullscreen-zen-overlay .zen-bottom-progress-fill {
+/* ---------- Honey, not red: Komorebi's accent across the app ----------
+   Crisp's red lives in Tailwind utilities (bg-/text-/border-[#ff3b30]) and in
+   the primary-button rules. The CTA rule above was written for older buttons
+   and no longer reached them, so the room was red everywhere but Settings.
+   In the room the accent is honey; warnings (delete, errors, high priority)
+   take persimmon. Unlayered rules outrank Tailwind's layered utilities. */
+html.komorebi .bg-\[\#ff3b30\] {
   background: var(--km-amber) !important;
   box-shadow: none !important;
 }
-html.komorebi :is(.glyph-timer-left-console, .fullscreen-zen-overlay) .text-\[\#ff3b30\] {
+html.komorebi .text-\[\#ff3b30\],
+html.komorebi .hover\:text-\[\#ff3b30\]:hover {
   color: var(--km-amber-ink) !important;
+}
+html.komorebi .border-\[\#ff3b30\],
+html.komorebi .hover\:border-\[\#ff3b30\]:hover,
+html.komorebi .focus\:border-\[\#ff3b30\]:focus,
+html.komorebi .focus-within\:border-\[\#ff3b30\]:focus-within {
+  border-color: var(--km-amber) !important;
+}
+html.komorebi :is(.btn-action.primary, .rb-shiny-btn--primary, .rb-shiny-btn--active, .glyph-start-btn.btn-running),
+html.komorebi :is(.btn-action.primary, .rb-shiny-btn--primary, .rb-shiny-btn--active, .glyph-start-btn.btn-running):hover,
+html.komorebi .fullscreen-zen-overlay .zen-bottom-controls .zen-main-btn,
+html.komorebi .fullscreen-zen-overlay .zen-bottom-controls .zen-main-btn:hover {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, oklch(0.70 0.135 55) 100%) !important;
+  color: oklch(0.22 0.012 155) !important; /* sumi ink: white on honey is too faint to read */
+  border-color: transparent !important;
+  box-shadow: 0 4px 18px var(--accent-glow) !important;
+}
+/* a honey button (day's folder "Add") keeps ink text, never honey on honey */
+html.komorebi[data-theme='light'] .new-folder-submit {
+  color: oklch(0.22 0.012 155) !important;
+}
+/* warnings */
+html.komorebi .priority-badge.text-\[\#ff3b30\],
+html.komorebi :is(.delete-btn, .note-icon-action.delete, .folder-delete-icon):hover,
+html.komorebi .new-folder-error {
+  color: var(--km-persimmon) !important;
+}
+html.komorebi .priority-badge .bg-\[\#ff3b30\] {
+  background: var(--km-persimmon) !important;
+}
+html.komorebi .confirm-dialog-confirm.btn-action.primary,
+html.komorebi .confirm-dialog-confirm.btn-action.primary:hover {
+  background: var(--km-persimmon) !important;
+  color: var(--km-on-persimmon) !important;
+  box-shadow: none !important;
+}
+/* task progress grows from moss into sunlight */
+html.komorebi .task-progress-fill {
+  background: linear-gradient(90deg, var(--km-sage), var(--km-amber)) !important;
+  box-shadow: none !important;
+}
+html.komorebi .fullscreen-zen-overlay .zen-bottom-progress-fill {
+  background: var(--km-amber) !important;
+  box-shadow: none !important;
 }
 html.komorebi .fullscreen-zen-overlay .zen-bottom-progress-track {
   background: var(--border-subtle) !important;
@@ -273,15 +323,6 @@ html.komorebi .fullscreen-zen-overlay .zen-bottom-progress-track {
 html.komorebi .fullscreen-zen-overlay :is(.zen-close-btn, .zen-reset-btn):hover {
   border-color: var(--km-amber) !important;
   color: var(--km-amber-ink) !important;
-}
-html.komorebi .glyph-timer-left-console :is(.rb-shiny-btn--primary, .rb-shiny-btn--active, .glyph-start-btn.btn-running),
-html.komorebi .glyph-timer-left-console :is(.rb-shiny-btn--primary, .rb-shiny-btn--active, .glyph-start-btn.btn-running):hover,
-html.komorebi .fullscreen-zen-overlay .zen-bottom-controls .zen-main-btn,
-html.komorebi .fullscreen-zen-overlay .zen-bottom-controls .zen-main-btn:hover {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, oklch(0.70 0.135 55) 100%) !important;
-  color: oklch(0.22 0.012 155) !important; /* sumi ink: white on honey is too faint to read */
-  border-color: transparent !important;
-  box-shadow: 0 4px 18px var(--accent-glow) !important;
 }
 /* the Minimal Dial's red, in honey */
 html.komorebi .minimal-canvas-stage [stroke='#ff3b30'] { stroke: var(--km-amber); }
