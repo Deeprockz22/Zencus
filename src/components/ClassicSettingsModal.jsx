@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Clock, Database, Info, Download, Upload, Trash2, Sparkles, Palette, Volume2, VolumeX, Music, Compass, Lock, Check } from 'lucide-react';
+import { X, Clock, Database, Info, Download, Upload, Trash2, Sparkles, Palette, Volume2, VolumeX, Music, Compass, Check } from 'lucide-react';
 import MagnetButton from './react-bits/MagnetButton';
 import AsciiImage from './ui/AsciiImage';
 import { COMPANIONS } from '../utils/companionPresets';
@@ -31,8 +31,7 @@ export default function ClassicSettingsModal({
   companionType = 'dino',
   onSelectCompanion,
   theme,
-  setTheme,
-  onLockApp
+  setTheme
 }) {
   const [focusSoundtrack, setFocusSoundtrack] = useState(() => Storage.get('focus_soundtrack', 'vinyl-lofi'));
   const [autoPlayAudio, setAutoPlayAudio] = useState(() => Storage.get('focus_autoplay_audio', false));
@@ -448,32 +447,6 @@ export default function ClassicSettingsModal({
               )}
             </div>
           </div>
-
-          {/* Privacy & Dashboard Lock */}
-          {onLockApp && (
-            <div className="settings-section">
-              <div className="settings-section-title flex items-center gap-2">
-                <Lock size={16} />
-                <span>Security & Privacy</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
-                <div>
-                  <span className="text-xs font-bold text-[var(--text-primary)] block">Lock Dashboard</span>
-                  <span className="text-[11px] text-[var(--text-secondary)]">Require PIN 1234 to access your notes and timer.</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    onLockApp();
-                  }}
-                  className="px-3.5 py-1.5 rounded-lg border border-[var(--border-subtle)] text-xs font-semibold hover:border-[var(--text-primary)] transition-all bg-[var(--bg-primary)] text-[var(--text-primary)]"
-                >
-                  Lock Now
-                </button>
-              </div>
-            </div>
-          )}
 
           {/* Data Backup & Management */}
           <div className="settings-section">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Clock, Database, Info, Download, Upload, Trash2, Sparkles, Palette, Volume2, VolumeX, Music, Compass, Lock, Check, Minus, Plus } from 'lucide-react';
+import { X, Clock, Database, Info, Download, Upload, Trash2, Sparkles, Palette, Volume2, VolumeX, Music, Compass, Check, Minus, Plus } from 'lucide-react';
 import MagnetButton from './react-bits/MagnetButton';
 import { COMPANIONS } from '../utils/companionPresets';
 import { sfx, SOUND_PACKS } from '../utils/sfx';
@@ -31,7 +31,6 @@ const CHAPTERS = [
   { id: 'world', label: 'World', hue: 'ultraviolet', Icon: Palette },
   { id: 'sound', label: 'Sound', hue: 'lagoon', Icon: Music },
   { id: 'companion', label: 'Companion', hue: 'mint', Icon: Sparkles },
-  { id: 'privacy', label: 'Privacy', hue: 'orchid', Icon: Lock },
   { id: 'keep', label: 'Keep', hue: 'solar', Icon: Database },
   { id: 'about', label: 'About', hue: 'ember', Icon: Info },
 ];
@@ -92,8 +91,7 @@ export default function AtelierSettingsModal({
   companionType = 'dino',
   onSelectCompanion,
   theme,
-  setTheme,
-  onLockApp
+  setTheme
 }) {
   const [focusSoundtrack, setFocusSoundtrack] = useState(() => Storage.get('focus_soundtrack', 'vinyl-lofi'));
   const [autoPlayAudio, setAutoPlayAudio] = useState(() => Storage.get('focus_autoplay_audio', false));
@@ -253,7 +251,7 @@ export default function AtelierSettingsModal({
 
         <div className="atl-layout">
           <nav className="atl-rail" aria-label="Settings chapters" ref={railRef}>
-            {CHAPTERS.filter((c) => c.id !== 'privacy' || onLockApp).map(({ id, label, hue, Icon }) => (
+            {CHAPTERS.map(({ id, label, hue, Icon }) => (
               <button
                 key={id}
                 type="button"
@@ -523,32 +521,6 @@ export default function AtelierSettingsModal({
                 )}
               </div>
             </section>
-
-            {/* ───────── Privacy ───────── */}
-            {onLockApp && (
-              <section className="settings-section atl-section atl-hue-orchid" data-chapter="privacy">
-                <div className="settings-section-title atl-section-title">
-                  <Lock size={16} />
-                  <span>Security & Privacy</span>
-                </div>
-                <div className="atl-row">
-                  <div className="atl-row-text">
-                    <span className="atl-row-title">Lock Dashboard</span>
-                    <span className="atl-row-desc">Require PIN 1234 to open your notes and timer.</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      onLockApp();
-                    }}
-                    className="atl-ghost-btn"
-                  >
-                    Lock Now
-                  </button>
-                </div>
-              </section>
-            )}
 
             {/* ───────── Keep ───────── */}
             <section className="settings-section atl-section atl-hue-solar" data-chapter="keep">

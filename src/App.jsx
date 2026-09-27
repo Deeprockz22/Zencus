@@ -10,7 +10,6 @@ import TaskManager from './components/tasks/TaskManager';
 import NotesHub from './components/notes/NotesHub';
 import SettingsModal from './components/SettingsModal';
 import CompanionPickerModal from './components/companion/CompanionPickerModal';
-import LockScreen from './components/LockScreen';
 import ClickSpark from './components/react-bits/ClickSpark';
 import SurrealWorld from './components/surreal/SurrealWorld';
 import LanternWorld from './components/lantern/LanternWorld';
@@ -33,6 +32,8 @@ import { updateTabProgressRing, restoreTabFavicon } from './utils/tabProgress';
 import { canUseDocumentPiP, openDocumentPiP, closeDocumentPiP, isPiPOpen } from './utils/pipManager';
 import ShortcutSheetModal from './components/ui/ShortcutSheetModal';
 import { recordFocusSession } from './utils/focusSessionHistory';
+import { createCustomFolder } from './utils/noteFolders';
+import { encryptLegacyNote } from './utils/noteCrypto';
 import useSoftLanding from './hooks/useSoftLanding';
 
 export default function App() {
@@ -95,7 +96,6 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [visualizerType, setVisualizerType] = useState('portal');
-  const [isAppLocked, setIsAppLocked] = useState(false);
   // the short reflection that follows a finished focus session
   const [debrief, setDebrief] = useState(null);
 
@@ -398,7 +398,8 @@ export default function App() {
   useEffect(() => {
     const handleGlobalKeyDown = (e) => {
       const tag = e.target?.tagName?.toLowerCase();
-      if (tag === 'input' || tag === 'textarea' || e.target?.isContentEditable) {
+      // Never fire while typing, or from inside an open dialog (e.g. the note editor).
+      if (tag === 'input' || tag === 'textarea' || e.target?.isContentEditable || e.target?.closest?.('.modal-card')) {
         return;
       }
       if (e.key === 'f' || e.key === 'F') {
@@ -630,43 +631,77 @@ export default function App() {
     return savedNote;
   };
 
+  // Note updates always build on the latest list, so back-to-back changes
+  // (and saves that finish late, like encrypted ones) never overwrite each other.
+  const updateNotes = (change) => {
+    setNotes((prevNotes) => {
+      const updated = change(prevNotes);
+      Storage.set('notes', updated);
+      return updated;
+    });
+  };
+
   const deleteNote = (noteId, permanent = false) => {
-    let updated;
-    if (permanent) {
-      updated = notes.filter((n) => n.id !== noteId);
-    } else {
-      updated = notes.map((n) => (n.id === noteId ? { ...n, trash: true } : n));
-    }
-    setNotes(updated);
-    Storage.set('notes', updated);
+    updateNotes((prev) =>
+      permanent ? prev.filter((n) => n.id !== noteId) : prev.map((n) => (n.id === noteId ? { ...n, trash: true } : n))
+    );
   };
 
   const restoreNote = (noteId) => {
-    const updated = notes.map((n) => (n.id === noteId ? { ...n, trash: false } : n));
-    setNotes(updated);
-    Storage.set('notes', updated);
+    updateNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, trash: false } : n)));
+  };
+
+  const emptyTrash = () => {
+    updateNotes((prev) => prev.filter((n) => !n.trash));
   };
 
   const togglePin = (noteId) => {
-    const updated = notes.map((n) => (n.id === noteId ? { ...n, pinned: !n.pinned } : n));
-    setNotes(updated);
-    Storage.set('notes', updated);
+    updateNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, pinned: !n.pinned } : n)));
   };
 
-  const addCustomFolder = (folderName) => {
-    const newF = {
-      id: folderName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      name: folderName
+  // Notes locked in the old format kept their PIN and text in plain sight: encrypt them.
+  useEffect(() => {
+    const legacy = notes.filter((n) => n.pin && !n.cipher);
+    if (legacy.length === 0) return;
+    let cancelled = false;
+    Promise.all(legacy.map(encryptLegacyNote)).then((upgraded) => {
+      if (cancelled) return;
+      const byId = new Map(upgraded.map((n, i) => [n.id, { upgraded: n, source: legacy[i] }]));
+      updateNotes((prev) =>
+        prev.map((n) => {
+          const entry = byId.get(n.id);
+          // Only replace a note that hasn't changed since it was encrypted
+          return entry && n.pin && !n.cipher && n.updatedAt === entry.source.updatedAt && n.content === entry.source.content
+            ? { ...n, ...entry.upgraded, pin: undefined }
+            : n;
+        })
+      );
+    });
+    return () => {
+      cancelled = true;
     };
-    const updated = [...customFolders, newF];
+  }, [notes]);
+
+  // Returns an error message when the name can't be used, otherwise null.
+  const addCustomFolder = (folderName) => {
+    const { folder, error } = createCustomFolder(folderName, customFolders);
+    if (error) return error;
+    const updated = [...customFolders, folder];
     setCustomFolders(updated);
     Storage.set('custom_folders', updated);
+    return null;
   };
 
+  // Notes in a deleted folder move to Quick Notes, as the confirm dialog promises.
   const deleteCustomFolder = (folderId) => {
     const updated = customFolders.filter((f) => f.id !== folderId);
     setCustomFolders(updated);
     Storage.set('custom_folders', updated);
+    setNotes((prevNotes) => {
+      const moved = prevNotes.map((n) => (n.folder === folderId ? { ...n, folder: 'quick' } : n));
+      Storage.set('notes', moved);
+      return moved;
+    });
   };
 
   // Settings & Data Backup Operations
@@ -769,24 +804,6 @@ export default function App() {
     }
   };
 
-  if (isAppLocked) {
-    return (
-      <div className={`app-layout theme-${theme} mode-${mode}`} data-theme={baseTheme(theme)}>
-        {isSurrealTheme(theme) && <SurrealWorld theme={theme} />}
-        {isLanternTheme(theme) && <LanternWorld theme={theme} />}
-        {isKomorebiTheme(theme) && <KomorebiWorld theme={theme} />}
-        <LockScreen
-          surreal={isSurrealTheme(theme)}
-          onUnlock={() => {
-            setIsAppLocked(false);
-            if (soundEnabled) sfx.play('select');
-          }}
-          correctPin="1234"
-        />
-      </div>
-    );
-  }
-
   return (
     <div className={`app-layout theme-${theme} mode-${mode}`} data-timer-mode={mode}>
 
@@ -831,10 +848,6 @@ export default function App() {
         miniTimerOpen={!!miniPip.pipWindow}
         companionType={companionType}
         openCompanionPicker={() => setIsCompanionPickerOpen(true)}
-        onLockApp={() => {
-          setIsAppLocked(true);
-          if (soundEnabled) sfx.play('select');
-        }}
       />
 
       {/* Main Content Area */}
@@ -909,6 +922,7 @@ export default function App() {
             saveNote={saveNote}
             deleteNote={deleteNote}
             restoreNote={restoreNote}
+            emptyTrash={emptyTrash}
             togglePin={togglePin}
             customFolders={customFolders}
             addCustomFolder={addCustomFolder}
@@ -1019,10 +1033,6 @@ export default function App() {
         }}
         theme={theme}
         setTheme={setTheme}
-        onLockApp={() => {
-          setIsAppLocked(true);
-          if (soundEnabled) sfx.play('select');
-        }}
       />
 
       {/* Focus Pet Wardrobe Modal */}

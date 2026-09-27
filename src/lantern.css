@@ -282,8 +282,7 @@ html.lantern .atl-world-name,
 html.lantern .atl-subtitle,
 html.lantern .atl-stepper-input,
 html.lantern .atl-volume-value,
-html.lantern .atl-cycle-total,
-html.lantern .lock-title {
+html.lantern .atl-cycle-total {
   font-family: var(--font-lantern) !important;
   font-style: normal !important;
   letter-spacing: -0.01em;
@@ -425,18 +424,6 @@ html.lantern .green-dot-matrix-wall .wall-left-panel { border-radius: 28px !impo
 html.lantern .fullscreen-zen-overlay { background: transparent !important; }
 html.lantern .fullscreen-zen-overlay .zen-bottom-digits,
 html.lantern .fullscreen-zen-overlay .zen-bottom-mode-tag { display: none !important; }
-
-/* lock screen: glass bubbles in the garden */
-html.lantern .lock-screen { background: transparent !important; }
-html.lantern .lock-key {
-  background: var(--ln-surface) !important;
-  border: 1px solid var(--ln-edge) !important;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  font-family: var(--font-lantern) !important;
-  transition: transform 0.5s var(--ln-ease), box-shadow 0.5s var(--ln-ease) !important;
-}
-html.lantern .lock-key:hover { transform: translateY(-3px); box-shadow: 0 10px 24px -8px var(--ln-cta-glow); }
 
 /* Settings (The Atelier) in lantern light */
 html.lantern .atl-card { --atl-tile: color-mix(in oklch, var(--bg-secondary) 55%, transparent); }

@@ -33,12 +33,18 @@ export default function FolderSidebar({
 }) {
   const [newFolderName, setNewFolderName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [folderError, setFolderError] = useState('');
 
   const handleCreateFolder = (e) => {
     e.preventDefault();
     if (newFolderName.trim()) {
-      onAddFolder(newFolderName.trim());
+      const error = onAddFolder(newFolderName.trim());
+      if (error) {
+        setFolderError(error);
+        return;
+      }
       setNewFolderName('');
+      setFolderError('');
       setIsCreating(false);
     }
   };
@@ -51,12 +57,15 @@ export default function FolderSidebar({
             Folders
           </span>
           <span className="sidebar-badge text-[11px] text-[var(--text-tertiary)] opacity-60">
-            {Object.values(notesCountByFolder).reduce((a, b) => a + b, 0)}
+            {notesCountByFolder.all || 0}
           </span>
         </div>
         <button
           className={`folder-add-btn p-1 text-[var(--text-secondary)] hover:text-[#ff3b30] transition-colors rounded-full ${isCreating ? 'active text-[#ff3b30]' : ''}`}
-          onClick={() => setIsCreating(!isCreating)}
+          onClick={() => {
+            setIsCreating(!isCreating);
+            setFolderError('');
+          }}
           title={isCreating ? 'Cancel' : 'Create Custom Folder'}
         >
           {isCreating ? <X size={14} /> : <FolderPlus size={14} />}
@@ -68,8 +77,13 @@ export default function FolderSidebar({
           <input
             type="text"
             value={newFolderName}
-            onChange={(e) => setNewFolderName(e.target.value)}
+            onChange={(e) => {
+              setNewFolderName(e.target.value);
+              setFolderError('');
+            }}
             placeholder="Folder name..."
+            aria-label="New folder name"
+            aria-invalid={Boolean(folderError)}
             className="new-folder-input flex-1 bg-transparent border-none text-xs text-[var(--text-primary)] outline-none"
             autoFocus
           />
@@ -77,6 +91,11 @@ export default function FolderSidebar({
             Add
           </button>
         </form>
+      )}
+      {isCreating && folderError && (
+        <p className="new-folder-error text-[11px] text-[#ff3b30] mb-2" role="alert">
+          {folderError}
+        </p>
       )}
 
       <div className="folder-list flex flex-col gap-1">
@@ -124,44 +143,38 @@ export default function FolderSidebar({
           const isActive = currentFolder === folderId;
 
           return (
-            <button
-              key={folderId || index}
-              className={`folder-item custom-folder-item flex items-center justify-between py-1.5 px-2 rounded transition-all text-xs ${
-                isActive
-                  ? 'active text-[var(--text-primary)] font-semibold bg-white/5'
-                  : 'text-[var(--text-secondary)] opacity-70 hover:opacity-100 hover:bg-white/[0.02]'
-              }`}
-              onClick={() => setCurrentFolder(folderId)}
-            >
-              <div className="folder-item-left flex items-center gap-2">
-                {isActive ? (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#ff3b30] shadow-[0_0_6px_#ff3b30] shrink-0" />
-                ) : (
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/20 shrink-0" />
-                )}
-                <Folder size={14} className="folder-icon opacity-70" />
-                <span className="folder-name tracking-tight">{folderName}</span>
-              </div>
-              <div className="folder-item-right flex items-center gap-1.5">
-                <span className="folder-count text-[10px] opacity-50">
-                  {count}
-                </span>
-                {onDeleteFolder && typeof custom === 'object' && (
-                  <span
-                    className="folder-delete-icon text-[var(--text-tertiary)] hover:text-[#ff3b30] cursor-pointer"
-                    title="Delete Folder"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (confirm(`Delete folder "${folderName}"? Notes inside will stay in Quick Notes.`)) {
-                        onDeleteFolder(folderId);
-                      }
-                    }}
-                  >
-                    <X size={11} />
-                  </span>
-                )}
-              </div>
-            </button>
+            <div key={folderId || index} className="custom-folder-row">
+              <button
+                className={`folder-item custom-folder-item flex items-center justify-between py-1.5 px-2 rounded transition-all text-xs ${
+                  isActive
+                    ? 'active text-[var(--text-primary)] font-semibold bg-white/5'
+                    : 'text-[var(--text-secondary)] opacity-70 hover:opacity-100 hover:bg-white/[0.02]'
+                }`}
+                onClick={() => setCurrentFolder(folderId)}
+              >
+                <div className="folder-item-left flex items-center gap-2">
+                  {isActive ? (
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff3b30] shadow-[0_0_6px_#ff3b30] shrink-0" />
+                  ) : (
+                    <span className="w-1.5 h-1.5 rounded-full bg-white/20 shrink-0" />
+                  )}
+                  <Folder size={14} className="folder-icon opacity-70" />
+                  <span className="folder-name tracking-tight">{folderName}</span>
+                </div>
+                <span className="folder-count text-[10px] opacity-50">{count}</span>
+              </button>
+              {onDeleteFolder && typeof custom === 'object' && (
+                <button
+                  type="button"
+                  className="folder-delete-icon p-1 rounded-full text-[var(--text-tertiary)] hover:text-[#ff3b30] transition-colors"
+                  title="Delete Folder"
+                  aria-label={`Delete folder ${folderName}`}
+                  onClick={() => onDeleteFolder(folderId, folderName)} // the hub asks to confirm
+                >
+                  <X size={11} />
+                </button>
+              )}
+            </div>
           );
         })}
       </div>

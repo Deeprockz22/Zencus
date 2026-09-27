@@ -1,0 +1,33 @@
+.confirm-dialog-backdrop { z-index: 120; }
+.confirm-dialog-card {
+  max-width: 360px;
+  padding: 22px 22px 18px;
+  gap: 8px;
+}
+.confirm-dialog-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.confirm-dialog-message {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.confirm-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+.confirm-dialog-actions .btn-action {
+  padding: 7px 16px;
+  font-size: 0.8rem;
+}
+
+/* Sized to sit with the other Notes header controls */
+.empty-trash-btn.btn-action {
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  box-shadow: none;
+}

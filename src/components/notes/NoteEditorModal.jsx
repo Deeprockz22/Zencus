@@ -34,6 +34,7 @@ import MagnetButton from '../react-bits/MagnetButton';
 import SketchCanvasModal from '../canvas/SketchCanvasModal';
 import NoteLockModal from '../security/NoteLockModal';
 import { Sanitizer } from '../../utils/sanitize';
+import { createLock, sealText } from '../../utils/noteCrypto';
 
 const COLOR_OPTIONS = [
   { id: 'default', label: 'Obsidian', color: 'rgba(255,255,255,0.1)' },
@@ -52,14 +53,15 @@ export default function NoteEditorModal({
   onDelete,
   onExport,
   onConvertToTask,
-  folders = ['quick', 'work', 'personal', 'ideas', 'archive']
+  customFolders = [],
+  lock: initialLock = null // the unlocked note's lock (PIN + key), held in memory only
 }) {
   const [currentNoteId, setCurrentNoteId] = useState(note?.id || null);
   const [title, setTitle] = useState('');
   const [folder, setFolder] = useState('quick');
   const [noteColor, setNoteColor] = useState('default');
   const [isPinned, setIsPinned] = useState(false);
-  const [pin, setPin] = useState(null);
+  const [lock, setLock] = useState(null);
   const [previewMode, setPreviewMode] = useState(false); // Split/Live preview
   const [previewHtml, setPreviewHtml] = useState('');
   const [autoSaveStatus, setAutoSaveStatus] = useState('Saved to Local Vault');
@@ -75,8 +77,20 @@ export default function NoteEditorModal({
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const currentNoteIdRef = useRef(note?.id || null);
+  // True once the person changes something; opening and closing a note never rewrites it
+  const isDirtyRef = useRef(false);
+  // Saves read the lock through these refs: lockPendingRef holds the key derivation
+  // started by "set PIN", so a save made before it finishes still waits and encrypts.
+  const lockRef = useRef(null);
+  const lockPendingRef = useRef(null);
+  const saveSeqRef = useRef(0);
+  // Each opening of the editor is a session. A save that finishes late (encryption is async)
+  // still writes to the note it came from, and only the newest save of a session is kept.
+  const sessionRef = useRef(0);
+  const latestSaveRef = useRef({});
 
   useEffect(() => {
+    sessionRef.current += 1;
     if (note) {
       const nextNoteId = note.id || null;
       currentNoteIdRef.current = nextNoteId;
@@ -85,7 +99,9 @@ export default function NoteEditorModal({
       setFolder(note.folder || 'quick');
       setNoteColor(note.color || 'default');
       setIsPinned(note.pinned || false);
-      setPin(note.pin || null);
+      setLock(initialLock);
+      lockRef.current = initialLock;
+      lockPendingRef.current = null;
       const cleanContent = note.content || '';
       if (editorRef.current) {
         editorRef.current.innerHTML = cleanContent;
@@ -98,25 +114,37 @@ export default function NoteEditorModal({
       setFolder('quick');
       setNoteColor('default');
       setIsPinned(false);
-      setPin(null);
+      setLock(null);
+      lockRef.current = null;
+      lockPendingRef.current = null;
       if (editorRef.current) {
         editorRef.current.innerHTML = '';
       }
       setPreviewHtml('');
     }
     setPreviewMode(false);
+    isDirtyRef.current = false;
     setAutoSaveStatus('Saved to Local Vault');
-    updateStats();
-  }, [note, isOpen]);
+    computeStats();
+  }, [note, isOpen, initialLock]);
 
-  const updateStats = () => {
+  const computeStats = () => {
     if (!editorRef.current) return;
     const text = editorRef.current.innerText || '';
     const words = text.trim() ? text.trim().split(/\s+/).length : 0;
     const chars = text.length;
     const readingTime = Math.max(1, Math.ceil(words / 180));
     setStats({ words, chars, readingTime });
+  };
+
+  const markDirty = () => {
+    isDirtyRef.current = true;
     setAutoSaveStatus('Editing...');
+  };
+
+  const updateStats = () => {
+    computeStats();
+    markDirty();
   };
 
   const handleSave = (shouldClose = false) => {
@@ -124,23 +152,45 @@ export default function NoteEditorModal({
     const noteTitle = title.trim();
     const existingNoteId = currentNoteIdRef.current || note?.id || null;
 
-    // Only save if there is content/title or it's an existing note being edited
-    if (noteTitle || currentHtml.trim() || existingNoteId) {
-      const saved = onSave({
-        id: existingNoteId,
+    // Save only real changes: new notes need a title or content, existing ones an edit
+    const shouldSave = existingNoteId ? isDirtyRef.current : Boolean(noteTitle || currentHtml.trim());
+    if (shouldSave) {
+      const fields = {
         title: noteTitle || 'Untitled Note',
-        content: currentHtml,
         folder,
         color: noteColor,
         pinned: isPinned,
-        pin,
         updatedAt: new Date().toISOString()
-      });
-      if (saved?.id) {
-        currentNoteIdRef.current = saved.id;
-        setCurrentNoteId(saved.id);
+      };
+      const seq = ++saveSeqRef.current;
+      const session = sessionRef.current;
+      latestSaveRef.current[session] = seq;
+      isDirtyRef.current = false;
+
+      const commit = (body) => {
+        if (latestSaveRef.current[session] !== seq) return; // a newer save carries these edits
+        const saved = onSave({ id: existingNoteId, ...fields, ...body });
+        if (sessionRef.current !== session) return; // editor has moved on to another note
+        if (saved?.id) {
+          currentNoteIdRef.current = saved.id;
+          setCurrentNoteId(saved.id);
+        }
+        setAutoSaveStatus('Saved to Local Vault');
+      };
+
+      if (!lockRef.current && !lockPendingRef.current) {
+        // Plain note: stored as is (clears any lock data it had)
+        commit({ content: currentHtml, cipher: null, pin: null });
+      } else {
+        // Locked note: only ciphertext is ever stored
+        setAutoSaveStatus('Encrypting...');
+        (async () => {
+          const activeLock = lockPendingRef.current ? await lockPendingRef.current : lockRef.current;
+          if (!activeLock) return commit({ content: currentHtml, cipher: null, pin: null });
+          const cipher = await sealText(activeLock, currentHtml);
+          commit({ content: '', cipher, pin: null });
+        })();
       }
-      setAutoSaveStatus('Saved to Local Vault');
     }
     if (shouldClose) {
       onClose();
@@ -163,7 +213,7 @@ export default function NoteEditorModal({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentNoteId, note, title, folder, noteColor, isPinned, pin, isSketchOpen, isLockModalOpen]);
+  }, [isOpen, currentNoteId, note, title, folder, noteColor, isPinned, lock, isSketchOpen, isLockModalOpen]);
 
   // Debounced auto-save (1.5s after user stops typing)
   useEffect(() => {
@@ -174,7 +224,7 @@ export default function NoteEditorModal({
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [isOpen, autoSaveStatus, title, folder, noteColor, isPinned, pin, currentNoteId]);
+  }, [isOpen, autoSaveStatus, title, folder, noteColor, isPinned, lock, currentNoteId]);
 
   const togglePreviewMode = () => {
     if (!previewMode) {
@@ -189,17 +239,48 @@ export default function NoteEditorModal({
     }
   };
 
+  // Toolbar actions always land in the note body: if the caret is elsewhere
+  // (e.g. still in the title), put it at the end of the body first.
+  const ensureEditorSelection = () => {
+    const el = editorRef.current;
+    if (!el) return null;
+    const selection = window.getSelection();
+    const inEditor = selection.rangeCount > 0 && el.contains(selection.getRangeAt(0).commonAncestorContainer);
+    if (!inEditor) {
+      el.focus();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else if (document.activeElement !== el) {
+      el.focus();
+    }
+    return selection;
+  };
+
   const executeCommand = (command, value = null) => {
+    ensureEditorSelection();
     document.execCommand(command, false, value);
     if (editorRef.current) {
-      editorRef.current.focus();
       updateStats();
     }
   };
 
+  // A checkbox's ticked state is a property, not markup; mirror it into the
+  // `checked` attribute so it's kept when the note is saved.
+  const handleEditorClick = (e) => {
+    const target = e.target;
+    if (target instanceof HTMLInputElement && target.type === 'checkbox') {
+      if (target.checked) target.setAttribute('checked', '');
+      else target.removeAttribute('checked');
+      markDirty();
+    }
+  };
+
   const insertChecklist = () => {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;
+    const selection = ensureEditorSelection();
+    if (!selection || !selection.rangeCount) return;
     const range = selection.getRangeAt(0);
     const checkHtml = '<div class="checklist-row"><input type="checkbox" /> <span>&nbsp;</span></div>';
     const fragment = range.createContextualFragment(checkHtml);
@@ -270,7 +351,7 @@ export default function NoteEditorModal({
                 value={title}
                 onChange={(e) => {
                   setTitle(e.target.value);
-                  setAutoSaveStatus('Editing...');
+                  markDirty();
                 }}
                 placeholder="Note Title (e.g. #Project Planning)..."
                 aria-label="Note title"
@@ -287,7 +368,7 @@ export default function NoteEditorModal({
                   value={folder}
                   onChange={(e) => {
                     setFolder(e.target.value);
-                    setAutoSaveStatus('Editing...');
+                    markDirty();
                   }}
                   className="note-folder-select"
                 >
@@ -296,6 +377,13 @@ export default function NoteEditorModal({
                   <option value="personal">Personal</option>
                   <option value="ideas">Ideas</option>
                   <option value="archive">Archive</option>
+                  {customFolders
+                    .filter((f) => typeof f === 'object' && f.id)
+                    .map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -308,7 +396,10 @@ export default function NoteEditorModal({
                     className={`color-dot-btn ${noteColor === c.id ? 'active' : ''}`}
                     style={{ backgroundColor: c.color }}
                     title={c.label}
-                    onClick={() => setNoteColor(c.id)}
+                    onClick={() => {
+                      setNoteColor(c.id);
+                      markDirty();
+                    }}
                   >
                     {noteColor === c.id && (
                       <Check
@@ -333,14 +424,14 @@ export default function NoteEditorModal({
               {/* Lock Button */}
               <button
                 type="button"
-                className={`icon-btn ${pin ? 'locked-active' : ''}`}
+                className={`icon-btn ${lock ? 'locked-active' : ''}`}
                 onClick={() => {
-                  setLockMode(pin ? 'remove' : 'set');
+                  setLockMode(lock ? 'remove' : 'set');
                   setIsLockModalOpen(true);
                 }}
-                title={pin ? 'Protected with PIN (Click to remove)' : 'Lock note with 4-digit PIN'}
+                title={lock ? 'Protected with PIN (Click to remove)' : 'Lock note with 4-digit PIN'}
               >
-                {pin ? <Lock size={15} color="#eab308" /> : <Unlock size={15} />}
+                {lock ? <Lock size={15} color="#eab308" /> : <Unlock size={15} />}
               </button>
 
               <button
@@ -527,7 +618,7 @@ export default function NoteEditorModal({
             contentEditable="true"
             data-placeholder="Start typing your thoughts, markdown notes (#tags), sketch ideas, or organize tasks..."
             onInput={updateStats}
-            onKeyUp={updateStats}
+            onClick={handleEditorClick}
             suppressContentEditableWarning
           />
 
@@ -601,14 +692,25 @@ export default function NoteEditorModal({
       <NoteLockModal
         isOpen={isLockModalOpen}
         mode={lockMode}
-        correctPin={pin}
+        verifyPin={async (entered) => entered === lock?.pin}
         onClose={() => setIsLockModalOpen(false)}
         onSuccess={(newPin) => {
           if (lockMode === 'set') {
-            setPin(newPin);
+            const pending = createLock(newPin);
+            lockPendingRef.current = pending;
+            pending.then((created) => {
+              if (lockPendingRef.current !== pending) return;
+              lockRef.current = created;
+              lockPendingRef.current = null;
+              setLock(created);
+            });
+            setLock({ pin: newPin, pending: true }); // show the lock right away
           } else if (lockMode === 'remove') {
-            setPin(null);
+            lockRef.current = null;
+            lockPendingRef.current = null;
+            setLock(null);
           }
+          markDirty();
         }}
       />
     </>

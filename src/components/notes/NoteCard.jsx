@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { isLockedNote } from '../../utils/noteCrypto';
 import {
   Pin,
   Trash2,
@@ -20,10 +21,11 @@ export default function NoteCard({
   onRestore,
   onExport,
   onTagClick,
+  tags: noteTags = [],
   isTrashView = false,
   viewMode = 'grid'
 }) {
-  const isLocked = Boolean(note.pin);
+  const isLocked = isLockedNote(note);
 
   // Extract drawing / image thumbnail if present
   const hasImage = note.content && note.content.includes('<img');
@@ -33,13 +35,8 @@ export default function NoteCard({
     return note.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }, [note.content]);
 
-  // Extract hashtags from content
-  const tags = useMemo(() => {
-    if (isLocked || !note.content) return [];
-    const combined = `${note.title || ''} ${note.content || ''}`;
-    const matches = combined.match(/#[a-zA-Z0-9_\-]+/g);
-    return matches ? Array.from(new Set(matches)).slice(0, 3) : [];
-  }, [note.title, note.content, isLocked]);
+  // Hashtags (hidden for locked notes)
+  const tags = isLocked ? [] : noteTags.slice(0, 3);
 
   // Compute word count & reading time
   const readingStats = useMemo(() => {
@@ -162,7 +159,7 @@ export default function NoteCard({
                   className="note-icon-action delete p-1 text-[var(--text-secondary)] hover:text-[#ff3b30] transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDelete(note.id, true); // permanent
+                    onDelete(note.id, true); // permanent (the hub asks to confirm)
                   }}
                   title="Delete Forever"
                   aria-label="Delete Forever"

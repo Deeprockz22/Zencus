@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import SettingsModal from './SettingsModal';
 import CompanionPickerModal from './companion/CompanionPickerModal';
-import LockScreen from './LockScreen';
 
 // Mock canvas-confetti to prevent jsdom context.closePath error
 vi.mock('canvas-confetti', () => ({
@@ -97,38 +96,4 @@ describe('SettingsAndControls: Modal Keyboard & Controller Unit Tests', () => {
     });
   });
 
-  describe('LockScreen Hardware Keyboard & PIN Entry (User Complaint Fix)', () => {
-    it('allows typing PIN digits directly from the computer keyboard', () => {
-      const onUnlock = vi.fn();
-      render(<LockScreen onUnlock={onUnlock} correctPin="1234" />);
-
-      // Type 1, 2, 3, 4 via keyboard
-      fireEvent.keyDown(window, { key: '1' });
-      fireEvent.keyDown(window, { key: '2' });
-      fireEvent.keyDown(window, { key: '3' });
-      fireEvent.keyDown(window, { key: '4' });
-
-      expect(onUnlock).toHaveBeenCalledTimes(1);
-    });
-
-    it('clears entered PIN digits when pressing Backspace or Escape', () => {
-      const onUnlock = vi.fn();
-      render(<LockScreen onUnlock={onUnlock} correctPin="1234" />);
-
-      // Type 1, 2
-      fireEvent.keyDown(window, { key: '1' });
-      fireEvent.keyDown(window, { key: '2' });
-
-      // Hit Backspace to clear
-      fireEvent.keyDown(window, { key: 'Backspace' });
-
-      // Now type full 1234 to verify it wasn't offset
-      fireEvent.keyDown(window, { key: '1' });
-      fireEvent.keyDown(window, { key: '2' });
-      fireEvent.keyDown(window, { key: '3' });
-      fireEvent.keyDown(window, { key: '4' });
-
-      expect(onUnlock).toHaveBeenCalledTimes(1);
-    });
-  });
 });

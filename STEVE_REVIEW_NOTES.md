@@ -2051,3 +2051,89 @@ so in Prism, Melting Clock and Dream Portal the seconds change in place and only
 Two new tests (`ui/FlipText.test.jsx`). 126/126, build ok.
 
 **Steve:** That's the one. The clock breathes once a minute instead of ticking at you. **9/10.**
+
+---
+
+## Round 42 — Notes page bug sweep (27 Sep 2026) — Claude + Steve
+
+**What:** tested every control on the Notes page end-to-end (`NOTES_TEST_CASES.md`). There were
+13 bugs, and all are fixed: 66/66 browser checks and 141 unit tests pass. Three fixes change what
+people see: a PIN prompt before exporting a locked note, a one-line inline error for a duplicate
+folder name, and a confirm before Delete Forever.
+
+### Steve
+This is the work nobody applauds and everybody feels. A lock that leaked its note through the
+download button wasn't a lock. A checkbox that forgot being ticked was a lie. Both are fixed.
+
+The three visible additions are the right size. The export PIN reuses the prompt people already
+know. The folder error is one quiet red line, not a dialog. The confirm only guards the one
+action that can't be undone.
+
+**Score: 9/10.**
+
+**Round 42 addendum — why it wasn't a 10, and what changed (27 Sep 2026):** the 9 above was
+given without saying what was missing. Written down, the gaps were: the browser's grey
+`confirm()` popup in the middle of a designed app; a one-entry PIN that a typo could turn into
+a permanent lockout; a "lock" that stored the note and its PIN in plain text; no Empty Trash;
+and folders hidden on phones. All are fixed (`NOTES_TEST_CASES.md`, round 2).
+
+### Steve
+Now the lock is a lock. The confirm looks like it belongs here. Your phone can reach its own
+trash. The PIN asks twice, the way anything permanent should.
+
+One thing stands between this and a 10, and it isn't a bug: four digits is a small key. It's
+fine for "keep my roommate out". It isn't fine for "keep a determined attacker out". If that
+matters, offer a longer passcode. That's a product decision for the owner.
+
+**Score: 9.5/10.**
+
+---
+
+## Round 43 — The dashboard lock is removed (27 Sep 2026) — Claude + Steve
+
+**What:** at the owner's request, the app-wide lock screen is gone. It locked the whole app
+behind a fixed PIN (1234) that couldn't be changed. Removed: the header lock button, the "Lock
+Dashboard" rows in both Settings designs (and the Atelier's Privacy chapter), `LockScreen.jsx`,
+and its theme styles. Per-note PINs are unchanged.
+
+### Steve
+Good riddance. A lock whose combination is printed in the settings isn't a lock. It's an extra
+tap on the way to your own timer. The header has one icon fewer, and the real protection lives
+where it belongs, on the notes that need it.
+
+---
+
+## Round 44 — Landing page (27 Sep 2026) — Claude + Steve
+
+**What:** `landing.html`, a second Vite page next to the app (the app keeps `/`). Hero, the
+focus → reflect → next loop, five features, the four themes with real screenshots, privacy, and a
+final call to action. Light and dark follow the system. Details on which design resources it uses
+are in `DESIGN_RESOURCES.md` §7.
+
+### Steve
+The hero *is* the product. A real timer you can start, not a video of one. That's the right
+instinct, and most landing pages never have it. One accent and one typeface pairing, with five
+features instead of fifteen. The screenshots are the actual app, not mockups. The privacy
+section says what's true, including the part about the web extras. Honesty is a feature.
+
+| # | Priority | Problem | Change |
+|---|---|---|---|
+| R44-D1 | SHOULD | The product shot shows the app's bracketed presets `( 25 )` and the `AIM:` label, the same pseudo-technical noise Round 1 killed. The landing page is only as clean as the app it shows. | Drop the brackets and `AIM:` in the app, then retake the screenshots. |
+| R44-D2 | COULD | The page lives at `/landing.html`. | When it's ready to be the front door, serve it at `/` and move the app to `/app`. |
+
+**Score: 9/10.**
+
+**R44-D1 done (Claude, 27 Sep 2026):** the presets read `15 25 45 60`, with no brackets. The
+`Aim:` label is gone; the field keeps its prompt and has an accessible name instead. Retaking the
+screenshots exposed one more thing the landing page was advertising: **Start Focus was clipped**
+("TART FO" in Surreal, "STAR…" in Lantern) and wrapped onto two lines in Crisp. It shared a row with
+five icon buttons and got 56–110 px. Start now has its own full-width row with the tools beneath,
+in every theme and at every width. On phones the aim field also cut its prompt off; it's full width
+now. All six landing screenshots were retaken.
+
+**Steve:** That's the timer I asked for in Round 1: the time, then one big Start, then everything
+else. The landing page and the app finally say the same thing. **9.5/10.**
+
+**R44-D2 closed by the owner (27 Sep 2026):** the site keeps opening straight into the app, on the
+timer. No landing page in front, no extra click. The landing page stays at `/landing.html` for
+sharing, and its buttons open the app, which always starts on the Timer tab.

@@ -8,6 +8,15 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  build: {
+    // Two pages: the app (index.html) and the marketing landing page (landing.html)
+    rolldownOptions: {
+      input: {
+        main: 'index.html',
+        landing: 'landing.html',
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": "/src",
