@@ -340,6 +340,14 @@ html.lantern :is(.rb-shiny-btn--primary, .btn-action.primary, .btn-action, .wall
   letter-spacing: 0.08em;
   transition: transform 0.5s var(--ln-ease), box-shadow 0.5s var(--ln-ease) !important;
 }
+/* at night Crisp's `[data-theme='dark'] .btn-action.primary:hover` (0,4,0) outranked the
+   hover below and repainted it with a red glow and white text */
+html.lantern .btn-action.primary:hover {
+  background: var(--ln-cta) !important;
+  color: #2a1640 !important;
+  border: none !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45) inset, 0 16px 36px -8px var(--ln-cta-glow) !important;
+}
 html.lantern :is(.rb-shiny-btn--primary, .btn-action, .wall-cta, .atl-save):hover {
   transform: translateY(-2px);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45) inset, 0 16px 36px -8px var(--ln-cta-glow) !important;

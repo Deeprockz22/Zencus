@@ -260,53 +260,22 @@ html.komorebi .fullscreen-zen-overlay:not(#_) {
 html.komorebi .fullscreen-zen-overlay .fullscreen-top-bar {
   border-color: var(--border-subtle) !important;
 }
-/* ---------- Honey, not red: Komorebi's accent across the app ----------
-   Crisp's red lives in Tailwind utilities (bg-/text-/border-[#ff3b30]) and in
-   the primary-button rules. The CTA rule above was written for older buttons
-   and no longer reached them, so the room was red everywhere but Settings.
-   In the room the accent is honey; warnings (delete, errors, high priority)
-   take persimmon. Unlayered rules outrank Tailwind's layered utilities. */
-html.komorebi .bg-\[\#ff3b30\] {
-  background: var(--km-amber) !important;
-  box-shadow: none !important;
-}
-html.komorebi .text-\[\#ff3b30\],
-html.komorebi .hover\:text-\[\#ff3b30\]:hover {
-  color: var(--km-amber-ink) !important;
-}
-html.komorebi .border-\[\#ff3b30\],
-html.komorebi .hover\:border-\[\#ff3b30\]:hover,
-html.komorebi .focus\:border-\[\#ff3b30\]:focus,
-html.komorebi .focus-within\:border-\[\#ff3b30\]:focus-within {
-  border-color: var(--km-amber) !important;
-}
-html.komorebi :is(.btn-action.primary, .rb-shiny-btn--primary, .rb-shiny-btn--active, .glyph-start-btn.btn-running),
-html.komorebi :is(.btn-action.primary, .rb-shiny-btn--primary, .rb-shiny-btn--active, .glyph-start-btn.btn-running):hover,
+/* ---------- Honey, not red ----------
+   Crisp's red becomes honey through the shared art accents (art-accents.css);
+   warnings take persimmon. The CTA rule above was written for older buttons and
+   no longer reached them, so the primary buttons are dressed here. */
+html.komorebi :is(.btn-action.primary, .rb-shiny-btn--primary, .glyph-start-btn.btn-running),
+html.komorebi :is(.btn-action.primary, .rb-shiny-btn--primary, .glyph-start-btn.btn-running):hover,
 html.komorebi .fullscreen-zen-overlay .zen-bottom-controls .zen-main-btn,
 html.komorebi .fullscreen-zen-overlay .zen-bottom-controls .zen-main-btn:hover {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, oklch(0.70 0.135 55) 100%) !important;
-  color: oklch(0.22 0.012 155) !important; /* sumi ink: white on honey is too faint to read */
+  background: var(--art-cta) !important;
+  color: var(--art-on-cta) !important;
   border-color: transparent !important;
   box-shadow: 0 4px 18px var(--accent-glow) !important;
 }
 /* a honey button (day's folder "Add") keeps ink text, never honey on honey */
 html.komorebi[data-theme='light'] .new-folder-submit {
-  color: oklch(0.22 0.012 155) !important;
-}
-/* warnings */
-html.komorebi .priority-badge.text-\[\#ff3b30\],
-html.komorebi :is(.delete-btn, .note-icon-action.delete, .folder-delete-icon):hover,
-html.komorebi .new-folder-error {
-  color: var(--km-persimmon) !important;
-}
-html.komorebi .priority-badge .bg-\[\#ff3b30\] {
-  background: var(--km-persimmon) !important;
-}
-html.komorebi .confirm-dialog-confirm.btn-action.primary,
-html.komorebi .confirm-dialog-confirm.btn-action.primary:hover {
-  background: var(--km-persimmon) !important;
-  color: var(--km-on-persimmon) !important;
-  box-shadow: none !important;
+  color: var(--art-on-cta) !important;
 }
 /* task progress grows from moss into sunlight */
 html.komorebi .task-progress-fill {
@@ -320,7 +289,7 @@ html.komorebi .fullscreen-zen-overlay .zen-bottom-progress-fill {
 html.komorebi .fullscreen-zen-overlay .zen-bottom-progress-track {
   background: var(--border-subtle) !important;
 }
-html.komorebi .fullscreen-zen-overlay :is(.zen-close-btn, .zen-reset-btn):hover {
+html.komorebi .fullscreen-zen-overlay :is(.zen-close-btn, .zen-reset-btn.btn-action.secondary):hover {
   border-color: var(--km-amber) !important;
   color: var(--km-amber-ink) !important;
 }

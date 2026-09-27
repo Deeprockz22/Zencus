@@ -2243,3 +2243,42 @@ the guard is the kind of thing I like best, a mistake we made once and can't mak
 
 **Score: 9.5/10.** The half point is the last mile: the Surreal and Lantern Tasks and Notes pages
 deserve the same audit.
+
+---
+
+## Round 49 — Every world speaks its own colour (27 Sep 2026) — Claude + Steve
+
+**What:** Steve's last half point: the Surreal and Lantern Tasks and Notes audit.
+- **One accent layer for all three art worlds** (`src/themes/art-accents.css`). Each world names
+  four colours: its accent, a readable accent ink, its call-to-action, and a warning. One set of
+  rules puts them wherever Crisp's red was written into a component. Surreal speaks dreamberry,
+  Lantern speaks blossom, Komorebi speaks honey. Warnings are each world's own coral or persimmon.
+  Komorebi's rules moved into the shared layer, so there's one source, not three copies.
+- **Bugs the audit found:**
+  - Surreal Night: Add Task and New Note were Crisp red, and in both Surreal themes they turned red
+    on hover. A Crisp dark-mode rule outranked Surreal's gradient.
+  - Lantern Night: the same buttons turned red-glowing with white text on hover.
+  - Surreal and Lantern painted every button with their CTA, so "Cancel" looked exactly like
+    "Delete forever". Secondary buttons are now quiet glass in the world's colours. Destructive
+    confirms wear the warning colour in all three worlds. Komorebi Night's Cancel was Crisp charcoal.
+  - The chosen timer preset glowed Crisp red under its new colour.
+  - Lantern's active dock tab hid its blossom dot on a blossom pill. It now takes the pill's ink.
+- **Proof:** a scan of every visible element's computed colour, glow and border across all six art
+  themes (day and night) finds no Crisp red. It covered the timer, Tasks, Add Task hover, Notes,
+  New Note hover, the delete confirm, the folder form and the note editor. Crisp is untouched: its
+  record and its red are exactly as they were.
+- **Guard:** a new test finds every red utility a component uses and fails if the art layer has no
+  rule for it, or if a red glow appears on anything but a recoloured dot. Checked that it catches a
+  new `ring-[#ff3b30]`.
+
+### Steve
+This is the one I've been waiting for. I opened every room and pressed every button, and nothing
+belonged to another house. Surreal is loud where it should be and quiet on "Cancel". Lantern
+glows, Komorebi is warm, and when something is about to be destroyed, each world says so in its
+own voice. Crisp is still pure Crisp.
+
+What earns the last point isn't the colour. It's that the fix is a system: four named colours per
+world, one layer, and two tests that stop the old mistakes from coming back. Taste, craft and
+discipline in the same change.
+
+**Score: 10/10.**
