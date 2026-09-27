@@ -8928,6 +8928,17 @@ select option,
   transform: translate(-1px, -1px);
 }
 
+/* Start gets its own full-width row: sharing a row with five icon buttons left it
+   56-110px wide, so "Start Focus" wrapped or was clipped (Steve R1-D1: Start is the hero). */
+.glyph-hero-controls {
+  flex-wrap: wrap;
+}
+
+.glyph-hero-controls .hero-start-btn {
+  flex: 1 1 100%;
+  white-space: nowrap;
+}
+
 .control-icon-btn {
   width: 44px;
   height: 44px;

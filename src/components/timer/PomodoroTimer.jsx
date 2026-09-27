@@ -288,7 +288,7 @@ export default function PomodoroTimer({
 
       {/* 3. Duration Presets & Hero Controls (UNBOXED - Nothing Style) */}
       <div className="glyph-transport-section flex flex-col gap-2">
-        {/* Preset Pills with Nothing Micro-Brackets */}
+        {/* Preset pills: plain numbers (Steve R1-D3, R44-D1) */}
         <div className="preset-pills glyph-presets flex items-center gap-1">
           {PRESETS.map((preset) => (
             <ShinyButton
@@ -302,10 +302,9 @@ export default function PomodoroTimer({
                 sfx.play('select');
               }}
               className="preset-pill glyph-preset-btn flex-1 py-0.5 text-[10px] font-mono font-medium"
+              ariaLabel={`${preset.label} minutes`}
             >
-              <span className="opacity-35 font-normal mr-0.5">(</span>
-              <span>{preset.label}</span>
-              <span className="opacity-35 font-normal ml-0.5">)</span>
+              {preset.label}
             </ShinyButton>
           ))}
         </div>
@@ -331,12 +330,10 @@ export default function PomodoroTimer({
 
         {/* Intention Line (#3) */}
         {mode === 'work' && (
-          <div className="intention-line-row flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.07)] transition-all focus-within:border-[var(--accent)]">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-tertiary)] shrink-0 select-none">
-              Aim:
-            </span>
+          <div className="intention-line-row w-full flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.07)] transition-all focus-within:border-[var(--accent)]">
             <input
               type="text"
+              aria-label="What are you giving this session to?"
               value={intention}
               onChange={(e) => setIntention && setIntention(e.target.value)}
               placeholder="What are you giving this session to?"

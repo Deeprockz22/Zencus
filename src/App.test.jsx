@@ -569,6 +569,14 @@ describe('Thelidhu Comprehensive Screen Test Suite', () => {
       expect(screen.getByText('ThreeUI (DesignCode)')).toBeInTheDocument();
     });
 
+    it('shows plain timer presets and no pseudo-technical labels (Steve R44-D1)', () => {
+      render(<App />);
+      const preset = screen.getByRole('button', { name: '25 minutes' });
+      expect(preset.textContent.trim()).toBe('25');
+      expect(screen.queryByText(/^Aim:?$/i)).not.toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: /What are you giving this session to/i })).toBeInTheDocument();
+    });
+
     it('has no dashboard lock screen or fixed PIN', () => {
       render(<App />);
       expect(screen.queryByTitle(/Lock Dashboard/i)).not.toBeInTheDocument();

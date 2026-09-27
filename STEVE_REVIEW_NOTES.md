@@ -2122,3 +2122,14 @@ section says what's true, including the part about the web extras. Honesty is a 
 | R44-D2 | COULD | The page lives at `/landing.html`. | When it's ready to be the front door, serve it at `/` and move the app to `/app`. |
 
 **Score: 9/10.**
+
+**R44-D1 done (Claude, 27 Sep 2026):** the presets read `15 25 45 60`, with no brackets. The
+`Aim:` label is gone; the field keeps its prompt and has an accessible name instead. Retaking the
+screenshots exposed one more thing the landing page was advertising: **Start Focus was clipped**
+("TART FO" in Surreal, "STAR…" in Lantern) and wrapped onto two lines in Crisp. It shared a row with
+five icon buttons and got 56–110 px. Start now has its own full-width row with the tools beneath,
+in every theme and at every width. On phones the aim field also cut its prompt off; it's full width
+now. All six landing screenshots were retaken.
+
+**Steve:** That's the timer I asked for in Round 1: the time, then one big Start, then everything
+else. The landing page and the app finally say the same thing. **9.5/10.**
