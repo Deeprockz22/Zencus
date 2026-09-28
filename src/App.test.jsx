@@ -513,6 +513,12 @@ describe('Thelidhu Comprehensive Screen Test Suite', () => {
 
       expect(screen.getByText('🐾 Focus Pet Wardrobe')).toBeInTheDocument();
       expect(screen.getByText('Choose your loyal productivity companion')).toBeInTheDocument();
+      expect(screen.getByText('Cappy')).toBeInTheDocument();
+      expect(screen.getByText('Maple')).toBeInTheDocument();
+      expect(screen.getByText('Mochi')).toBeInTheDocument();
+      expect(screen.getByText('Kiki')).toBeInTheDocument();
+      expect(screen.getByText('Ripple')).toBeInTheDocument();
+      expect(screen.getByText('Pebble')).toBeInTheDocument();
     });
   });
 
