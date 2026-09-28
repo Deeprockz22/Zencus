@@ -395,6 +395,304 @@ class AmbientSoundscapes {
     }, 220);
   }
 
+  triggerCampfireCrackle(time) {
+    if (!this.ctx || this.activeType !== 'campfire') return;
+
+    const crackleLen = 0.018 + Math.random() * 0.05;
+    const sampleRate = this.ctx.sampleRate;
+    const crackleBuffer = this.ctx.createBuffer(1, Math.floor(sampleRate * crackleLen), sampleRate);
+    const data = crackleBuffer.getChannelData(0);
+
+    for (let i = 0; i < data.length; i++) {
+      const env = Math.exp(-i / (sampleRate * (0.003 + Math.random() * 0.004)));
+      data[i] = (Math.random() * 2 - 1) * env;
+    }
+
+    const src = this.ctx.createBufferSource();
+    src.buffer = crackleBuffer;
+
+    const hp = this.ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.setValueAtTime(1400 + Math.random() * 2200, time);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, time);
+    gain.gain.linearRampToValueAtTime(0.06 + Math.random() * 0.09, time + 0.004);
+    gain.gain.exponentialRampToValueAtTime(0.0001, time + crackleLen + 0.01);
+
+    const panner = this.createPanner((Math.random() * 1.2) - 0.6);
+    src.connect(hp);
+    hp.connect(gain);
+    gain.connect(panner);
+    panner.connect(this.gainNode);
+
+    src.start(time);
+    src.stop(time + crackleLen + 0.02);
+    src.onended = () => {
+      try {
+        src.disconnect();
+        hp.disconnect();
+        gain.disconnect();
+        panner.disconnect();
+      } catch {}
+    };
+  }
+
+  playCampfire() {
+    this.stop();
+    this.init();
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+
+    this.activeType = 'campfire';
+
+    const pinkBuffer = this.getPinkNoiseBuffer(4);
+    const emberBed = this.ctx.createBufferSource();
+    emberBed.buffer = pinkBuffer;
+    emberBed.loop = true;
+
+    const lowpass = this.ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.setValueAtTime(1200, this.ctx.currentTime);
+
+    const highpass = this.ctx.createBiquadFilter();
+    highpass.type = 'highpass';
+    highpass.frequency.setValueAtTime(120, this.ctx.currentTime);
+
+    const bedGain = this.ctx.createGain();
+    bedGain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+
+    emberBed.connect(lowpass);
+    lowpass.connect(highpass);
+    highpass.connect(bedGain);
+    bedGain.connect(this.gainNode);
+
+    emberBed.start();
+    this.activeSources.push(emberBed, lowpass, highpass, bedGain);
+
+    this.dropletInterval = setInterval(() => {
+      if (this.activeType !== 'campfire') return;
+      const now = this.ctx.currentTime;
+      if (Math.random() < 0.62) this.triggerCampfireCrackle(now + Math.random() * 0.08);
+      if (Math.random() < 0.18) this.triggerCampfireCrackle(now + 0.03 + Math.random() * 0.09);
+    }, 170);
+  }
+
+  playForestBirdsong() {
+    this.stop();
+    this.init();
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+
+    this.activeType = 'forest';
+
+    const pinkBuffer = this.getPinkNoiseBuffer(5);
+    const windBed = this.ctx.createBufferSource();
+    windBed.buffer = pinkBuffer;
+    windBed.loop = true;
+
+    const windFilter = this.ctx.createBiquadFilter();
+    windFilter.type = 'bandpass';
+    windFilter.frequency.setValueAtTime(540, this.ctx.currentTime);
+    windFilter.Q.setValueAtTime(0.6, this.ctx.currentTime);
+
+    const windLfo = this.ctx.createOscillator();
+    windLfo.type = 'sine';
+    windLfo.frequency.setValueAtTime(0.045, this.ctx.currentTime);
+    const windLfoGain = this.ctx.createGain();
+    windLfoGain.gain.setValueAtTime(220, this.ctx.currentTime);
+    windLfo.connect(windLfoGain);
+    windLfoGain.connect(windFilter.frequency);
+    windLfo.start();
+    this.lfoNode = windLfo;
+
+    const bedGain = this.ctx.createGain();
+    bedGain.gain.setValueAtTime(0.13, this.ctx.currentTime);
+
+    windBed.connect(windFilter);
+    windFilter.connect(bedGain);
+    bedGain.connect(this.gainNode);
+    windBed.start();
+
+    this.activeSources.push(windBed, windFilter, windLfoGain, bedGain);
+
+    const triggerBirdChirp = (time) => {
+      if (!this.ctx || this.activeType !== 'forest') return;
+      const chirp = this.ctx.createOscillator();
+      chirp.type = 'triangle';
+      const base = 1900 + Math.random() * 1700;
+      chirp.frequency.setValueAtTime(base, time);
+      chirp.frequency.exponentialRampToValueAtTime(base * (1.25 + Math.random() * 0.35), time + 0.05);
+      chirp.frequency.exponentialRampToValueAtTime(base * 0.9, time + 0.13);
+
+      const chirpGain = this.ctx.createGain();
+      chirpGain.gain.setValueAtTime(0.0001, time);
+      chirpGain.gain.linearRampToValueAtTime(0.03 + Math.random() * 0.05, time + 0.012);
+      chirpGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.15);
+
+      const panner = this.createPanner((Math.random() * 1.6) - 0.8);
+      chirp.connect(chirpGain);
+      chirpGain.connect(panner);
+      panner.connect(this.gainNode);
+
+      chirp.start(time);
+      chirp.stop(time + 0.17);
+      chirp.onended = () => {
+        try {
+          chirp.disconnect();
+          chirpGain.disconnect();
+          panner.disconnect();
+        } catch {}
+      };
+    };
+
+    this.dropletInterval = setInterval(() => {
+      if (this.activeType !== 'forest') return;
+      if (Math.random() < 0.36) triggerBirdChirp(this.ctx.currentTime + Math.random() * 0.2);
+      if (Math.random() < 0.12) triggerBirdChirp(this.ctx.currentTime + 0.08 + Math.random() * 0.2);
+    }, 620);
+  }
+
+  playCoffeeShop() {
+    this.stop();
+    this.init();
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+
+    this.activeType = 'coffee-shop';
+
+    const pinkBuffer = this.getPinkNoiseBuffer(4);
+    const murmurBed = this.ctx.createBufferSource();
+    murmurBed.buffer = pinkBuffer;
+    murmurBed.loop = true;
+
+    const bp = this.ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.setValueAtTime(520, this.ctx.currentTime);
+    bp.Q.setValueAtTime(0.7, this.ctx.currentTime);
+
+    const lp = this.ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(1800, this.ctx.currentTime);
+
+    const bedGain = this.ctx.createGain();
+    bedGain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+
+    murmurBed.connect(bp);
+    bp.connect(lp);
+    lp.connect(bedGain);
+    bedGain.connect(this.gainNode);
+    murmurBed.start();
+
+    this.activeSources.push(murmurBed, bp, lp, bedGain);
+
+    const triggerCafeClink = (time) => {
+      if (!this.ctx || this.activeType !== 'coffee-shop') return;
+      const osc = this.ctx.createOscillator();
+      osc.type = 'sine';
+      const f = 900 + Math.random() * 1800;
+      osc.frequency.setValueAtTime(f, time);
+      osc.frequency.exponentialRampToValueAtTime(f * 1.8, time + 0.03);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.linearRampToValueAtTime(0.025 + Math.random() * 0.03, time + 0.004);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.08);
+
+      const panner = this.createPanner((Math.random() * 1.4) - 0.7);
+      osc.connect(gain);
+      gain.connect(panner);
+      panner.connect(this.gainNode);
+
+      osc.start(time);
+      osc.stop(time + 0.1);
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+          panner.disconnect();
+        } catch {}
+      };
+    };
+
+    this.dropletInterval = setInterval(() => {
+      if (this.activeType !== 'coffee-shop') return;
+      if (Math.random() < 0.28) triggerCafeClink(this.ctx.currentTime + Math.random() * 0.18);
+      if (Math.random() < 0.1) triggerCafeClink(this.ctx.currentTime + 0.1 + Math.random() * 0.2);
+    }, 540);
+  }
+
+  playOceanWaves() {
+    this.stop();
+    this.init();
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+
+    this.activeType = 'ocean';
+
+    const pinkBuffer = this.getPinkNoiseBuffer(6);
+    const surfBed = this.ctx.createBufferSource();
+    surfBed.buffer = pinkBuffer;
+    surfBed.loop = true;
+
+    const lp = this.ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(1450, this.ctx.currentTime);
+
+    const waveGain = this.ctx.createGain();
+    waveGain.gain.setValueAtTime(0.09, this.ctx.currentTime);
+
+    const waveLfo = this.ctx.createOscillator();
+    waveLfo.type = 'sine';
+    waveLfo.frequency.setValueAtTime(0.09, this.ctx.currentTime);
+    const waveLfoGain = this.ctx.createGain();
+    waveLfoGain.gain.setValueAtTime(0.11, this.ctx.currentTime);
+    waveLfo.connect(waveLfoGain);
+    waveLfoGain.connect(waveGain.gain);
+    waveLfo.start();
+    this.lfoNode = waveLfo;
+
+    surfBed.connect(lp);
+    lp.connect(waveGain);
+    waveGain.connect(this.gainNode);
+    surfBed.start();
+    this.activeSources.push(surfBed, lp, waveGain, waveLfoGain);
+
+    const triggerWaveShore = (time) => {
+      if (!this.ctx || this.activeType !== 'ocean') return;
+      const src = this.ctx.createBufferSource();
+      src.buffer = this.getPinkNoiseBuffer(1);
+
+      const hpf = this.ctx.createBiquadFilter();
+      hpf.type = 'highpass';
+      hpf.frequency.setValueAtTime(420, time);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.linearRampToValueAtTime(0.12 + Math.random() * 0.1, time + 0.35);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + 1.5);
+
+      src.connect(hpf);
+      hpf.connect(gain);
+      gain.connect(this.gainNode);
+
+      src.start(time);
+      src.stop(time + 1.6);
+      src.onended = () => {
+        try {
+          src.disconnect();
+          hpf.disconnect();
+          gain.disconnect();
+        } catch {}
+      };
+    };
+
+    this.dropletInterval = setInterval(() => {
+      if (this.activeType !== 'ocean') return;
+      if (Math.random() < 0.55) triggerWaveShore(this.ctx.currentTime + Math.random() * 0.5);
+    }, 1100);
+  }
+
   /**
    * Alias for backward compatibility
    */
