@@ -620,6 +620,14 @@
   box-shadow: 0 0 0 2px var(--atl-pack), 0 10px 22px -12px var(--atl-pack);
 }
 
+/* ---------- visual effects (Auto / Full / Light) ---------- */
+.atl-fx-head { flex-direction: column; align-items: flex-start; gap: 3px; margin-top: 24px; }
+.atl-packs.atl-fx { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.atl-fx .atl-pack { --atl-pack: var(--atl-ultraviolet); }
+@media (max-width: 560px) {
+  .atl-packs.atl-fx { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* ---------- companion ---------- */
 .atl-companion {
   display: flex;

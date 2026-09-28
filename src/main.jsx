@@ -8,6 +8,7 @@ import './lantern.css';
 import './themes/komorebi.css';
 import './themes/art-accents.css';
 import './mobile-center.css';
+import './fx-lite.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

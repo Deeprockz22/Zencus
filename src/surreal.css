@@ -209,7 +209,6 @@ html.surreal body {
   height: 50vh;
   transform: translate(-50%, -50%);
   background: radial-gradient(closest-side, var(--sw-sun), transparent);
-  filter: blur(10px);
 }
 
 .sw-floor {
@@ -287,10 +286,12 @@ html.surreal body {
   transform-origin: 50% 50%;
   animation: sw-blink 9s ease-in-out infinite;
 }
+/* the iris looks at the pointer: --sw-gx/--sw-gy are set by SurrealWorld (gazeOffset)
+   in the eye's own SVG units */
 .sw-eye-iris {
   transform-box: view-box;
-  transform: translate(calc(var(--sw-px) * 26px), calc(var(--sw-py) * 14px));
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transform: translate(calc(var(--sw-gx, 0) * 1px), calc(var(--sw-gy, 0) * 1px));
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 @keyframes sw-blink {
   0%, 94%, 100% { transform: scaleY(1); }
@@ -889,7 +890,8 @@ html.surreal[data-theme='dark'] .sw-aurora { opacity: 0.6; }
   width: 55vw;
   height: 55vw;
   border-radius: 50%;
-  filter: blur(70px);
+  /* the radial gradient is already soft; a blur(70px) on these drifting fields made
+     the GPU re-blur four huge layers every frame (the theme ran at a few fps) */
   will-change: transform;
 }
 .sw-blob-a { left: -10%; top: -20%; background: radial-gradient(closest-side, var(--sr-aurora-a), transparent); animation: sw-blob-a 38s ease-in-out infinite; }
@@ -917,10 +919,10 @@ html.surreal[data-theme='dark'] .sw-aurora { opacity: 0.6; }
     radial-gradient(1.5px 1.5px at 36% 44%, #fff, transparent),
     radial-gradient(1px 1px at 55% 38%, #fff, transparent);
   background-size: 700px 500px;
-  animation: sw-twinkle 6s ease-in-out infinite;
+  /* (no twinkle: it animated brightness on white stars, which can't get brighter,
+     and repainted the whole sky to do nothing) */
 }
 html.surreal[data-theme='dark'] .sw-stars { opacity: 0.9; }
-@keyframes sw-twinkle { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.6); } }
 
 /* the synthwave sun sitting on the horizon, sliced by bands of sky */
 .sw-synth-sun {

@@ -72,8 +72,7 @@
 .kw-night .kw-dapples { animation-duration: 12s; }
 
 /* ---------------- the room ---------------- */
-.kw-room,
-.kw-canopy-svg {
+.kw-room {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -165,16 +164,26 @@
 .kw-canopy {
   position: absolute;
   inset: -8%;
-  fill: var(--kw-leaf);
   opacity: var(--kw-leaf-alpha);
-  mix-blend-mode: multiply;
+  /* near-black leaves: a plain blend looks the same as multiply and costs the GPU nothing extra */
   transform-origin: 70% 0%;
   will-change: transform;
 }
-.kw-night .kw-canopy { mix-blend-mode: normal; }
-.kw-canopy-far { filter: blur(14px); opacity: calc(var(--kw-leaf-alpha) * 0.8); animation: kw-sway 17s ease-in-out infinite alternate; }
-.kw-canopy-mid { filter: blur(8px); animation: kw-sway 11s ease-in-out -4s infinite alternate-reverse; }
-.kw-canopy-near { filter: blur(4px); opacity: calc(var(--kw-leaf-alpha) * 1.15); animation: kw-sway-near 8s ease-in-out -2s infinite alternate; }
+/* the leaves: a flat colour seen through a cached, pre-blurred leaf mask (see Canopy) */
+.kw-canopy-leaves {
+  position: absolute;
+  inset: 0;
+  background: var(--kw-leaf);
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.kw-canopy-far { opacity: calc(var(--kw-leaf-alpha) * 0.8); animation: kw-sway 17s ease-in-out infinite alternate; }
+.kw-canopy-mid { animation: kw-sway 11s ease-in-out -4s infinite alternate-reverse; }
+.kw-canopy-near { opacity: calc(var(--kw-leaf-alpha) * 1.15); animation: kw-sway-near 8s ease-in-out -2s infinite alternate; }
 @keyframes kw-sway {
   0% { transform: rotate(-0.8deg) translate(-0.6%, 0); }
   100% { transform: rotate(0.9deg) translate(0.8%, 0.4%); }

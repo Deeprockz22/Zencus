@@ -2282,3 +2282,79 @@ world, one layer, and two tests that stop the old mistakes from coming back. Tas
 discipline in the same change.
 
 **Score: 10/10.**
+
+---
+
+## Round 50 — The False Mirror looks at you (27 Sep 2026) — Claude + Steve
+
+**What:** in Surreal (day and night), the floating eye now looks where your pointer is.
+- It used to nudge the iris by where the pointer was *on the screen*, not where it was *from the
+  eye*. The eye sits top right, so a pointer just left of it (but right of centre) made it look the
+  wrong way. Now the iris turns along the line from the eye to the pointer. The pointer's distance
+  sets how far it turns: on the eye it looks straight at you, and from across the room it swings to
+  the rim. It never leaves the socket.
+- On phones, a tap draws its gaze. When the pointer leaves the window, the eye drifts back to
+  looking at you. It still blinks, and it stays still under reduced motion.
+- Tests: the gaze math (direction relative to the eye, head-on at the centre, never outside the
+  almond) and the wiring (pointer, tap, leaving the window). Checked in the browser, day and night.
+
+### Steve
+That's the Magritte joke finally landing: the painting is watching *you*. Before, it looked at the
+middle of the screen, a portrait that never met your eyes. Now it follows you to the dock and back,
+and it doesn't overdo it. Small, precise, delightful.
+
+**Score: 10/10.**
+
+---
+
+## Round 51 — Fast on battery (27 Sep 2026) — Claude + Steve
+
+**The complaint:** "Why is my UI slow?" And in power-saving mode it's very slow.
+
+**What we measured** (Chromium, software-rendered, which is close to a throttled GPU; timer running):
+
+| Theme | Before | Full now | Light |
+|---|---|---|---|
+| Crisp light / dark | 60 fps, ~11% CPU idle | 60 fps, 3–5% | 60 fps |
+| Surreal | 4–5 fps | 12 fps | 60 fps |
+| Lantern Night | 11 fps | 16 fps | 60 fps |
+| Komorebi | 5 fps | 13 fps | 58–60 fps |
+
+JavaScript was never the problem (main thread under 25%). The GPU was redrawing expensive
+effects on every frame.
+
+**Causes, and fixes that don't change the look:**
+- The click-spark layer was a full-screen canvas cleared and redrawn 60 times a second forever,
+  in every theme, even with no sparks. It now only draws while sparks exist.
+- Smooth scrolling (Lenis) woke the page on every frame even when nothing moved. It now sleeps
+  after half a second of stillness and wakes on wheel, touch, key or scroll, with its clock
+  corrected so the first scroll after a pause is still smooth.
+- Komorebi's three full-screen leaf-shadow layers were re-blurred on every frame as they swayed.
+  The leaves are now a pre-blurred image mask, which the browser rasterises once. Same shadows,
+  2.5× the frame rate.
+- Surreal's aurora and Lantern's light pools carried `blur(70px)` on soft gradients that were already
+  soft. Removed. Surreal's star "twinkle" animated brightness on white stars, which can't get
+  brighter, so it cost a full-sky repaint and did nothing. Removed.
+- Lantern's butterfly kept a full-screen backdrop blur alive at opacity 0. It's now hidden when
+  the butterfly is away.
+
+**Light mode, for power-saving mode:** Settings → World → Visual Effects: **Auto** (default),
+**Full**, **Light**. Light keeps each world in its resting pose and draws it without per-frame
+effects: no drifting layers, blur, blend-mode grain or glass re-blur. Panels get a little more body
+so text stays clear, and the art timers show a still frame. Auto picks Light when the page can't
+hold a smooth frame rate for two samples in a row (Chrome's Energy Saver caps pages at 30 fps), when
+the battery is low and not charging, or on very low-end hardware. It stays Light for the session and
+tries Full again when the charger goes in. Settings says which one Auto is using.
+
+**Tests:** the Auto decision (frame rate, battery, device), the hook (two slow samples, not one; Full
+overrides; the session remembers), the idle spark canvas, the Settings picker. 178/178 pass.
+Checked in the browser: smooth scroll after idle, sparks on click, and Auto choosing Light on the slow
+renderer but staying Full on Crisp.
+
+### Steve
+This is the right kind of fix. You didn't make it uglier to make it faster. You found the four
+things wasting the machine's time and made them stop, and the rooms look the same. Then, for the
+laptop on its last 15%, there's a mode that keeps the world and drops the motion. It's honest about
+it too: Settings tells you when Auto has switched.
+
+**Score: 10/10.**

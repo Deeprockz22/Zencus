@@ -1,0 +1,78 @@
+/* =====================================================================
+   LIGHT MODE (html.fx-lite): every world still and flat.
+   Turned on by useFxMode: Settings → World → Visual Effects → Light, or by
+   Auto when the device is in power-saving mode or can't hold a smooth frame
+   rate (see src/utils/fxMode.js).
+
+   What costs the GPU on every frame is movement under effects: drifting
+   layers, blur, blend modes, and glass that re-blurs whatever moves behind it.
+   Light mode keeps the same rooms, but holds them in their resting pose and
+   draws them without those effects. Crisp is already light; only its glass
+   changes. One-shot UI animations (a modal opening, a digit flipping) stay.
+   ===================================================================== */
+
+/* 1. The worlds hold still, in their resting pose, with no per-frame effects */
+html.fx-lite :is(.surreal-world, .lantern-world, .komorebi-world),
+html.fx-lite :is(.surreal-world, .lantern-world, .komorebi-world) :is(*, *::before, *::after) {
+  animation: none !important;
+  transition: none !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  will-change: auto !important;
+}
+/* grain is a blend-mode texture: without the blend it's just grey noise */
+html.fx-lite :is(.sw-grain, .lw-grain, .kw-grain) {
+  display: none !important;
+}
+/* light that was added with screen / soft-light blends goes softer when laid flat */
+html.fx-lite .sw-aurora { opacity: 0.4 !important; }
+html.fx-lite .lw-pool { opacity: 0.28 !important; }
+html.fx-lite .lw-cursor-light { display: none !important; }
+html.fx-lite .kw-shaft { opacity: 0.08 !important; }
+
+/* 2. The art timers stop their loops (the scene is still there, just calm) */
+html.fx-lite :is(.dream-portal, .prism-record, .melt-clock, .paper-lantern) :is(*, *::before, *::after) {
+  animation: none !important;
+}
+html.fx-lite :is(.dream-portal-glow, .prism-aura) {
+  display: none !important;
+}
+
+/* 3. Floating UI stops floating */
+html.fx-lite:is(.surreal, .lantern, .komorebi) :is(
+  .dock-nav,
+  .glyph-turntable-stage,
+  .glyph-time-display .glyph-ndot-display-wrap,
+  .glyph-time-display .glyph-ndot-display-wrap::before,
+  .glyph-time-display .glyph-ndot-display-wrap::after
+) {
+  animation: none !important;
+}
+
+/* 4. Glass is drawn flat. Blur re-computes whatever is behind it on every
+      frame; without it the panels get a touch more body so text stays clear. */
+html.fx-lite :is(*, *::before, *::after) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-box-reflect: unset !important;
+}
+html.fx-lite:is(.surreal, .lantern, .komorebi) :is(
+  .glyph-timer-left-console,
+  .dock-nav,
+  .header-right,
+  .scene-switcher-pills,
+  .modal-card,
+  .tasks-view,
+  .notes-main-area,
+  .folder-sidebar,
+  .unboxed-task-row,
+  .unboxed-note-card,
+  .task-input-bar,
+  .search-bar-wrapper
+) {
+  /* an inset shade sits above the panel's own background and below its content */
+  box-shadow: inset 0 0 0 100vmax color-mix(in oklch, var(--bg-secondary) 62%, transparent) !important;
+}
+html.fx-lite .modal-backdrop {
+  background: color-mix(in oklch, var(--bg-primary) 70%, transparent) !important;
+}

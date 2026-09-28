@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { SPECTRUM as S } from './spectrum';
+import { gazeOffset } from './gaze';
 
 /*
  * SurrealWorld — the painted room the whole app floats in.
@@ -185,6 +186,7 @@ const Lamppost = () => (
 
 export default function SurrealWorld({ theme }) {
   const rootRef = useRef(null);
+  const eyeRef = useRef(null);
 
   // Tag <html> so the surreal skin only styles the themes it was painted for.
   useEffect(() => {
@@ -193,25 +195,45 @@ export default function SurrealWorld({ theme }) {
     return () => html.classList.remove('surreal');
   }, []);
 
-  // Gentle pointer parallax: near objects drift more than far ones.
+  // Gentle pointer parallax (near objects drift more than far ones), and the
+  // False Mirror looks at the pointer wherever it goes.
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return undefined;
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
     let frame = 0;
+    let last = null;
+    const lookAt = (x, y) => {
+      const eye = eyeRef.current;
+      if (!eye) return;
+      const g = x == null ? { x: 0, y: 0 } : gazeOffset(eye.getBoundingClientRect(), x, y);
+      eye.style.setProperty('--sw-gx', g.x.toFixed(2));
+      eye.style.setProperty('--sw-gy', g.y.toFixed(2));
+    };
     const onMove = (e) => {
+      last = e;
       if (frame) return;
       frame = requestAnimationFrame(() => {
         frame = 0;
-        const x = e.clientX / window.innerWidth - 0.5;
-        const y = e.clientY / window.innerHeight - 0.5;
+        const x = last.clientX / window.innerWidth - 0.5;
+        const y = last.clientY / window.innerHeight - 0.5;
         el.style.setProperty('--sw-px', x.toFixed(3));
         el.style.setProperty('--sw-py', y.toFixed(3));
+        lookAt(last.clientX, last.clientY);
       });
     };
+    // the pointer left the window: the eye drifts back to looking at you
+    const onOut = (e) => {
+      if (!e.relatedTarget) lookAt(null, null);
+    };
     window.addEventListener('pointermove', onMove, { passive: true });
+    // phones have no hover: a tap draws its gaze too
+    window.addEventListener('pointerdown', onMove, { passive: true });
+    window.addEventListener('mouseout', onOut);
     return () => {
       window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerdown', onMove);
+      window.removeEventListener('mouseout', onOut);
       if (frame) cancelAnimationFrame(frame);
     };
   }, []);
@@ -264,7 +286,7 @@ export default function SurrealWorld({ theme }) {
       </div>
 
       <div className="sw-layer sw-near">
-        <div className="sw-obj sw-obj-eye"><FalseMirrorEye /></div>
+        <div ref={eyeRef} className="sw-obj sw-obj-eye"><FalseMirrorEye /></div>
         <div className="sw-obj sw-obj-rock"><CastleRock /><span className="sw-drop-shadow" /></div>
         <div className="sw-obj sw-obj-apple"><Apple /></div>
         <div className="sw-obj sw-obj-hat"><BowlerHat /></div>
