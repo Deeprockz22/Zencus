@@ -66,5 +66,53 @@ export const COMPANIONS = [
     icon: '👻',
     description: 'Floating mischievous phantom who roasts procrastination and haunts incomplete tasks.',
     specialty: 'Deadlines & High Alertness'
+  },
+  {
+    id: 'capybara',
+    name: 'Cappy',
+    title: 'The Chill Capybara',
+    icon: '🦫',
+    description: 'Ultra-relaxed buddy who keeps your stress low and your focus steady.',
+    specialty: 'Calm Focus & Consistency'
+  },
+  {
+    id: 'redpanda',
+    name: 'Maple',
+    title: 'The Red Panda',
+    icon: '🦊',
+    description: 'Curious and playful pal that cheers every completed task with cozy energy.',
+    specialty: 'Warm Motivation & Momentum'
+  },
+  {
+    id: 'sloth',
+    name: 'Mochi',
+    title: 'The Mindful Sloth',
+    icon: '🦥',
+    description: 'Slow and steady strategist who reminds you that sustainable progress wins.',
+    specialty: 'Mindful Pace & Endurance'
+  },
+  {
+    id: 'koala',
+    name: 'Kiki',
+    title: 'The Cozy Koala',
+    icon: '🐨',
+    description: 'Tree-hugging companion that keeps your workspace peaceful and comforting.',
+    specialty: 'Comfort & Gentle Focus'
+  },
+  {
+    id: 'dolphin',
+    name: 'Ripple',
+    title: 'The Smart Dolphin',
+    icon: '🐬',
+    description: 'Playful ocean genius that helps you ride productive flow waves.',
+    specialty: 'Flow State & Clarity'
+  },
+  {
+    id: 'duck',
+    name: 'Pebble',
+    title: 'The Sunny Duck',
+    icon: '🦆',
+    description: 'Bright little cheerleader who turns small wins into big confidence.',
+    specialty: 'Cheerful Energy & Wins'
   }
 ];
