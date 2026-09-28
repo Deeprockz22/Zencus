@@ -15,7 +15,11 @@ import FlipText from '../components/ui/FlipText';
 import MagnetButton from '../components/react-bits/MagnetButton';
 import './landing.css';
 
-const APP_URL = '/';
+// Paths follow Vite's base, so the page works at the site root in dev and under
+// /Zencus/ on GitHub Pages (base is './' in vite.config.js)
+const BASE = import.meta.env.BASE_URL;
+const APP_URL = BASE;
+const shot = (name) => `${BASE}landing/${name}`;
 
 const MODES = [
   { id: 'focus', label: 'Focus', minutes: 25 },
@@ -24,10 +28,10 @@ const MODES = [
 ];
 
 const THEMES = [
-  { name: 'Crisp', line: 'Quiet, light and precise. The default.', img: '/landing/crisp-timer.jpg' },
-  { name: 'Surreal', line: 'A Magritte sky with a dream-portal clock.', img: '/landing/surreal.jpg' },
-  { name: 'Lantern Garden', line: 'Night blossoms, a paper lantern and a visiting butterfly.', img: '/landing/lantern.jpg' },
-  { name: 'Komorebi', line: 'Sunlight through leaves, and a cat asleep on the floor.', img: '/landing/komorebi.jpg' }
+  { name: 'Crisp', line: 'Quiet, light and precise. The default.', img: shot('crisp-timer.jpg') },
+  { name: 'Surreal', line: 'A Magritte sky with a dream-portal clock.', img: shot('surreal.jpg') },
+  { name: 'Lantern Garden', line: 'Night blossoms, a paper lantern and a visiting butterfly.', img: shot('lantern.jpg') },
+  { name: 'Komorebi', line: 'Sunlight through leaves, and a cat asleep on the floor.', img: shot('komorebi.jpg') }
 ];
 
 const prefersReducedMotion = () =>
@@ -250,9 +254,9 @@ export default function Landing() {
           <div className="lp-container">
             <figure className="lp-shot lp-shot-hero reveal">
               <picture>
-                <source srcSet="/landing/crisp-dark.jpg" media="(prefers-color-scheme: dark)" />
+                <source srcSet={shot('crisp-dark.jpg')} media="(prefers-color-scheme: dark)" />
                 <img
-                  src="/landing/crisp-timer.jpg"
+                  src={shot('crisp-timer.jpg')}
                   width="1440"
                   height="900"
                   alt="The Zencus timer: a 25:00 dot-matrix countdown beside a spinning vinyl record, with the Timer, Tasks and Notes dock at the bottom."
@@ -309,7 +313,7 @@ export default function Landing() {
                 </div>
                 <img
                   className="lp-card-img"
-                  src="/landing/crisp-notes.jpg"
+                  src={shot('crisp-notes.jpg')}
                   width="1440"
                   height="900"
                   loading="lazy"
