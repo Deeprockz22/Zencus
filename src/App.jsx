@@ -18,6 +18,7 @@ import { isSurrealTheme, isLanternTheme, isKomorebiTheme, baseTheme } from './th
 import KomorebiWorld from './components/komorebi/KomorebiWorld';
 import FloatingMiniTimer from './components/pip/MiniTimer';
 import useDocumentPiP from './components/pip/useDocumentPiP';
+import useLiveActivity from './native/useLiveActivity';
 import useWakeLock from './hooks/useWakeLock';
 import { Storage, uid } from './utils/storage';
 import { themedAudio } from './utils/retroAudio';
@@ -331,24 +332,52 @@ export default function App() {
     setIsRunning(false);
   }, [mode, timerSettings]);
 
-  // Timer Countdown Loop
+  // Timer Countdown Loop: counts against the clock (endsAt), not by
+  // subtracting a second per tick. JavaScript timers pause in a background tab
+  // and in the iPhone app while it's in the background, so tick-counting fell
+  // behind the real time (and behind the Dynamic Island, which iOS counts down
+  // itself). Now the time left is always endsAt minus now, re-read as soon as
+  // the page is visible again.
+  const endsAtRef = useRef(null);
+  const timeLeftRef = useRef(timeLeft);
+  timeLeftRef.current = timeLeft;
   useEffect(() => {
-    let interval = null;
-
-    if (isRunning) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            handleSessionComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    if (!isRunning) {
+      endsAtRef.current = null; // every pause, reset, skip or mode change stops the timer first
+      return undefined;
     }
-
-    return () => clearInterval(interval);
+    if (!endsAtRef.current) endsAtRef.current = Date.now() + timeLeftRef.current * 1000;
+    let done = false;
+    const tick = () => {
+      if (done) return;
+      const left = Math.max(0, Math.ceil((endsAtRef.current - Date.now()) / 1000));
+      if (left <= 0) {
+        done = true;
+        setTimeLeft(0);
+        handleSessionComplete();
+        return;
+      }
+      setTimeLeft(left);
+    };
+    const interval = setInterval(tick, 250); // several checks a second, so the display turns over on the second
+    const onVisible = () => { if (document.visibilityState === 'visible') tick(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [isRunning, mode, timerSettings, soundEnabled, sessionsCompleted, totalFocusMinutes, theme]);
+
+  // iPhone app: the running session shows in the Dynamic Island and on the Lock Screen.
+  // (After the countdown loop, so it sees the same endsAt.)
+  useLiveActivity({
+    isRunning,
+    mode,
+    timeLeft,
+    totalDuration,
+    endsAtRef,
+    taskTitle: tasks.find((t) => t.id === activeTimerTaskId)?.title || '',
+  });
 
   // Update document title and dynamic favicon progress ring with remaining time (#34)
   useEffect(() => {

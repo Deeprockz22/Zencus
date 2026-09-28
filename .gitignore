@@ -12,15 +12,25 @@ dist
 dist-ssr
 *.local
 
-# Editor directories and files
+# Editor & Workspace
 .vscode/*
 !.vscode/extensions.json
 .idea
+*.code-workspace
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Build & Deploy
 .vercel
 .vitest
+build/
+
+# AI & Agent local metadata
+.claude/
+.agents/
+.gemini/
+

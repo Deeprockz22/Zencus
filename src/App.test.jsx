@@ -12,20 +12,9 @@ import SettingsModal from './components/SettingsModal';
 import CompanionPickerModal from './components/companion/CompanionPickerModal';
 import MiniTimer from './components/timer/MiniTimer';
 
-// All 9 Visualizers
-import BakF2Visualizer from './components/timer/BakF2Visualizer';
-import IsometricEditorialDial from './components/timer/IsometricEditorialDial';
-import ShaderGradientVisualizer from './components/timer/ShaderGradientVisualizer';
-import NeuformVisualizer from './components/timer/NeuformVisualizer';
-import GlobeVisualizer from './components/timer/GlobeVisualizer';
-import NexusVisualizer from './components/timer/NexusVisualizer';
-import QuantumVisualizer from './components/timer/QuantumVisualizer';
-import LaunchVisualizer from './components/timer/LaunchVisualizer';
+// Visualizers still in the app
 import MinimalVisualizer from './components/timer/MinimalVisualizer';
 
-// Aceternity UI Primitives
-import Card3D from './components/ui/Card3D';
-import BorderBeam from './components/ui/BorderBeam';
 import { gsapMotion } from './utils/gsapMotion';
 import { Link001, Link002, Link003, Link004, Link005 } from './components/ui/skiper-ui/skiper40';
 
@@ -203,65 +192,8 @@ describe('Thelidhu Comprehensive Screen Test Suite', () => {
     });
   });
 
-  // ═══════════════ 3. SCREENS: ALL 9 VISUALIZER ENGINES ═══════════════
+  // ═══════════════ 3. SCREENS: VISUALIZER ENGINES ═══════════════
   describe('Screens: Visualizer Engines Suite', () => {
-    it('renders BAK F2 32-bit Float Field Recorder screen', () => {
-      render(<BakF2Visualizer {...sharedVizProps} isRunning={true} />);
-      expect(screen.getByText('BAK F2')).toBeInTheDocument();
-      expect(screen.getByText('32-BIT FLOAT FIELD RECORDER')).toBeInTheDocument();
-      expect(screen.getByText('192.0 kHz')).toBeInTheDocument();
-      expect(screen.getByText('● REC LOCK')).toBeInTheDocument();
-      expect(screen.getByText('CH 1 / L')).toBeInTheDocument();
-      expect(screen.getByText('CH 2 / R')).toBeInTheDocument();
-      expect(screen.getByText('TRIM 1')).toBeInTheDocument();
-      expect(screen.getByText('TRIM 2')).toBeInTheDocument();
-      expect(screen.getByText('25:00')).toBeInTheDocument();
-    });
-
-    it('renders Isometric Editorial Vinyl Turntable screen', () => {
-      render(<IsometricEditorialDial {...sharedVizProps} />);
-      expect(screen.getByText('25:00')).toBeInTheDocument();
-      expect(document.querySelector('.isometric-editorial-hero')).toBeInTheDocument();
-      expect(document.querySelector('.turntable-canvas-stage')).toBeInTheDocument();
-    });
-
-    it('renders Aura Flow 3D ShaderGradient screen', () => {
-      render(<ShaderGradientVisualizer {...sharedVizProps} isRunning={false} />);
-      expect(document.querySelector('.shader-viz-stage')).toBeInTheDocument();
-      expect(screen.getByText('Sphere')).toBeInTheDocument();
-      expect(screen.getByText('Ocean')).toBeInTheDocument();
-    });
-
-    it('renders Neuform Generative Iridescent Glass screen', () => {
-      render(<NeuformVisualizer {...sharedVizProps} isRunning={true} />);
-      expect(screen.getByText('NEUFORM')).toBeInTheDocument();
-      expect(screen.getByText('25:00')).toBeInTheDocument();
-    });
-
-    it('renders Interactive 3D Globe screen', () => {
-      render(<GlobeVisualizer {...sharedVizProps} />);
-      expect(screen.getByText('25:00')).toBeInTheDocument();
-      expect(document.querySelector('.globe-visualizer-hero')).toBeInTheDocument();
-    });
-
-    it('renders NEXUS Personnel Registry Telemetry HUD screen', () => {
-      render(<NexusVisualizer {...sharedVizProps} />);
-      expect(screen.getByText('25:00')).toBeInTheDocument();
-      expect(document.querySelector('.nexus-visualizer-hero')).toBeInTheDocument();
-    });
-
-    it('renders Quantum Particulate Render Matrix screen', () => {
-      render(<QuantumVisualizer {...sharedVizProps} />);
-      expect(screen.getByText('25:00')).toBeInTheDocument();
-      expect(document.querySelector('.quantum-visualizer-hero')).toBeInTheDocument();
-    });
-
-    it('renders Launch Brutalist Aerospace Mode screen', () => {
-      render(<LaunchVisualizer {...sharedVizProps} />);
-      expect(screen.getByText('25:00')).toBeInTheDocument();
-      expect(document.querySelector('.launch-visualizer-hero')).toBeInTheDocument();
-    });
-
     it('renders Minimalist Zen Breath Dial screen', () => {
       render(<MinimalVisualizer {...sharedVizProps} />);
       expect(screen.getByText('25:00')).toBeInTheDocument();
@@ -599,24 +531,6 @@ describe('Thelidhu Comprehensive Screen Test Suite', () => {
       );
 
       expect(screen.getByText('15:00')).toBeInTheDocument();
-    });
-  });
-
-  // ═══════════════ 11. SCREEN: ACETERNITY UI PRIMITIVES ═══════════════
-  describe('Screen: Aceternity UI 3D Card & Border Beam Primitives', () => {
-    it('renders Card3D with perspective wrapper', () => {
-      render(
-        <Card3D maxTilt={6}>
-          <div data-testid="card-child">Focused Deck</div>
-        </Card3D>
-      );
-      expect(screen.getByTestId('card-child')).toBeInTheDocument();
-    });
-
-    it('renders BorderBeam with custom styles', () => {
-      const { container } = render(<BorderBeam size={180} duration={8} />);
-      const beam = container.querySelector('.animate-border-beam');
-      expect(beam).toBeInTheDocument();
     });
   });
 

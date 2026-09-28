@@ -1,15 +1,17 @@
 # Publishes the app to GitHub Pages (https://deeprockz22.github.io/Zencus/)
-# every time main changes. Pages serves the gh-pages branch; this workflow
-# builds main and replaces that branch's contents with the fresh dist/.
+# on every push to main via native GitHub Actions.
+# Eliminates the need for any secondary gh-pages branch, keeping the repo on a single clean branch (main).
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
-  workflow_dispatch: # "Run workflow" button in the Actions tab
+  workflow_dispatch:
 
 permissions:
-  contents: write # push the built site to the gh-pages branch
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: pages
@@ -17,23 +19,37 @@ concurrency:
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      - run: npm ci
-      - run: npm test
-      - run: npm run build
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Publish dist/ to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Run test suite
+        run: npm test
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: gh-pages
-          commit_message: 'deploy: ${{ github.sha }}'
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

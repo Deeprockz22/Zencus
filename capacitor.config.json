@@ -1,0 +1,8 @@
+{
+  "appId": "com.deeprockz22.zencus",
+  "appName": "Zencus",
+  "webDir": "dist",
+  "ios": {
+    "backgroundColor": "#f7f3ec"
+  }
+}

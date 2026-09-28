@@ -1,0 +1,20 @@
+/* Safe areas for the iPhone app (and home-screen web apps). The page draws
+   edge to edge (viewport-fit=cover), under the status bar, the Dynamic
+   Island and the home indicator. env(safe-area-inset-*) is 0 in ordinary
+   browsers, so the website on desktop and in Safari is unchanged. Loaded last. */
+
+.app-header {
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+}
+@media (max-width: 768px) {
+  .app-header {
+    padding-top: calc(7px + env(safe-area-inset-top, 0px)) !important;
+  }
+}
+
+.dock-nav-container {
+  bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 10px));
+}
+html.surreal .dock-nav-container {
+  bottom: max(30px, calc(env(safe-area-inset-bottom, 0px) + 10px));
+}

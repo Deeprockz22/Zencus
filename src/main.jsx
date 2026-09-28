@@ -9,6 +9,8 @@ import './themes/komorebi.css';
 import './themes/art-accents.css';
 import './mobile-center.css';
 import './fx-lite.css';
+import './native-safe-area.css';
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
