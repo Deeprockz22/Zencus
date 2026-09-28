@@ -12,7 +12,7 @@ describe('Landing page', () => {
     render(<Landing />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Where zen meets focus.');
     expect(screen.getAllByRole('button', { name: /Start a focus session/i }).length).toBe(2);
-    expect(screen.getByRole('link', { name: 'Open Zencus' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Open Zencus' })).toHaveAttribute('href', import.meta.env.BASE_URL);
   });
 
   it('has a hero timer that really counts down, pauses and switches length', () => {

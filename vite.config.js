@@ -4,6 +4,9 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // Relative asset paths, so the same build works at a domain root and under
+  // https://deeprockz22.github.io/Zencus/ (GitHub Pages serves the repo there)
+  base: './',
   plugins: [
     react(),
     tailwindcss(),
