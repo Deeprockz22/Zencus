@@ -203,6 +203,19 @@
   width: var(--kw-basin-w);
 }
 .kw-basin svg { display: block; width: 100%; height: auto; overflow: visible; }
+.kw-tsukubai-render {
+  pointer-events: none;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.28));
+}
+.kw-night .kw-tsukubai-render {
+  filter: brightness(0.65) saturate(0.8) hue-rotate(-12deg) drop-shadow(0 6px 14px rgba(0, 0, 0, 0.48));
+}
+.kw-kakei,
+.kw-stone,
+.kw-stone-hi,
+.kw-water {
+  opacity: 0;
+}
 .kw-kakei rect { fill: var(--kw-bamboo); }
 .kw-kakei .kw-kakei-hi { fill: color-mix(in oklch, var(--kw-bamboo) 55%, white); }
 .kw-kakei line { stroke: color-mix(in oklch, var(--kw-bamboo) 60%, black); stroke-width: 1.5; }
@@ -528,3 +541,30 @@
   0%, 100% { transform: none; }
   50% { transform: translateY(-3px); }
 }
+
+/* ---------- #29 mist rings: the breath guide, rising off the tsukubai ----------
+   One 16 s cycle = useBreathGuide's box breathing: 0–25% in (rise and widen),
+   25–50% hold, 50–75% out (settle), 75–100% rest. Eased like the hook's sine.
+   Transform + opacity only. Skipped in Light mode and under reduced motion. */
+.kw-mist-ring {
+  fill: none;
+  stroke: color-mix(in oklch, var(--kw-water) 35%, white);
+  stroke-width: 2.4;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  opacity: 0.2;
+  animation: kw-mist-breath 16s linear infinite;
+  will-change: transform, opacity;
+}
+.kw-mist-ring-1 { --kw-mist-s: 1.3;  --kw-mist-y: -12px; }
+.kw-mist-ring-2 { --kw-mist-s: 1.18; --kw-mist-y: -22px; stroke-width: 1.6; }
+.kw-night .kw-mist-ring { stroke: rgba(205, 220, 255, 0.9); }
+@keyframes kw-mist-breath {
+  0%   { transform: translateY(0) scale(1);                                   opacity: 0.2;  animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1); }
+  25%  { transform: translateY(var(--kw-mist-y)) scale(var(--kw-mist-s));     opacity: 0.75; animation-timing-function: linear; }
+  50%  { transform: translateY(var(--kw-mist-y)) scale(var(--kw-mist-s));     opacity: 0.75; animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1); }
+  75%  { transform: translateY(0) scale(1);                                   opacity: 0.2;  animation-timing-function: linear; }
+  100% { transform: translateY(0) scale(1);                                   opacity: 0.2; }
+}
+@media (prefers-reduced-motion: reduce) { .kw-mist { display: none; } }
+html.fx-lite .kw-mist { display: none; }

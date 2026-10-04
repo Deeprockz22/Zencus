@@ -876,7 +876,9 @@ export default function App() {
     <div className={`app-layout theme-${theme} mode-${mode}`} data-timer-mode={mode}>
 
       {/* The painted worlds of the art themes */}
-      {isSurrealTheme(theme) && <SurrealWorld theme={theme} />}
+      {isSurrealTheme(theme) && (
+        <SurrealWorld theme={theme} progress={totalDuration ? 1 - timeLeft / totalDuration : 0} mode={mode} />
+      )}
       {/* The anime night garden, and the ASCII butterfly that visits it */}
       {isLanternTheme(theme) && <LanternWorld theme={theme} />}
       {isLanternTheme(theme) && !fx.lite && <AsciiButterfly />}

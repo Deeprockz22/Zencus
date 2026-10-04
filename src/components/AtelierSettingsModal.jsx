@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Clock, Database, Info, Download, Upload, Trash2, Sparkles, Palette, Volume2, VolumeX, Music, Compass, Check, Minus, Plus } from 'lucide-react';
+import { X, Clock, Database, Info, Download, Upload, Trash2, Sparkles, Palette, Volume2, VolumeX, Music, Compass, Check, Minus, Plus, MessageSquare } from 'lucide-react';
 import MagnetButton from './react-bits/MagnetButton';
 import { COMPANIONS } from '../utils/companionPresets';
 import { sfx, SOUND_PACKS } from '../utils/sfx';
@@ -8,6 +8,7 @@ import { Storage } from '../utils/storage';
 import { SOUNDTRACK_OPTIONS } from '../utils/soundtracks';
 import { themeFamily, pickFamily } from '../themeFamilies';
 import ConfirmDialog from './ui/ConfirmDialog';
+import FeedbackModal from './modals/FeedbackModal';
 import './settings-atelier.css';
 import './settings-skins.css';
 
@@ -143,6 +144,7 @@ export default function AtelierSettingsModal({
   const [sessionsBeforeLong, setSessionsBeforeLong] = useState(timerSettings.sessionsBeforeLong || 4);
   const [activeChapter, setActiveChapter] = useState('rhythm');
   const [confirmClear, setConfirmClear] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   // Sketch mode is Crisp in black and white, so it gets its own monochrome skin
   const skin = theme === 'sketch' ? 'sketch' : themeFamily(theme);
   const copy = FAMILY_COPY[skin] || FAMILY_COPY.crisp;
@@ -653,6 +655,14 @@ export default function AtelierSettingsModal({
                       <span>Active</span>
                     </span>
                   </div>
+                  <button
+                    type="button"
+                    className="atl-feedback-trigger-btn flex items-center gap-1.5 text-xs font-medium text-[var(--accent-primary)] hover:underline mt-2.5 transition-colors cursor-pointer"
+                    onClick={() => setFeedbackOpen(true)}
+                  >
+                    <MessageSquare size={13} aria-hidden="true" />
+                    <span>Send feedback to creator</span>
+                  </button>
                 </div>
               </div>
 
@@ -698,6 +708,12 @@ export default function AtelierSettingsModal({
           onClearAllData();
           onClose();
         }}
+      />
+
+      <FeedbackModal
+        isOpen={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        theme={theme}
       />
     </div>
   );

@@ -56,12 +56,16 @@ export default function Header({
     <header className="app-header">
       {/* Left: Brand Identity */}
       <div className="header-left">
-        <div className="header-brand-group flex items-center gap-2.5 select-none">
+        <a
+          href={`${import.meta.env.BASE_URL}landing.html`}
+          className="header-brand-group flex items-center gap-2.5 select-none no-underline cursor-pointer hover:opacity-85 transition-opacity"
+          title="Zencus Atelier & Craft Overview"
+        >
           <FocusLogo size={32} className="brand-logo-icon" />
           <span className="brand-wordmark font-bold text-sm tracking-tight text-[var(--text-primary)]">
             Zencus
           </span>
-        </div>
+        </a>
       </div>
 
       {/* Right: Streamlined Control Suite */}

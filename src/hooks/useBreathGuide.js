@@ -2,7 +2,7 @@
 // Foundation for Idea #29: Mindful Breath Guide on Breaks
 // Provides pure mathematical cadence and rhythm for restorative box breathing (4-4-4-4).
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 export const BREATH_PHASES = {
   INHALE: { id: 'inhale', label: 'Breathe in', duration: 4 },
@@ -72,29 +72,50 @@ export function calculateBreathState(elapsedSeconds) {
 }
 
 export default function useBreathGuide(isActive = true) {
-  const [elapsed, setElapsed] = useState(0);
-  const startTimeRef = useRef(null);
+  const [phaseIndex, setPhaseIndex] = useState(0);
 
   useEffect(() => {
     if (!isActive) {
-      setElapsed(0);
-      startTimeRef.current = null;
+      setPhaseIndex(0);
       return undefined;
     }
 
-    let rafId;
-    const start = performance.now();
-    startTimeRef.current = start;
-
-    const tick = (now) => {
-      const sec = (now - start) / 1000;
-      setElapsed(sec);
-      rafId = requestAnimationFrame(tick);
+    // State moves only at phase boundaries (once per 4 s, not per frame). The phase is
+    // read from the clock, never counted from ticks: a hidden tab throttles timers, so
+    // a counted phase would fall behind the CSS ring (which follows the clock). We
+    // re-read on every tick and the moment the tab is visible again.
+    const start = Date.now();
+    let timer = 0;
+    const sync = () => {
+      const elapsed = (Date.now() - start) / 1000;
+      const now = calculateBreathState(elapsed);
+      setPhaseIndex(PHASE_SEQUENCE.findIndex((p) => p.id === now.phase));
+      const phase = PHASE_SEQUENCE.find((p) => p.id === now.phase);
+      const untilNext = phase.duration * (1 - now.phaseProgress);
+      timer = setTimeout(sync, Math.max(16, untilNext * 1000));
     };
+    timer = setTimeout(sync, PHASE_SEQUENCE[0].duration * 1000);
+    const onVisible = () => {
+      if (document.hidden) return;
+      clearTimeout(timer);
+      sync();
+    };
+    document.addEventListener('visibilitychange', onVisible);
 
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [isActive]);
 
-  return useMemo(() => calculateBreathState(elapsed), [elapsed]);
+  const currentPhase = PHASE_SEQUENCE[phaseIndex];
+
+  return useMemo(() => ({
+    phase: currentPhase.id,
+    label: currentPhase.label,
+    phaseProgress: 0,
+    cycleProgress: (phaseIndex * 4) / TOTAL_CYCLE_DURATION,
+    scale: currentPhase.id === 'hold_in' || currentPhase.id === 'inhale' ? 1.35 : 1.0,
+    secondsInPhase: 0,
+  }), [currentPhase, phaseIndex]);
 }

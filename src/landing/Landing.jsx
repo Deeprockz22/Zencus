@@ -13,6 +13,7 @@ import {
 import FocusLogo from '../components/brand/FocusLogo';
 import FlipText from '../components/ui/FlipText';
 import MagnetButton from '../components/react-bits/MagnetButton';
+import FeedbackModal from '../components/modals/FeedbackModal';
 import './landing.css';
 
 // Paths follow Vite's base, so the page works at the site root in dev and under
@@ -171,6 +172,8 @@ function MiniTask() {
 }
 
 export default function Landing() {
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+
   // Smooth, inertial scrolling (Lenis), off for people who ask for less motion
   useEffect(() => {
     if (prefersReducedMotion()) return;
@@ -213,6 +216,7 @@ export default function Landing() {
           <nav className="lp-nav-links" aria-label="Sections">
             <SweepLink href="#loop">The loop</SweepLink>
             <SweepLink href="#features">Features</SweepLink>
+            <SweepLink href="#craft">Craft</SweepLink>
             <SweepLink href="#themes">Themes</SweepLink>
             <SweepLink href="#privacy">Privacy</SweepLink>
           </nav>
@@ -349,6 +353,31 @@ export default function Landing() {
           </div>
         </section>
 
+        {/* ── Craft / The Monolith ── */}
+        <section id="craft" className="lp-section lp-section-monolith">
+          <div className="lp-container">
+            <header className="lp-section-head reveal">
+              <p className="lp-eyebrow">The Atelier</p>
+              <h2 className="lp-h2">Hardware soul. Zero footprint.</h2>
+              <p className="lp-section-lede">
+                Designed with the weight and discipline of physical studio equipment. Bead-blasted anodized aluminum, diamond-chamfered edges, and phosphor amber luminescence—sculpted in Blender 3D.
+              </p>
+            </header>
+            <figure className="lp-shot lp-shot-monolith reveal">
+              <img
+                src={shot('atelier-chrono-3d.jpg')}
+                width="1920"
+                height="1080"
+                loading="lazy"
+                alt="Zencus Atelier Monolith: bead-blasted anodized aluminum focus dial with amber OLED readout and tactile river stone on smoked walnut desk."
+              />
+              <figcaption className="lp-monolith-caption">
+                <span>Zencus Atelier Monolith · 100mm Anodized Aluminum Dial · Smoked Walnut Studio Desk</span>
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
         {/* ── Themes ── */}
         <section id="themes" className="lp-section">
           <div className="lp-container">
@@ -424,9 +453,24 @@ export default function Landing() {
             <span>Zencus</span>
           </div>
           <p>Where zen meets focus.</p>
-          <p className="lp-footer-muted">© {new Date().getFullYear()} Zencus</p>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              className="text-xs text-[var(--lp-text-muted,#888)] hover:text-[var(--lp-text,#111)] transition-colors cursor-pointer bg-transparent border-none p-0"
+              onClick={() => setFeedbackOpen(true)}
+            >
+              Feedback
+            </button>
+            <p className="lp-footer-muted m-0">© {new Date().getFullYear()} Zencus</p>
+          </div>
         </div>
       </footer>
+
+      <FeedbackModal
+        isOpen={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        theme="light"
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
-import SurrealWorld from './SurrealWorld';
+import SurrealWorld, { sunSetAmount } from './SurrealWorld';
 import { gazeOffset, GAZE_REACH } from './gaze';
 
 const eyeRect = { left: 1000, top: 200, width: 200, height: 110 }; // centre (1100, 255)
@@ -59,5 +59,26 @@ describe('SurrealWorld eye', () => {
       window.dispatchEvent(new MouseEvent('pointerdown', { clientX: 1100, clientY: 0 }));
     });
     expect(parseFloat(eye.style.getPropertyValue('--sw-gy'))).toBeLessThan(0);
+  });
+});
+
+describe('the sun', () => {
+  it('sinks through a focus session and rises through a break', () => {
+    expect(sunSetAmount('work', 0)).toBe(0);
+    expect(sunSetAmount('work', 0.75)).toBe(0.75);
+    expect(sunSetAmount('shortBreak', 0)).toBe(1);
+    expect(sunSetAmount('longBreak', 1)).toBe(0);
+    expect(sunSetAmount('work', 2)).toBe(1);
+  });
+
+  it('carries the set amount onto the world and swaps sprites for night', () => {
+    const { container, rerender } = render(<SurrealWorld theme="surreal" progress={0.4} mode="work" />);
+    const world = container.querySelector('.surreal-world');
+    expect(world.style.getPropertyValue('--sw-set')).toBe('0.4000');
+    expect(container.querySelectorAll('.sw-sun-disc')).toHaveLength(2);
+    expect(container.querySelector('.sw-sun-disc').getAttribute('src')).toMatch(/sun-day-high/);
+    rerender(<SurrealWorld theme="surreal-night" progress={0.4} mode="shortBreak" />);
+    expect(world.style.getPropertyValue('--sw-set')).toBe('0.6000');
+    expect(container.querySelector('.sw-sun-disc').getAttribute('src')).toMatch(/sun-night-high/);
   });
 });

@@ -118,10 +118,34 @@ export default function MinimalVisualizer({
               <stop offset="60%" stopColor="#ff3b30" stopOpacity={isRunning ? '0.05' : '0.01'} />
               <stop offset="100%" stopColor="#ff3b30" stopOpacity="0" />
             </radialGradient>
+            {/* Atelier Monolith Diamond Chamfer Reflection */}
+            <linearGradient id="monolithChamfer" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(255, 255, 255, 0.45)" />
+              <stop offset="45%" stopColor="rgba(255, 255, 255, 0.08)" />
+              <stop offset="70%" stopColor="rgba(255, 255, 255, 0.65)" />
+              <stop offset="100%" stopColor="rgba(255, 255, 255, 0.12)" />
+            </linearGradient>
+            {/* Machined Bead-blasted Chassis Bezel */}
+            <radialGradient id="monolithBezel" cx="50%" cy="40%" r="60%">
+              <stop offset="85%" stopColor="var(--bg-secondary)" stopOpacity="0.4" />
+              <stop offset="96%" stopColor="var(--bg-primary)" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="var(--border-subtle)" stopOpacity="0.9" />
+            </radialGradient>
           </defs>
 
           {/* Calming Central Ambient Aura */}
           <circle cx="180" cy="180" r="140" fill="url(#minimalGlow)" />
+
+          {/* Precision Machined Monolith Outer Bezel & Chamfer Lip */}
+          <circle
+            cx="180"
+            cy="180"
+            r="162"
+            fill="url(#monolithBezel)"
+            stroke="url(#monolithChamfer)"
+            strokeWidth="1.8"
+            className="monolith-bezel-lip"
+          />
 
           {/* 60 Precision Minimalist Ticks */}
           <g className="minimal-dial-ticks" opacity="0.45">

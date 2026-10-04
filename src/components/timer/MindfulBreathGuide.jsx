@@ -30,7 +30,7 @@ export default function MindfulBreathGuide({
       aria-label={`Breathing guide: ${breath.label}`}
       style={{ '--breath-scale': breath.scale }}
     >
-      <div className="breath-ring-wrapper" style={{ transform: `scale(${breath.scale})` }}>
+      <div className="breath-ring-wrapper">
         <div className="breath-ring-halo" />
         <div className="breath-ring-core" />
       </div>

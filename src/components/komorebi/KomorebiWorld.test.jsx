@@ -104,4 +104,18 @@ describe('KomorebiWorld', () => {
     rerender(<KomorebiWorld theme="komorebi" sessionsCompleted={2} mode="work" />);
     expect(say()).toBeNull();
   });
+
+  it('lifts mist rings off the basin only on a running break (the #29 breath guide)', () => {
+    const { container, rerender } = render(<KomorebiWorld theme="komorebi" mode="work" isRunning />);
+    const mist = () => container.querySelector('[data-testid="kw-mist"]');
+    expect(mist()).toBeNull();                                                    // never while focusing
+    rerender(<KomorebiWorld theme="komorebi" mode="shortBreak" isRunning={false} />);
+    expect(mist()).toBeNull();                                                    // not while paused
+    rerender(<KomorebiWorld theme="komorebi" mode="shortBreak" isRunning />);
+    expect(mist().querySelectorAll('.kw-mist-ring')).toHaveLength(2);
+    rerender(<KomorebiWorld theme="komorebi" mode="longBreak" isRunning />);
+    expect(mist()).not.toBeNull();                                                // long breaks too
+    rerender(<KomorebiWorld theme="komorebi" mode="work" isRunning />);
+    expect(mist()).toBeNull();
+  });
 });

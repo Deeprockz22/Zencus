@@ -1,203 +1,66 @@
 import React, { useEffect, useRef } from 'react';
+import atlasUrl from './butterfly-atlas.webp';
 
 /*
- * AsciiButterfly — a butterfly made of coloured ASCII that visits the
+ * AsciiButterfly — a Blue Morpho made of coloured ASCII that visits the
  * Lantern Garden.
  *
- * A small, cute visitor: every 5 minutes exactly it flutters in from the
- * edge of the screen and lands in the middle, then flies away again. The app
- * behind it drifts out of focus as it approaches and comes back into focus as
- * it leaves: the blur is driven frame by frame by how close it is. While it
- * rests it bobs gently, slowly opening and closing its wings. A tap or
- * keypress sends it off early.
+ * Every 5 minutes exactly it flutters in from the edge of the screen and
+ * lands in the middle, then flies away again. The app behind it drifts out
+ * of focus as it approaches and comes back into focus as it leaves: the blur
+ * is driven frame by frame by how close it is. While it rests it bobs
+ * gently, slowly opening and closing its wings. A tap or keypress sends it
+ * off early.
  *
- * Every character is computed from a model of the insect, per frame:
- *   · forewings + hindwings (with tails), mirrored across the body
- *   · iridescent upperside: indigo root → cyan/violet shimmer → blossom tips
- *   · black margins with rows of white dots, a submarginal row of gold spots
- *   · veins radiating from the wing root, drawn as | / \ - along their angle
- *   · gold-ringed eyespots on the hindwings
- *   · per-cell "scale" noise for texture; a muted tawny underside that shows
- *     when the wings fold past vertical
- *   · a segmented body, and antennae with clubbed tips
- * Characters sit on a fixed screen grid, so it reads as true ASCII art while
- * it moves. Only the butterfly's bounding box is redrawn each frame.
+ * The insect itself is a real 3D model rendered in Blender
+ * (resources/blender: painted from Morpho references, structural-blue
+ * upperside with black margins and white apex spots, iridescent toward
+ * violet as the wings fold). butterfly-atlas.webp holds one wingbeat, 24
+ * frames from wings-down (−35°) to clapped shut (88°). Each frame, every
+ * cell of a fixed character grid samples the frame for the current wing
+ * angle: its brightness picks the glyph, its colour paints it. So it reads
+ * as true ASCII art, in perspective, while it moves. Only the butterfly's
+ * bounding box is redrawn each frame.
  */
 
-const FONT_PX = 7;
+const FONT_PX = 6;
 const CW = FONT_PX * 0.6; // monospace cell width
 const CH = FONT_PX;       // cell height
-const DENSE = '@#%&8B$WM';
-const MID = '*+=xoaeX';
+// darkest → brightest
+const RAMP = ".:-=+*cxoaeO0#%&8B@";
+const VELVET = '#%&8B';
+
+// atlas layout (must match the Blender render)
+const FW = 160;
+const FH = 128;
+const COLS = 6;
+const NF = 24;
+const A0 = -35;
+const A1 = 88;
+const ASPECT = FW / FH;
 
 const clamp01 = (v) => Math.max(0, Math.min(1, v));
 const lerp = (a, b, t) => a + (b - a) * t;
-const mix = (c1, c2, t) => [lerp(c1[0], c2[0], t), lerp(c1[1], c2[1], t), lerp(c1[2], c2[2], t)];
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const easeOut = (t) => 1 - Math.pow(1 - t, 3);
-const hash = (x, y) => {
-  const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
-  return s - Math.floor(s);
-};
-const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
 
-const UP = {
-  root: hex('#23145e'),
-  cyan: hex('#3fe6ff'),
-  violet: hex('#7a5cff'),
-  pink: hex('#ff5fb0'),
-  coral: hex('#ffb08a'),
-  gold: hex('#ffc24a'),
-  black: hex('#2a1238'),
-  white: hex('#fff8ee'),
-  hindBase: hex('#5a2fb0'),
-  hindMid: hex('#ff8fc8'),
-};
-const UNDER = {
-  root: hex('#3a2a22'),
-  a: hex('#b88a5c'),
-  b: hex('#e2c49a'),
-  edge: hex('#4a3526'),
-};
+/** Wing angle in degrees → atlas frame index. */
+export const frameForAngle = (deg) => Math.round(clamp01((deg - A0) / (A1 - A0)) * (NF - 1));
 
-// Wing geometry in butterfly space: x ∈ [-1,1] (wingspan), y downward.
-// Radii are measured from each wing's root along a ray; t runs from the
-// wing's leading edge to its trailing edge. Neither wing collapses to nothing
-// along its trailing edge, so the hindwing tucks under the forewing the way
-// a real butterfly's does, with no gap between them.
-//   forewing: a swept triangle — short at the costa, a pointed apex, then a
-//             long straight inner margin back toward the body
-//   hindwing: a rounded fan with a scalloped edge and a tail
-const FORE = { rx: 0.05, ry: -0.04, a0: -1.95, a1: 0.42 };
-const HIND = { rx: 0.05, ry: 0.05, a0: -0.05, a1: 1.72 };
-
-function foreRadius(t) {
-  // a rounded, generous forewing (cute rather than sharp)
-  if (t < 0.55) return 0.2 + 0.78 * Math.pow(Math.sin((t / 0.55) * Math.PI / 2), 1.2);
-  return 0.98 - 0.42 * Math.pow((t - 0.55) / 0.45, 1.6);
-}
-function hindRadius(t) {
-  const fan = 0.54 + 0.3 * Math.sin(Math.min(1, t / 0.7) * Math.PI * 0.95);
-  const toBody = t > 0.78 ? -0.34 * Math.pow((t - 0.78) / 0.22, 1.4) : 0;
-  const scallop = 0.025 * Math.sin(t * Math.PI * 14);
-  const tail = 0.1 * Math.exp(-Math.pow((t - 0.72) / 0.05, 2)); // a short, sweet tail
-  return fan + toBody + scallop + tail;
-}
-
-// Sample the butterfly at local point (x, y). Returns [char, rgb] or null.
-function sample(x, y, time, underside) {
-  const ax = Math.abs(x);
-
-  // --- antennae: thin curves from the head up and outward, clubbed tips
-  if (y < -0.3 && ax < 0.34) {
-    const t = clamp01((-0.3 - y) / 0.46);
-    const cx = 0.03 + 0.26 * Math.pow(t, 1.4);
-    if (Math.abs(ax - cx) < 0.03 + (t > 0.9 ? 0.035 : 0)) {
-      if (t > 0.9) return ['@', [255, 206, 110]];
-      return [x > 0 ? '/' : '\\', [120, 96, 120]];
-    }
-  }
-
-  // --- body: head, thorax, segmented abdomen
-  const head = (x * x) / (0.075 * 0.075) + ((y + 0.27) * (y + 0.27)) / (0.075 * 0.075);
-  const thorax = (x * x) / (0.07 * 0.07) + ((y + 0.13) * (y + 0.13)) / (0.13 * 0.13);
-  const abd = (x * x) / (0.06 * 0.06) + ((y - 0.17) * (y - 0.17)) / (0.22 * 0.22);
-  if (head < 1 || thorax < 1 || abd < 1) {
-    const seg = abd < 1 && Math.floor((y - 0.0) * 22) % 2 === 0;
-    const fuzz = hash(Math.round(x * 90), Math.round(y * 90));
-    if (head < 1) return ['@', [40, 26, 40]];
-    if (thorax < 1) return [fuzz > 0.7 ? '%' : '8', fuzz > 0.82 ? [210, 170, 90] : [52, 34, 44]];
-    return [seg ? '=' : '8', seg ? [150, 110, 70] : [44, 30, 38]];
-  }
-
-  // --- wings (mirror to the right side)
-  const wing = (w, radiusFn) => {
-    const dx = ax - w.rx;
-    const dy = y - w.ry;
-    const ang = Math.atan2(dy, dx);
-    if (ang < w.a0 || ang > w.a1) return null;
-    const t = (ang - w.a0) / (w.a1 - w.a0);
-    const r = radiusFn(t);
-    const dist = Math.hypot(dx, dy);
-    if (dist > r) return null;
-    return { t, d: dist / r, ang };
+/** Decode the atlas once into raw RGBA (null where canvas can't, e.g. jsdom). */
+function loadAtlas(onReady) {
+  if (typeof Image === 'undefined') return;
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    const g = c.getContext?.('2d');
+    if (!g || typeof g.drawImage !== 'function' || typeof g.getImageData !== 'function') return;
+    g.drawImage(img, 0, 0);
+    onReady({ data: g.getImageData(0, 0, c.width, c.height).data, width: c.width });
   };
-  const fw = wing(FORE, foreRadius);
-  const hw = fw ? null : wing(HIND, hindRadius);
-  const w = fw || hw;
-  if (!w) return null;
-  const fore = !!fw;
-  const { t, d, ang } = w;
-  const grain = hash(Math.round(x * 140), Math.round(y * 140));
-
-  // veins: radial lines from the root, plus the cross-vein that closes the cell
-  const veinCount = fore ? 7 : 6;
-  const vf = Math.abs(((t * veinCount) % 1) - 0.5);
-  const isVein = (vf > 0.455 && d > 0.12) || (Math.abs(d - (fore ? 0.46 : 0.4)) < 0.022 && t > 0.2 && t < 0.8);
-
-  // outer margin: black band with rows of white dots
-  const margin = d > 0.86;
-  const dotLine = fore ? t * 16 : t * 13;
-  const isDot = margin && d > 0.9 && d < 0.965 && Math.abs((dotLine % 1) - 0.5) < 0.2;
-  const subDot = !margin && d > 0.76 && d < 0.83 && Math.abs(((t * (fore ? 11 : 9)) % 1) - 0.5) < 0.16;
-
-  // hindwing eyespot
-  let eye = -1;
-  if (!fore) {
-    const ex = HIND.rx + Math.cos(HIND.a0 + 0.52 * (HIND.a1 - HIND.a0)) * 0.44;
-    const ey = HIND.ry + Math.sin(HIND.a0 + 0.52 * (HIND.a1 - HIND.a0)) * 0.44;
-    eye = Math.hypot(ax - ex, y - ey);
-  }
-
-  if (underside) {
-    // the underside: muted tawny, a faint echo of the same pattern
-    let c = mix(UNDER.root, d < 0.5 ? UNDER.a : UNDER.b, clamp01(d * 1.3));
-    if (margin) c = UNDER.edge;
-    if (isVein) c = mix(c, UNDER.root, 0.6);
-    if (isDot || subDot) c = [236, 222, 196];
-    c = c.map((v) => v * (0.82 + grain * 0.3));
-    return [isVein ? veinChar(ang) : margin ? '#' : DENSE[Math.floor(grain * DENSE.length)], c];
-  }
-
-  // upperside colour field
-  const shimmer = 0.5 + 0.5 * Math.sin(time * 1.6 + t * 4 + d * 3);
-  let c;
-  if (fore) {
-    const irid = mix(UP.cyan, UP.violet, shimmer);
-    c = d < 0.16 ? mix(UP.root, irid, d / 0.16)
-      : d < 0.62 ? mix(irid, UP.pink, (d - 0.16) / 0.46)
-      : mix(UP.pink, UP.coral, (d - 0.62) / 0.24);
-    // apex flush of gold near the wing tip
-    if (t > 0.5 && t < 0.78 && d > 0.62) c = mix(c, UP.gold, 0.35 * (1 - Math.abs(t - 0.64) / 0.14));
-  } else {
-    const irid = mix(UP.violet, UP.cyan, shimmer * 0.7);
-    c = d < 0.18 ? mix(UP.root, UP.hindBase, d / 0.18)
-      : d < 0.7 ? mix(irid, UP.hindMid, (d - 0.18) / 0.52)
-      : mix(UP.hindMid, UP.coral, (d - 0.7) / 0.16);
-  }
-  let ch = (d < 0.5 ? DENSE : MID)[Math.floor(grain * (d < 0.5 ? DENSE.length : MID.length))];
-
-  if (eye >= 0 && eye < 0.13) {
-    if (eye < 0.035) return ['@', [80, 230, 255]];        // blue pupil
-    if (eye < 0.06) return ['O', [20, 12, 30]];           // black ring
-    if (eye < 0.1) return ['o', UP.gold];                 // gold ring
-    return ['0', [30, 18, 40]];                           // outer rim
-  }
-  if (isVein) return [veinChar(ang), [18, 12, 26]];
-  if (isDot) return [grain > 0.5 ? '@' : 'o', UP.white];
-  if (margin) return ['#', UP.black];
-  if (subDot) return ['*', UP.gold];
-
-  c = c.map((v) => Math.min(255, v * (1.0 + grain * 0.28)));
-  return [ch, c];
-}
-
-function veinChar(ang) {
-  const a = ((ang % Math.PI) + Math.PI) % Math.PI; // 0..π
-  if (a < 0.39 || a > 2.75) return '-';
-  if (a < 1.18) return '\\';
-  if (a < 1.96) return '|';
-  return '/';
+  img.src = atlasUrl;
 }
 
 export default function AsciiButterfly() {
@@ -211,6 +74,9 @@ export default function AsciiButterfly() {
     const ctx = canvas.getContext?.('2d');
     if (!ctx || typeof ctx.fillText !== 'function') return undefined; // jsdom / no canvas
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
+
+    let atlas = null;
+    loadAtlas((a) => { atlas = a; });
 
     let W = 0;
     let H = 0;
@@ -238,7 +104,7 @@ export default function AsciiButterfly() {
     };
     const DUR = { arrive: 4.6, rest: 6.5, leave: 3.6 };
     const VISIT_EVERY_MS = 5 * 60 * 1000; // exactly every 5 minutes
-    const landingSize = () => Math.min(W * 0.34, 170);
+    const landingSize = () => Math.min(W * 0.46, 280);
 
     // the blur is tied to the butterfly: 0 = sharp, 1 = fully out of focus
     const setFocus = (amount) => {
@@ -293,7 +159,7 @@ export default function AsciiButterfly() {
 
       let pos;
       let size;
-      let open; // 0..1 how open the wings are (projected width)
+      let angle = 0; // wing angle in degrees: 0 = flat open, 88 = clapped shut
       let tilt = 0;
 
       if (S.phase === 'arrive') {
@@ -305,7 +171,8 @@ export default function AsciiButterfly() {
         // the world softens as it approaches
         setFocus(easeInOut(clamp01((t - 0.1) / 0.9)));
         S.flap += dt * (2 * Math.PI) * lerp(8, 2.2, t);
-        open = 0.1 + 0.9 * Math.abs(Math.cos(S.flap));
+        // a full stroke: clapped above the back (88°) down to −35°
+        angle = 26.5 + 61.5 * Math.cos(S.flap);
         const ahead = bezier(S.from, S.c1, S.c2, S.to, Math.min(1, e + 0.02));
         tilt = Math.max(-0.35, Math.min(0.35, (ahead[0] - pos[0]) * 0.02)) * (1 - t);
         if (t >= 1) { S.phase = 'rest'; S.t0 = now; }
@@ -314,7 +181,7 @@ export default function AsciiButterfly() {
         size = landingSize();
         setFocus(1);
         // resting butterflies open and close their wings slowly
-        open = 0.62 + 0.38 * (0.5 + 0.5 * Math.cos(el * (Math.PI * 2 / 2.8)));
+        angle = 8 + 50 * (0.5 - 0.5 * Math.cos(el * (Math.PI * 2 / 2.8)));
         if (el >= DUR.rest || S.leaveEarly) leave();
       } else if (S.phase === 'leave') {
         const t = clamp01(el / DUR.leave);
@@ -324,7 +191,7 @@ export default function AsciiButterfly() {
         // …and comes back into focus as it flies away
         setFocus(1 - easeInOut(clamp01(t / 0.85)));
         S.flap += dt * (2 * Math.PI) * lerp(3, 9, t);
-        open = 0.1 + 0.9 * Math.abs(Math.cos(S.flap));
+        angle = 26.5 + 61.5 * Math.cos(S.flap);
         tilt = 0.25 * Math.sin(el * 3);
         if (t >= 1) {
           S.phase = 'idle';
@@ -341,14 +208,18 @@ export default function AsciiButterfly() {
       if (S.bbox) ctx.clearRect(...S.bbox);
 
       const half = size / 2;
+      const halfH = half / ASPECT;
       const bx = Math.floor((pos[0] - half) / CW) * CW;
-      const by = Math.floor((pos[1] - half * 0.95) / CH) * CH;
+      const by = Math.floor((pos[1] - halfH) / CH) * CH;
       const bw = Math.ceil((size + CW * 2) / CW) * CW;
-      const bh = Math.ceil((size * 0.95 + CH * 2) / CH) * CH;
+      const bh = Math.ceil((halfH * 2 + CH * 2) / CH) * CH;
       S.bbox = [bx - 2, by - 2, bw + 4, bh + 4];
+      if (!atlas) { S.frame = requestAnimationFrame(loop); return; }
 
-      // wings past vertical show their underside
-      const underside = S.phase !== 'rest' && Math.cos(S.flap) < -0.2;
+      const f = frameForAngle(angle);
+      const ox = (f % COLS) * FW;
+      const oy = Math.floor(f / COLS) * FH;
+      const { data, width } = atlas;
       const cosT = Math.cos(-tilt);
       const sinT = Math.sin(-tilt);
 
@@ -356,22 +227,32 @@ export default function AsciiButterfly() {
       ctx.textBaseline = 'top';
       for (let py = by; py < by + bh; py += CH) {
         for (let px = bx; px < bx + bw; px += CW) {
-          // cell centre → butterfly space (undo tilt, undo wing projection)
-          let lx = (px + CW / 2 - pos[0]) / half;
-          let ly = (py + CH / 2 - pos[1]) / half;
-          const rx = lx * cosT - ly * sinT;
-          const ry = lx * sinT + ly * cosT;
-          lx = rx; ly = ry;
-          const bodyZone = Math.abs(lx) < 0.075;
-          const x = bodyZone ? lx : lx / Math.max(0.08, open);
-          if (Math.abs(x) > 1.02 || ly < -0.8 || ly > 0.95) continue;
-          const hit = sample(x, ly, time, underside && !bodyZone);
-          if (!hit) continue;
-          const [c, rgb] = hit;
-          // folding wings catch less light
-          const shade = bodyZone ? 1 : 0.72 + 0.28 * open;
-          ctx.fillStyle = `rgb(${rgb[0] * shade | 0},${rgb[1] * shade | 0},${rgb[2] * shade | 0})`;
-          ctx.fillText(c, px, py);
+          // cell centre → frame pixel (undo tilt)
+          const dx = px + CW / 2 - pos[0];
+          const dy = py + CH / 2 - pos[1];
+          const u = (dx * cosT - dy * sinT) / half;   // −1..1 across the frame
+          const v = (dx * sinT + dy * cosT) / halfH;
+          if (u < -1 || u >= 1 || v < -1 || v >= 1) continue;
+          const sx = ox + ((u + 1) * 0.5 * FW) | 0;
+          const sy = oy + ((v + 1) * 0.5 * FH) | 0;
+          const k = (sy * width + sx) * 4;
+          const a = data[k + 3];
+          if (a < 90) continue;
+          const r = data[k];
+          const g = data[k + 1];
+          const b = data[k + 2];
+          // perceived brightness picks the glyph; edges (low alpha) stay light
+          const lum = (0.3 * r + 0.59 * g + 0.11 * b) / 255;
+          if (lum < 0.13 && a > 200) {
+            // the black velvet (margins, body): heavy glyphs in a dark that still
+            // reads on the night garden, so the wing keeps its outline
+            ctx.fillStyle = `rgb(${(r * 0.4 + 52) | 0},${(g * 0.4 + 42) | 0},${(b * 0.4 + 72) | 0})`;
+            ctx.fillText(VELVET[(sx * 7 + sy * 13) % VELVET.length], px, py);
+            continue;
+          }
+          const ci = Math.min(RAMP.length - 1, Math.floor(Math.pow(lum, 0.8) * (a / 255) * RAMP.length * 1.15));
+          ctx.fillStyle = `rgb(${Math.min(255, r * 1.12 + 22) | 0},${Math.min(255, g * 1.12 + 18) | 0},${Math.min(255, b * 1.12 + 30) | 0})`;
+          ctx.fillText(RAMP[ci], px, py);
         }
       }
 

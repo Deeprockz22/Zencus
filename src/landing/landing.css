@@ -618,6 +618,43 @@ kbd {
   }
 }
 
+/* ── Monolith Atelier ── */
+.lp-section-monolith {
+  background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.04) 0%, transparent 65%), var(--lp-bg);
+  padding-bottom: 72px;
+}
+.lp-shot-monolith {
+  margin-top: 48px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--lp-line);
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.35);
+  background: #0d0e12;
+  position: relative;
+}
+.lp-shot-monolith img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.8s var(--lp-ease);
+}
+.lp-shot-monolith:hover img {
+  transform: scale(1.015);
+}
+.lp-monolith-caption {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--lp-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+  border-top: 1px solid var(--lp-line);
+  background: var(--lp-surface);
+}
+
 /* ── Themes ── */
 .lp-themes {
   display: grid;

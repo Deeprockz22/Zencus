@@ -98,6 +98,12 @@ Custom markdown design specifications supplied to define distinct operational mo
 - **Core Elements**: Cyberpunk biometric surveillance registry, personnel clearance levels, and active monitoring metrics.
 - **Component**: [`NexusVisualizer.jsx`](file:///Users/jakkasaisrinivasamanideep/Documents/Thelidhu/src/components/timer/NexusVisualizer.jsx) (mapped to `minimal` sound pack).
 
+### 5. Zencus Atelier Monolith · 3D Hardware Chronometer
+- **Asset**: [`atelier-chrono-3d.jpg`](file:///Users/jakkasaisrinivasamanideep/Documents/Thelidhu/public/landing/atelier-chrono-3d.jpg)
+- **Palette**: Space Black anodized aluminum (`#121316`), Diamond-cut polished silver chamfer (`#E8EAF0`), Volcanic graphite dial plate (`#1A1A1E`), Phosphor amber OLED (`#FF9E24`), Smoked Japanese walnut (`#2B1B10`).
+- **Core Elements**: 100mm physical desktop monolith dial, 60-interval radial tick ring with amber 5-minute glow, high-contrast digital chronometer readout (`25:00`), companion Zen river pebble, and studio lighting rendered via Blender EEVEE Next raytracing.
+- **Role in Application**: Hero showcase in the Atelier landing page section (`#craft`), bridging physical industrial design with digital distraction-free focus.
+
 ---
 
 ## 6. Component Toolkits & Precedents
@@ -110,6 +116,7 @@ Foundational codebases and repositories referenced for structure and micro-compo
 | **Notes-App Directory** | Local Workspace (`Notes-App`) | Aesthetic benchmark for custom notes folders, rich text editing, and tag organization. |
 | **Skiper UI** | [skiper-ui.com](https://skiper-ui.com/) | Minimal copy-paste React micro-interaction component library (`@skiper-ui/skiper40`). |
 | **ThreeUI MCP** | [threeui.com/api/mcp](https://threeui.com/api/mcp) | Model Context Protocol API endpoint providing automated 3D component discovery for AI coding agents. |
+| **Open-Source Resourcefulness** | [github.com](https://github.com) | Steve Jobs Principle: When hitting browser or technical walls, ruthlessly leverage existing open-source solutions. "Great artists steal" by taking battle-tested, zero-cost libraries and elevating them into seamless, cohesive user experiences. |
 
 ---
 
@@ -128,6 +135,7 @@ Foundational codebases and repositories referenced for structure and micro-compo
 | **Skiper UI (skiper40)** | The underline-sweep-and-arrow nav links (`Link001`), rebuilt in plain CSS so the page doesn't load Tailwind. |
 | **Animaster (rolling digits)** | The hero's working timer uses `FlipText`, so only the changed digit rolls. |
 | **Lenis** | Smooth, inertial scrolling and anchor links. Off for people who ask for reduced motion. |
+| **Blender 3D Atelier Monolith** | The physical craft showcase (`#craft`): 3D studio ray-traced render of the Zencus Atelier Monolith dial. Zero runtime WebGL cost (pre-rendered to a crisp 140KB asset), delivering tangible industrial design while preserving 60 FPS on battery. |
 
 **Left out on purpose:** ShaderGradient, React Three Fiber and Vanta (WebGL would add hundreds of KB
 to a page whose job is to load instantly), and GSAP (an IntersectionObserver plus CSS covers the scroll

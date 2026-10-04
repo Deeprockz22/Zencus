@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { LANTERN as L } from './lanternPalette';
 import { LANTERN_NIGHT } from '../../themeFamilies';
+import sakuraTrees from './sakura-night.webp';
+import sakuraDayTrees from './sakura-day.webp';
 
 /*
  * LanternWorld — the painted garden behind the app for the Lantern theme.
@@ -55,39 +57,11 @@ function Moon({ cx, cy, r, sky }) {
 /* Sakura (night)                                                      */
 /* ------------------------------------------------------------------ */
 function SakuraScene() {
-  const { stars, canopyL, canopyR, petalsL, petalsR, orbs, petals, flies } = useMemo(() => {
+  const { stars, orbs, petals, flies } = useMemo(() => {
     const r = rng(7);
     const stars = Array.from({ length: 150 }, () => ({
       x: r() * W, y: r() * 470, s: 0.6 + r() * 1.9, d: -r() * 6, g: Math.floor(r() * 3),
     }));
-    // blossom clusters hug the two top corners, rim-lit from the lanterns below
-    const cluster = (cx, cy, rx, ry, n, seed) => {
-      const q = rng(seed);
-      return Array.from({ length: n }, () => {
-        const a = q() * Math.PI * 2;
-        const d = Math.sqrt(q());
-        return {
-          x: cx + Math.cos(a) * rx * d,
-          y: cy + Math.sin(a) * ry * d,
-          rad: 16 + q() * 40,
-          tone: Math.floor(q() * 4),
-        };
-      }).sort((a, b) => a.y - b.y);
-    };
-    const canopyL = [...cluster(230, 120, 430, 240, 170, 11), ...cluster(520, 330, 230, 125, 60, 12)];
-    const canopyR = [...cluster(1390, 110, 440, 240, 175, 21), ...cluster(1120, 360, 210, 115, 55, 22)];
-    // individual lit petals scattered over the clumps (the anime-painting texture)
-    const speckle = (list, seed) => {
-      const q = rng(seed);
-      return list.flatMap((c) => Array.from({ length: 3 }, () => ({
-        x: c.x + (q() - 0.5) * c.rad * 1.5,
-        y: c.y + (q() - 0.6) * c.rad * 1.2,
-        r: 1.2 + q() * 2.6,
-        lit: q() > 0.45,
-      })));
-    };
-    const petalsL = speckle(canopyL, 13);
-    const petalsR = speckle(canopyR, 23);
     const orbs = Array.from({ length: 18 }, () => ({
       x: 200 + r() * 1200, y: 480 + r() * 380, s: 5 + r() * 12, d: -r() * 14, dur: 10 + r() * 10,
     }));
@@ -97,10 +71,8 @@ function SakuraScene() {
     const flies = Array.from({ length: 26 }, () => ({
       x: 380 + r() * 840, y: 700 + r() * 190, d: -r() * 4, s: 1.4 + r() * 2.2,
     }));
-    return { stars, canopyL, canopyR, petalsL, petalsR, orbs, petals, flies };
+    return { stars, orbs, petals, flies };
   }, []);
-
-  const blossomFill = (t) => `url(#lwBlossom${t})`;
 
   return (
     <svg className="lw-svg lw-sakura" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -121,18 +93,6 @@ function SakuraScene() {
           <stop offset="0%" stopColor="#dfe6ff" stopOpacity="0.55" />
           <stop offset="100%" stopColor="#dfe6ff" stopOpacity="0" />
         </radialGradient>
-        {[
-          [L.blossomLight, L.blossom, L.blossomDeep],
-          [L.coral, L.blossom, L.blossomDeep],
-          ['#ffd0e2', L.blossomLight, L.blossom],
-          [L.blossom, L.blossomDeep, '#7a2a6e'],
-        ].map(([a, b, c], i) => (
-          <radialGradient key={i} id={`lwBlossom${i}`} cx="45%" cy="62%" r="70%">
-            <stop offset="0%" stopColor={a} />
-            <stop offset="55%" stopColor={b} />
-            <stop offset="100%" stopColor={c} />
-          </radialGradient>
-        ))}
         <radialGradient id="lwLanternGlow">
           <stop offset="0%" stopColor={L.lanternGold} stopOpacity="0.75" />
           <stop offset="45%" stopColor={L.lanternGold} stopOpacity="0.22" />
@@ -228,28 +188,9 @@ function SakuraScene() {
         <path d="M1310 712 L1060 676 L1060 682 L1310 720 Z" />
       </g>
 
-      {/* trunks rising into the canopies */}
-      <g fill={L.bark}>
-        <path d="M60 900 C120 700 140 520 220 360 C250 300 330 250 420 230 L430 250 C340 280 280 330 250 400 C200 520 190 700 170 900 Z" />
-        <path d="M1540 900 C1480 700 1460 520 1380 360 C1350 300 1270 250 1180 230 L1170 250 C1260 280 1320 330 1350 400 C1400 520 1410 700 1430 900 Z" />
-        <path d="M230 380 C330 340 420 350 520 330 L522 342 C430 362 340 360 240 400 Z" />
-        <path d="M1370 380 C1270 340 1180 350 1080 330 L1078 342 C1170 362 1260 360 1360 400 Z" />
-      </g>
-
-      {/* blossom canopies: a shadowed underside, clumps rim-lit from below, lit petals on top */}
-      {[[canopyL, petalsL, 'left'], [canopyR, petalsR, 'right']].map(([clumps, specks, side]) => (
-        <g key={side} className={`lw-canopy lw-canopy-${side}`}>
-          <g fill="#5a1d5e" opacity="0.55">
-            {clumps.map((c, i) => <circle key={i} cx={c.x + 6} cy={c.y + 10} r={c.rad} />)}
-          </g>
-          {clumps.map((c, i) => <circle key={i} cx={c.x} cy={c.y} r={c.rad} fill={blossomFill(c.tone)} />)}
-          <g>
-            {specks.map((p, i) => (
-              <circle key={i} cx={p.x} cy={p.y} r={p.r} fill={p.lit ? '#ffe3ef' : L.blossomDeep} opacity={p.lit ? 0.9 : 0.55} />
-            ))}
-          </g>
-        </g>
-      ))}
+      {/* the cherry trees: Somei-Yoshino, grown and rendered in Blender
+          (resources/blender) — lantern-lit from below, moonlit from above */}
+      <image className="lw-sakura-trees" href={sakuraTrees} x="0" y="0" width={W} height={H} preserveAspectRatio="xMidYMid slice" />
 
       </g>
 
@@ -412,18 +353,10 @@ function MistScene() {
 
       <rect className="lw-fog lw-fog-2" x="-600" y="560" width="2600" height="220" fill="url(#lwFog)" />
 
-      {/* near trunks frame the scene */}
+      {/* near sakura trees: Somei-Yoshino, grown and rendered in Blender in soft morning mist light */}
+      <image className="lw-sakura-trees" href={sakuraDayTrees} x="0" y="0" width={W} height={H} preserveAspectRatio="xMidYMid slice" opacity="0.95" />
+
       <g className="lw-layer-near">
-      <g fill={L.treeDeep}>
-        <path d="M40 900 L70 0 L120 0 L130 900 Z" />
-        <path d="M190 900 L230 0 L262 0 L258 900 Z" />
-        <path d="M1500 900 L1520 0 L1560 0 L1570 900 Z" />
-      </g>
-      <g stroke={L.treeDeep} strokeWidth="6" fill="none" opacity="0.8">
-        <path d="M110 260 C200 210 260 190 330 120" />
-        <path d="M250 330 C330 300 400 260 460 180" />
-        <path d="M1520 300 C1450 250 1400 210 1360 140" />
-      </g>
 
       {/* fine vines trailing from the canopy: 1px, meandering, with tiny leaves */}
       <g className="lw-vines" stroke={L.treeDeep} strokeWidth="1.2" fill="none" opacity="0.75">

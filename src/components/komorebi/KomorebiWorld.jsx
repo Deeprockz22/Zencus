@@ -3,6 +3,7 @@ import CalicoCat from './CalicoCat';
 import Sparrow, { useSparrowVisit } from './Sparrow';
 
 import { drip, startPurr, stopPurr, purrHaptic } from './komorebiAudio';
+import tsukubaiImg from './tsukubai.webp';
 import { KOMOREBI_NIGHT } from '../../themeFamilies';
 import './komorebi-world.css';
 
@@ -110,7 +111,7 @@ function Room() {
   );
 }
 
-function Basin({ drops, stones = 0, sparrow = null }) {
+function Basin({ drops, stones = 0, sparrow = null, breathing = false }) {
   const stoneList = useMemo(() => {
     const count = Math.min(stones, 7);
     const coords = [
@@ -128,6 +129,8 @@ function Basin({ drops, stones = 0, sparrow = null }) {
   return (
     <div className="kw-basin">
       <svg viewBox="0 0 220 170" aria-hidden="true">
+        {/* 3D Rendered Tsukubai stone basin from Blender (resources/blender/komorebi-basin.blend) */}
+        <image className="kw-tsukubai-render" href={tsukubaiImg} x="0" y="0" width="220" height="170" preserveAspectRatio="xMidYMid meet" />
         {/* bamboo spout (kakei) */}
         <g className="kw-kakei">
           <rect x="96" y="0" width="12" height="46" rx="3" />
@@ -140,6 +143,15 @@ function Basin({ drops, stones = 0, sparrow = null }) {
         <path className="kw-stone" d="M18 118 Q14 86 46 80 Q110 70 176 80 Q206 88 202 118 Q198 152 150 160 Q100 166 58 158 Q20 150 18 118 Z" />
         <path className="kw-stone-hi" d="M40 90 Q110 76 186 90" />
         <ellipse className="kw-water" cx="110" cy="96" rx="66" ry="12" />
+        {/* #29 breath guide: mist rings lift off the water and settle, on the same
+            16 s box cadence as useBreathGuide (4 in · 4 hold · 4 out · 4 rest).
+            Pure CSS, so no per-frame JS; it mounts with the timer's guide. */}
+        {breathing && (
+          <g className="kw-mist" data-testid="kw-mist">
+            <ellipse className="kw-mist-ring kw-mist-ring-1" cx="110" cy="93" rx="60" ry="10" />
+            <ellipse className="kw-mist-ring kw-mist-ring-2" cx="110" cy="92" rx="46" ry="7.5" />
+          </g>
+        )}
         {drops > 0 && (
           <g key={drops}>
             <ellipse className="kw-drop" cx="66" cy="50" rx="2.6" ry="3.6" />
@@ -281,7 +293,7 @@ export default function KomorebiWorld({
       <div className="kw-canopy kw-canopy-far"><Canopy seed={11} count={70} spread={0.9} blur={14} /></div>
       <div className="kw-canopy kw-canopy-mid"><Canopy seed={29} count={55} spread={0.7} blur={8} /></div>
       <div className="kw-canopy kw-canopy-near"><Canopy seed={47} count={30} spread={0.45} blur={4} /></div>
-      <Basin drops={drops} stones={gardenProgress?.stones || 0} sparrow={sparrow} />
+      <Basin drops={drops} stones={gardenProgress?.stones || 0} sparrow={sparrow} breathing={onBreak && isRunning} />
       <div className="kw-cat-track">
         <div className="kw-cat">
           {mode === 'shortBreak' && !stretching && <DrinkWater />}
