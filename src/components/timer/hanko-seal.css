@@ -1,0 +1,61 @@
+/* Hanko Seal Styling (Cinnabar Vermilion Japanese Seal) */
+
+.hanko-seal-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.92;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.hanko-seal-svg {
+  display: block;
+}
+
+.hanko-border {
+  fill: none;
+  stroke: #c53026;
+  stroke-width: 5.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.95;
+}
+
+.hanko-text {
+  fill: #c53026;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif, 'Apple Color Emoji';
+  font-weight: 700;
+  font-size: 32px;
+  letter-spacing: -0.05em;
+  opacity: 0.95;
+}
+
+/* Stamping Spring Physics */
+.hanko-seal-wrapper.is-stamping {
+  animation: hankoStamp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes hankoStamp {
+  0% {
+    transform: scale(2.2) rotate(-8deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.92) rotate(2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.95;
+  }
+}
+
+/* Subtle ink glow on dark backgrounds */
+[data-theme='dark'] .hanko-border,
+[data-theme='dark'] .hanko-text {
+  stroke: #e04436;
+  fill: #e04436;
+  filter: drop-shadow(0 0 3px rgba(224, 68, 54, 0.35));
+}

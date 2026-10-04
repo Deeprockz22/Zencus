@@ -1,5 +1,6 @@
 import { createUISFX, PACKS } from 'uisfx';
 import { Storage } from './storage';
+import { playStartChime, playCompletionChime } from './focusChime';
 
 export const SOUND_PACKS = [
   { id: 'zen', name: 'Zen', desc: 'Pure tones, dry wood, washi detail', color: '#7d8f77' },
@@ -167,6 +168,9 @@ class SFXManager {
   // Semantic Shortcuts
   timerStart() {
     this.play('start');
+    if (this.pack === 'zen' || this.pack === 'minimal' || this.pack === 'organic') {
+      playStartChime();
+    }
   }
 
   timerPause() {
@@ -179,6 +183,7 @@ class SFXManager {
 
   sessionComplete() {
     this.play('complete');
+    playCompletionChime();
     setTimeout(() => {
       this.play('achievement');
     }, 280);

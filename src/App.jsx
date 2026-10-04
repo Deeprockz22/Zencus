@@ -225,6 +225,15 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
 
+  // Soft Landing: gentle ease-out during final 60 seconds of focus
+  const softLanding = useSoftLanding(timeLeft, isRunning, mode);
+
+  useEffect(() => {
+    if (softLanding.isSoftLanding && ambientSoundscapes.activeType) {
+      ambientSoundscapes.setVolume(0.35 * softLanding.volumeFactor);
+    }
+  }, [softLanding.isSoftLanding, softLanding.volumeFactor]);
+
   // Keep the display awake for the length of a running session
   useWakeLock(isRunning);
 

@@ -227,3 +227,17 @@
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
+
+/* On the landing page (its own --lp-* palette, light or dark) the app's tokens
+   are missing or mixed: it defines --text-primary for the logo but no backgrounds,
+   which gave near-white text on a white card. Map them to the page's palette. */
+.feedback-modal-backdrop[data-skin='landing'] {
+  --bg-primary: var(--lp-surface);
+  --bg-secondary: var(--lp-bg-tint);
+  --text-primary: var(--lp-ink);
+  --text-secondary: var(--lp-muted);
+  --text-tertiary: var(--lp-faint);
+  --border-subtle: var(--lp-line);
+  --accent-primary: var(--lp-accent);
+  font-family: var(--lp-sans);
+}

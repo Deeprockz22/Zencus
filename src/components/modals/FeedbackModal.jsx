@@ -7,13 +7,15 @@ import './feedback-modal.css';
  * FeedbackModal — A quiet, respectful feedback box for Zencus.
  * Transmits directly to the owner via Vercel Resend integration.
  */
-export default function FeedbackModal({ isOpen, onClose, theme = '' }) {
+export default function FeedbackModal({ isOpen, onClose, theme = '', skin = '' }) {
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState(''); // Honeypot bot trap
   const [status, setStatus] = useState('idle'); // 'idle' | 'sending' | 'sent' | 'error'
   const [errorMessage, setErrorMessage] = useState('');
   const textareaRef = useRef(null);
+  const cardRef = useRef(null);
+  const closeTimerRef = useRef(0);
 
   useEffect(() => {
     if (isOpen) {
@@ -22,8 +24,13 @@ export default function FeedbackModal({ isOpen, onClose, theme = '' }) {
       setWebsite('');
       setStatus('idle');
       setErrorMessage('');
+      const opener = document.activeElement;           // give focus back to it afterwards
       const timer = setTimeout(() => textareaRef.current?.focus(), 50);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(closeTimerRef.current);           // no late "thank-you" close after we're gone
+        if (opener && typeof opener.focus === 'function') opener.focus();
+      };
     }
   }, [isOpen]);
 
@@ -31,11 +38,23 @@ export default function FeedbackModal({ isOpen, onClose, theme = '' }) {
     if (!isOpen) return;
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
+        // Captured and stopped here: Settings (underneath) also listens for Escape on window,
+        // and one press must close only the topmost window.
+        e.stopPropagation();
         onClose();
+      } else if (e.key === 'Tab' && cardRef.current) {
+        // aria-modal: keep Tab inside the box
+        const items = [...cardRef.current.querySelectorAll('textarea, input:not([tabindex="-1"]), button')]
+          .filter((el) => !el.disabled);
+        if (!items.length) return;
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -61,9 +80,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = '' }) {
 
     if (result.ok) {
       setStatus('sent');
-      setTimeout(() => {
-        onClose();
-      }, 1800);
+      closeTimerRef.current = setTimeout(onClose, 1800);
     } else {
       setStatus('error');
       setErrorMessage(feedbackMessage(result.error));
@@ -71,8 +88,9 @@ export default function FeedbackModal({ isOpen, onClose, theme = '' }) {
   };
 
   return (
-    <div className="feedback-modal-backdrop" onClick={onClose} role="presentation">
+    <div className="feedback-modal-backdrop" data-skin={skin || undefined} onClick={onClose} role="presentation">
       <div
+        ref={cardRef}
         className="feedback-modal-card"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
@@ -123,6 +141,10 @@ export default function FeedbackModal({ isOpen, onClose, theme = '' }) {
               maxLength={2000}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                // Cmd/Ctrl + Enter sends; a plain Enter is just a new line
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && status !== 'sending') handleSubmit(e);
+              }}
               disabled={status === 'sending'}
               required
             />

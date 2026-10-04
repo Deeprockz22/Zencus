@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
+import HankoSeal from './HankoSeal';
 import './session-debrief.css';
 
 /*
@@ -85,7 +86,10 @@ export default function SessionDebrief({
         </button>
 
         <div className="debrief-head">
-          <span className="debrief-kicker">Session complete · {minutes} min{taskTitle ? ` · ${taskTitle}` : ''}</span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="debrief-kicker">Session complete · {minutes} min{taskTitle ? ` · ${taskTitle}` : ''}</span>
+            <HankoSeal size={26} animate={true} title="Zen Complete" />
+          </div>
           <h3 id="debrief-title" className="debrief-title">How did that go?</h3>
           {intention && (
             <div className="debrief-intention-callout">
@@ -175,6 +179,7 @@ export function debriefToNote({ done, next, feel, intention, parkedThoughts, dis
     title: `Focus · ${minutes} min${taskTitle ? ` · ${taskTitle}` : ''}`,
     content: lines.join('\n'),
     folder: 'quick',
+    hanko: 'zen-complete',
     updatedAt: new Date().toISOString(),
   };
 }

@@ -12,6 +12,7 @@ import {
   Clock,
   FileText
 } from 'lucide-react';
+import HankoSeal from '../timer/HankoSeal';
 
 export default function NoteCard({
   note,
@@ -73,6 +74,9 @@ export default function NoteCard({
             <h3 className="note-card-title font-semibold tracking-tight text-sm text-[var(--text-primary)] truncate">
               {note.title || 'Untitled Note'}
             </h3>
+            {note.hanko && (
+              <HankoSeal size={18} title="Sealed Focus Session" className="shrink-0 opacity-85" />
+            )}
           </div>
 
           {!isTrashView && (

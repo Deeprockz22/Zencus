@@ -895,3 +895,28 @@ kbd {
   width: 0.5em;
   text-align: center;
 }
+
+/* ── Footer: Feedback link (the landing page has no Tailwind, so it is styled here) ── */
+.lp-footer-end {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.lp-footer-end .lp-footer-muted { margin: 0; }
+.lp-footer-link {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--lp-muted);
+  cursor: pointer;
+  transition: color 0.2s var(--lp-ease);
+}
+.lp-footer-link:hover { color: var(--lp-ink); }
+.lp-footer-link:focus-visible { outline: 2px solid var(--lp-accent); outline-offset: 3px; border-radius: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .lp-shot-monolith:hover img { transform: none; }
+  .lp-shot-monolith img { transition: none; }
+}

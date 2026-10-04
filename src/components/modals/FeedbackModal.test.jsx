@@ -90,4 +90,71 @@ describe('FeedbackModal Component', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/You’ve sent a few already/i);
   });
+
+  it('takes a skin so a host page with its own palette (the landing page) can restyle it', () => {
+    render(<FeedbackModal isOpen={true} onClose={() => {}} skin="landing" />);
+    expect(document.querySelector('.feedback-modal-backdrop').getAttribute('data-skin')).toBe('landing');
+  });
+
+  describe('living inside another window (polish, found testing it in the app)', () => {
+    it('Escape closes only the feedback box, not the window underneath', () => {
+      const underneath = vi.fn();                       // e.g. Settings, which also listens for Escape
+      window.addEventListener('keydown', (e) => { if (e.key === 'Escape') underneath(); });
+      const onClose = vi.fn();
+      render(<FeedbackModal isOpen={true} onClose={onClose} />);
+      fireEvent.keyDown(screen.getByPlaceholderText(/What's on your mind/i), { key: 'Escape' });
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(underneath).not.toHaveBeenCalled();
+    });
+
+    it('hands focus back to whatever opened it', async () => {
+      const opener = document.createElement('button');
+      document.body.appendChild(opener);
+      opener.focus();
+      const { rerender } = render(<FeedbackModal isOpen={false} onClose={() => {}} />);
+      rerender(<FeedbackModal isOpen={true} onClose={() => {}} />);
+      await waitFor(() => expect(document.activeElement).toBe(screen.getByPlaceholderText(/What's on your mind/i)));
+      rerender(<FeedbackModal isOpen={false} onClose={() => {}} />);
+      expect(document.activeElement).toBe(opener);
+      opener.remove();
+    });
+
+    it('keeps Tab inside the dialog (it is aria-modal)', () => {
+      render(<FeedbackModal isOpen={true} onClose={() => {}} />);
+      const close = screen.getByLabelText(/Close dialog/i);
+      const textarea = screen.getByPlaceholderText(/What's on your mind/i);
+      fireEvent.change(textarea, { target: { value: 'hello there' } });
+      const send = screen.getByRole('button', { name: /Send Note/i });
+      send.focus();
+      fireEvent.keyDown(send, { key: 'Tab' });            // past the last control → back to the first
+      expect(document.activeElement).toBe(close);
+      fireEvent.keyDown(close, { key: 'Tab', shiftKey: true }); // before the first → to the last
+      expect(document.activeElement).toBe(send);
+    });
+
+    it('sends with Cmd/Ctrl + Enter from the message box', async () => {
+      feedbackUtils.submitFeedback.mockResolvedValue({ ok: true });
+      render(<FeedbackModal isOpen={true} onClose={() => {}} />);
+      const textarea = screen.getByPlaceholderText(/What's on your mind/i);
+      fireEvent.change(textarea, { target: { value: 'Lovely cat' } });
+      fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true });
+      await waitFor(() => expect(feedbackUtils.submitFeedback).toHaveBeenCalledTimes(1));
+      fireEvent.keyDown(textarea, { key: 'Enter' });       // a plain Enter just makes a new line
+      expect(feedbackUtils.submitFeedback).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not call onClose after it has been closed or unmounted (the thank-you timer)', async () => {
+      vi.useFakeTimers();
+      feedbackUtils.submitFeedback.mockResolvedValue({ ok: true });
+      const onClose = vi.fn();
+      const { unmount } = render(<FeedbackModal isOpen={true} onClose={onClose} />);
+      fireEvent.change(screen.getByPlaceholderText(/What's on your mind/i), { target: { value: 'thanks' } });
+      fireEvent.click(screen.getByRole('button', { name: /Send Note/i }));
+      await vi.advanceTimersByTimeAsync(10);
+      unmount();
+      await vi.advanceTimersByTimeAsync(3000);
+      expect(onClose).not.toHaveBeenCalled();
+      vi.useRealTimers();
+    });
+  });
 });

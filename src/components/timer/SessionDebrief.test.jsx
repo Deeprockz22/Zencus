@@ -15,6 +15,7 @@ describe('Session Debrief', () => {
     expect(note.content).toContain('Felt: ⚡ energised');
     expect(note.content).toContain('#focuslog');
     expect(note.folder).toBe('quick');
+    expect(note.hanko).toBe('zen-complete');
   });
 
   it('includes intention in debrief card and note when provided', () => {

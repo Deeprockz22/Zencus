@@ -453,15 +453,11 @@ export default function Landing() {
             <span>Zencus</span>
           </div>
           <p>Where zen meets focus.</p>
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              className="text-xs text-[var(--lp-text-muted,#888)] hover:text-[var(--lp-text,#111)] transition-colors cursor-pointer bg-transparent border-none p-0"
-              onClick={() => setFeedbackOpen(true)}
-            >
+          <div className="lp-footer-end">
+            <button type="button" className="lp-footer-link" onClick={() => setFeedbackOpen(true)}>
               Feedback
             </button>
-            <p className="lp-footer-muted m-0">© {new Date().getFullYear()} Zencus</p>
+            <p className="lp-footer-muted">© {new Date().getFullYear()} Zencus</p>
           </div>
         </div>
       </footer>
@@ -469,7 +465,8 @@ export default function Landing() {
       <FeedbackModal
         isOpen={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
-        theme="light"
+        theme="landing"
+        skin="landing"
       />
     </div>
   );
