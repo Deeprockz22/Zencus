@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { CloudRain, Droplets, Radio, Waves, Volume2, VolumeX, Sparkles, Music2, Coffee } from 'lucide-react';
+import {
+  CloudRain, Droplets, Radio, Waves, Volume2, Sparkles, Music2, Coffee, Flame, Bird, Store,
+} from 'lucide-react';
 import { ambientSoundscapes } from '../../utils/ambientAudio';
 import { jazzRadio, JAZZ_STATIONS } from '../../utils/jazzRadioAudio';
 
 export default function AmbientSoundscapes() {
-  const [activeSound, setActiveSound] = useState(null); // null | 'window-rain' | 'zen-rain' | 'whitenoise' | 'alphabeats'
+  const [activeSound, setActiveSound] = useState(null); // null | 'window-rain' | 'zen-rain' | 'campfire' | 'forest' | 'coffee-shop' | 'ocean' | 'whitenoise' | 'alphabeats'
   const [volume, setVolume] = useState(35);
   const [radioState, setRadioState] = useState(() => jazzRadio.getState());
   const [showRadioMenu, setShowRadioMenu] = useState(false);
@@ -20,6 +22,10 @@ export default function AmbientSoundscapes() {
     } else {
       if (type === 'window-rain') ambientSoundscapes.playWindowRain();
       if (type === 'zen-rain') ambientSoundscapes.playZenRain();
+      if (type === 'campfire') ambientSoundscapes.playCampfire();
+      if (type === 'forest') ambientSoundscapes.playForestBirdsong();
+      if (type === 'coffee-shop') ambientSoundscapes.playCoffeeShop();
+      if (type === 'ocean') ambientSoundscapes.playOceanWaves();
       if (type === 'whitenoise') ambientSoundscapes.playWhiteNoise();
       if (type === 'alphabeats') ambientSoundscapes.playAlphaBeats();
       setActiveSound(type);
@@ -96,6 +102,42 @@ export default function AmbientSoundscapes() {
         >
           <CloudRain size={14} />
           <span>Zen Rain</span>
+        </button>
+
+        <button
+          className={`ambient-btn ${activeSound === 'campfire' ? 'active' : ''}`}
+          onClick={() => toggleSound('campfire')}
+          title="Campfire: Hearth embers and soothing crackles"
+        >
+          <Flame size={14} />
+          <span>Campfire</span>
+        </button>
+
+        <button
+          className={`ambient-btn ${activeSound === 'forest' ? 'active' : ''}`}
+          onClick={() => toggleSound('forest')}
+          title="Forest: Birdsong with soft wind through trees"
+        >
+          <Bird size={14} />
+          <span>Forest</span>
+        </button>
+
+        <button
+          className={`ambient-btn ${activeSound === 'coffee-shop' ? 'active' : ''}`}
+          onClick={() => toggleSound('coffee-shop')}
+          title="Coffee Shop: Warm cafe murmur and cup clinks"
+        >
+          <Store size={14} />
+          <span>Cafe Hum</span>
+        </button>
+
+        <button
+          className={`ambient-btn ${activeSound === 'ocean' ? 'active' : ''}`}
+          onClick={() => toggleSound('ocean')}
+          title="Ocean Waves: Gentle shoreline swells"
+        >
+          <Waves size={14} />
+          <span>Ocean Waves</span>
         </button>
 
         <button
